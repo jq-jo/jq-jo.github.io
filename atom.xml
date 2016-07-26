@@ -4,7 +4,7 @@
   <title><![CDATA[Jo's Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2016-07-26T10:50:51+09:00</updated>
+  <updated>2016-07-26T11:32:33+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -14,17 +14,46 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Grape Gem]]></title>
+    <link href="http://jq-jo.github.io/blog/2016/07/26/grape-gem/"/>
+    <updated>2016-07-26T10:54:56+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2016/07/26/grape-gem</id>
+    <content type="html"><![CDATA[<h1>Grapeとは</h1>
+
+<p>Grape gemはruby用のREST-APIフレームワークです。簡単にRESTfulなAPIを開発するための単純なDSLを提供することによって、Railsとシナトラなどの既存のWebアプリケーションフレームワークを補完するために設計されています。</p>
+
+<h1>Grape gemの実装</h1>
+
+<h3>Grape gemのインストール</h3>
+
+<h6>Gemfile</h6>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;'grape'</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p>そして</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;install</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<h5>b-1-1</h5>
+
+<p>abcd</p>
+
+<h3>b-2</h3>
+
+<h5>b-2-1</h5>
+
+<p>abcd</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[First Post]]></title>
     <link href="http://jq-jo.github.io/blog/2016/07/26/first-post/"/>
     <updated>2016-07-26T10:24:28+09:00</updated>
     <id>http://jq-jo.github.io/blog/2016/07/26/first-post</id>
-    <content type="html"><![CDATA[<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px; border-right:2px solid #4f4f4f"><div style="margin:0; padding:0; word-break:normal; text-align:right; color:#aaa; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;new&nbsp;grape_app</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none; color:white"><span style="font-size:9px; word-break:normal; background-color:#4f4f4f; color:white; border-radius:10px; padding:1px">cs</span></a></td></tr></table></div>
-
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;new&nbsp;grape_app</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<h1>a</h1>
+    <content type="html"><![CDATA[<h1>a</h1>
 
 <h3>a-1</h3>
 
