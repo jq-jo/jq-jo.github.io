@@ -9,7 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Grapeとは Grape gemはruby用のREST-APIフレームワークです。簡単にRESTfulなAPIを開発するための単純なDSLを提供することによって、Railsとシナトラなどの既存のWebアプリケーションフレームワークを補完するために設計されています。 Grape gemの実装 &hellip;">
+  <meta name="description" content="RESTとは RESTとは 2000年 Roy Fieldingが博士学位請求論文でREST(Representational State Transfer)をソフトウェアアーキテクチャとして提案した後、OPEN APIを開発する基本としてすぐに広く使われることになりました。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,166 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/03/rest/">REST</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-03T14:40:53+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>2:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>RESTとは</h1>
+
+<h2>RESTとは</h2>
+
+<p><small>2000年 Roy Fieldingが博士学位請求論文でREST(Representational State Transfer)をソフトウェアアーキテクチャとして提案した後、OPEN APIを開発する基本としてすぐに広く使われることになりました。RESTはSOAPがサービス指向アーキテクチャなのとは異なり、リソース指向アーキテクチャ(ROA: Resource Oriented Architecture)ということでウェブサイトのコンテンツやDBなどを全て一つのリソースとして把握し、各リソースの固有なURI(Uniform Resource Identifier)を付与して該当のリソースに対するCRUD(Create, Read, Update, Delete)作業をHTTPの基本命令語のPOST, GET, PUT, DELETEを通して処理するものです。</small></p>
+
+<h2>ソフトウェアアーキテクチャとは</h2>
+
+<p><small>ソフトウェアコンポーネント、それらの外部特性、またそれらの相互関係から構成されます。また、この用語はシステムのソフトウェアアーキテクチャの文書化を意味することもあります。ソフトウェアアーキテクチャの文書は開発依頼主とのコミュニケーションを容易にするもので、概要レベルの設計に関する早期の決定を促し、プロジェクト間でのコンポーネントとパターンの設計を再利用することを可能にします。</small></p>
+
+<h2>ROAとは</h2>
+
+<p><small>ウェブの全てのリソースをURIで表現し、構造的に連結してステートレスな方法で決まってあるメソッドだけを使用してリソースを運用するアーキテクチャ。</small></p>
+
+<h2>REST API</h2>
+
+<p><small>REST構造タイプに適するWeb APIをREST APIと言います。<br>
+RESTの設計原則に従って策定された‘REST API’を提供するウェブサビスを’RESTful’だと言えます。</small></p>
+
+<h2>REST APIの具現化例</h2>
+
+<p><small>Google API<br>
+Twitter API<br>
+Facebook API<br>
+。<br>
+。<br>
+。<br>
+今の時点には山ほどあると思います。</small></p>
+
+<h2>REST API情報提供方式</h2>
+
+<p><small>XML<br>
+JSON<br>
+RSS</small></p>
+
+<h2>RESTのメリット</h2>
+
+<p><small></p>
+
+<h3>1. わかりやすい<br></h3>
+
+<p>•　URIに規律があるため、みたら直ぐに何をしているのかがわかります<br>
+•　サービス内のリソースがURIで参照することが出来ます<br>
+•　参照URIでは、常に同じレスポンスが期待出来ます<br></p>
+
+<h3>2. 連携しやすい<br></h3>
+
+<p>•　新たな機能などにも対応しやすいです<br>
+•　RESTAPIを活用すればマッシュアップサービスがつくりやすいです<br>
+•　OpenAPIを簡単に提供できます<br>
+•　セッションを使わないのでそれぞれのリクエストに独立的です</small></p>
+
+<h2>RESTの原則</h2>
+
+<p><small>RESTを支持する人々は、ウェブのスケーラビリティと成長は、次に述べるような、いくつかのキーとなる設計原則の結果であると論じます。</small></p>
+
+<h5>ステートレスなクライアント/サーバプロトコル</h5>
+
+<p><small>HTTPメッセージの一つ一つが、そのリクエスト(メッセージ)を理解するために必要な全ての情報を含みます。そのため、クライアントもサーバも、メッセージ間におけるセッションの状態を記憶しておく必要がありません。ただし実際には、多くのHTTPベースのアプリケーションはクッキーやその他の仕掛けを使ってセッションの状態を管理しています (URLリライティングのような一部のセッション管理手法を使うシステムは、RESTful ではありません)。</small></p>
+
+<h5>すべての情報 (リソース) に適用できる「よく定義された操作」のセット</h5>
+
+<p><small>HTTP では操作 (メソッド) の小さなセットが定義されています。最も重要なのは &ldquo;GET"、"POST"、"PUT"、"DELETE&rdquo; であります。これらはデータ永続化に要求される CRUD と比較されることがあります。</small></p>
+
+<h5>リソースを一意に識別する「汎用的な構文」</h5>
+
+<p><small>RESTful なシステムでは、すべてのリソースは URI (Uniform Resource Identifier) で表される一意的な (ユニークな) アドレスを持ちます。</small></p>
+
+<h5>アプリケーションの情報と状態遷移の両方を扱うことができる「ハイパーメディアの使用」</h5>
+
+<p><small>RESTシステムでは、多くの場合、HTML文書またはXML文書を使います。こうした文書に情報およびその他のリソースへのリンクを含めます。こうすることにより、あるRESTリソースから他のRESTリソースを参照したい場合は単にリンクを辿るだけでよい。レジストリなどの他の基盤的な機能を使う必要はありません。</small></p>
+
+<h3>URLの設計</h3>
+
+<h5>ひと目でAPIと分かるようなURLにする</h5>
+
+<p><small>APIを利用する人がURLを見た時にAPIと分かるようなURLにするのが良いです。<br>
+例えは、ディレクトリに分ける場合と、サブドメインに切る場合があります。<br>
+<a href="http://example.com/api">http://example.com/api</a><br>
+<a href="http://api.example.com">http://api.example.com</a></small></p>
+
+<h5>URLにAPIのバージョンを含める</h5>
+
+<p><small>URLにAPIバージョンを含めるようにしたら管理もしやすいし、APIを使用する人がAPIのバージョンを選択しやすくなり、バージョンの切り分けも容易となるメリットが有ります。<br>
+<a href="http://api.example.com/1/article">http://api.example.com/1/article</a><br>
+<a href="http://api.example.com/v1/article/">http://api.example.com/v1/article/</a></small></p>
+
+<h5>URLに動詞を含めず、複数形の名詞のみで構成する</h5>
+
+<p><small>まず最初に好ましくないURLについて見てみると、<br>
+<a href="http://api.example.com/v1/createArticle">http://api.example.com/v1/createArticle</a><br>
+<a href="http://api.example.com/v1/article/create">http://api.example.com/v1/article/create</a><br>
+<a href="http://api.example.com/v1/article/1/create">http://api.example.com/v1/article/1/create</a><br>
+<a href="http://api.example.com/v1/article/createComment">http://api.example.com/v1/article/createComment</a><br>
+<a href="http://api.example.com/v1/article/1/comment/1/create">http://api.example.com/v1/article/1/comment/1/create</a><br>
+<br>
+上記のリソースに対して一意ではないという問題と、一つのリソースに対してCRUDの操作が必要になった場合にその操作の分だけURLが増えてしまう問題があります。<br>
+<br>
+これを名詞のURLにすると、以下のようになります。<br>
+<br>
+<a href="http://api.example.com/v1/articles">http://api.example.com/v1/articles</a><br>
+<small>article全てを指す</small><br>
+<a href="http://api.example.com/v1/articles/1">http://api.example.com/v1/articles/1</a><br>
+<small>articlesの中のID：1を指す</small><br>
+<a href="http://api.example.com/v1/articles/1/comments">http://api.example.com/v1/articles/1/comments</a><br>
+<small>articlesの  中のID:1についたcomment全てを指す</small><br>
+<a href="http://api.example.com/v1/articles/1/comments/1">http://api.example.com/v1/articles/1/comments/1</a><br>
+<small>articlesの中のID:1についたcommentsの中のID:1を指す</small></small></p>
+
+<h5>リソースの関係性がひと目で分かるようにする</h5>
+
+<p><small>URLを見ただけで、リソースがどこに属しているか分かるようにするのがベストです。<br>
+例えば、記事に属するコメントを表す場合は以下のように書いてみます。<br>
+<a href="http://api.example.com/v1/articles/1/comments">http://api.example.com/v1/articles/1/comments</a></small></p>
+
+<h5>アプリケーションや言語に依存する拡張子は含めない</h5>
+
+<p><small>URLの末尾に.htmlや.phpなど言語に関係した拡張子を付けないようにします。将来的にAPIの仕様変更で言語の変更などがあった場合に困ることになります。言語の拡張子がなければ、フレームワークや言語に縛られることがないので、様々な変更に対応ができます。</small></p>
+
+<h5>長くしすぎない</h5>
+
+<p><small><a href="http://api.example.com/articles/128/comments/10/tags/10/......">http://api.example.com/articles/128/comments/10/tags/10/......</a><br>
+のように不要に長いURLをしないことが良いです。</small>
+<br></p>
+
+<h2>参照</h2>
+
+<p><small>
+<a href="http://wp.tech-style.info/archives/683#URL_8211_Cool_URI">http://wp.tech-style.info/archives/683#URL_8211_Cool_URI</a><br>
+<a href="http://karur4n.hatenablog.com/entry/read-webtechbook">http://karur4n.hatenablog.com/entry/read-webtechbook</a><br>
+<a href="https://ja.wikipedia.org/wiki/REST">https://ja.wikipedia.org/wiki/REST</a>
+</small></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -251,7 +411,9 @@ showの部分はちょっと迷いましたけど、</p>
   </header>
 
 
-  <div class="entry-content"><h1>a</h1>
+  <div class="entry-content"><p><small></p>
+
+<h1>a</h1>
 
 <h3>a-1</h3>
 
@@ -277,7 +439,8 @@ showの部分はちょっと迷いましたけど、</p>
 
 <h5>b-2-1</h5>
 
-<p>abcd</p>
+<p>abcd
+</small></p>
 </div>
   
   
@@ -296,6 +459,10 @@ showの部分はちょっと迷いましたけど、</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/03/rest/">REST</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/07/26/grape-gem/">Grape Gem</a>
