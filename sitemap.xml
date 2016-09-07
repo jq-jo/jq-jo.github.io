@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>http://jq-jo.github.io/blog/2016/09/07/creating-a-github-blog-using-octopress/</loc>
+<lastmod>2016-09-07T17:54:02+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/08/31/Hybrid-Native-Responsive/</loc>
+<lastmod>2016-08-31T16:02:03+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/08/24/HAML%20&%20Slim/</loc>
+<lastmod>2016-08-24T10:25:08+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/08/10/asset-pipeline/</loc>
+<lastmod>2016-08-10T16:42:54+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/08/03/rest/</loc>
+<lastmod>2016-08-03T14:40:53+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/07/26/grape-gem/</loc>
+<lastmod>2016-07-26T10:54:56+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/07/26/first-post/</loc>
+<lastmod>2016-07-26T10:24:28+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/archives/</loc>
+</url>
+<url>
+<loc>http://jq-jo.github.io/</loc>
+</url>
+</urlset>
