@@ -1,0 +1,13 @@
+// This File is imported last, and will override other styles in the cascade
+// Add styles here to make changes without digging in too much
+html {font-family: 'Noto Serif', serif;}
+table {width: 100%;}
+p, article blockquote, ul, ol {
+    margin-bottom: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizelegibility;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    font-weight: bold;
+}

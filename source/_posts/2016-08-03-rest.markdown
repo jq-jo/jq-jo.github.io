@@ -1,0 +1,96 @@
+---
+layout: post
+title: "REST"
+date: 2016-08-03 14:40:53 +0900
+comments: true
+categories:
+---
+# RESTとは
+## RESTとは
+<small>2000年 Roy Fieldingが博士学位請求論文でREST(Representational State Transfer)をソフトウェアアーキテクチャとして提案した後、OPEN APIを開発する基本としてすぐに広く使われることになりました。RESTはSOAPがサービス指向アーキテクチャなのとは異なり、リソース指向アーキテクチャ(ROA: Resource Oriented Architecture)ということでウェブサイトのコンテンツやDBなどを全て一つのリソースとして把握し、各リソースの固有なURI(Uniform Resource Identifier)を付与して該当のリソースに対するCRUD(Create, Read, Update, Delete)作業をHTTPの基本命令語のPOST, GET, PUT, DELETEを通して処理するものです。</small>
+## ソフトウェアアーキテクチャとは
+<small>ソフトウェアコンポーネント、それらの外部特性、またそれらの相互関係から構成されます。また、この用語はシステムのソフトウェアアーキテクチャの文書化を意味することもあります。ソフトウェアアーキテクチャの文書は開発依頼主とのコミュニケーションを容易にするもので、概要レベルの設計に関する早期の決定を促し、プロジェクト間でのコンポーネントとパターンの設計を再利用することを可能にします。</small>
+## ROAとは
+<small>ウェブの全てのリソースをURIで表現し、構造的に連結してステートレスな方法で決まってあるメソッドだけを使用してリソースを運用するアーキテクチャ。</small>
+## REST API
+<small>REST構造タイプに適するWeb APIをREST APIと言います。<br>
+RESTの設計原則に従って策定された‘REST API’を提供するウェブサビスを’RESTful’だと言えます。</small>
+## REST APIの具現化例
+<small>Google API<br>
+Twitter API<br>
+Facebook API<br>
+。<br>
+。<br>
+。<br>
+今の時点には山ほどあると思います。</small>
+## REST API情報提供方式
+<small>XML<br>
+JSON<br>
+RSS</small>
+## RESTのメリット
+<small>
+###1. わかりやすい<br>
+•　URIに規律があるため、みたら直ぐに何をしているのかがわかります<br>
+•　サービス内のリソースがURIで参照することが出来ます<br>
+•　参照URIでは、常に同じレスポンスが期待出来ます<br>
+###2. 連携しやすい<br>
+•　新たな機能などにも対応しやすいです<br>
+•　RESTAPIを活用すればマッシュアップサービスがつくりやすいです<br>
+•　OpenAPIを簡単に提供できます<br>
+•　セッションを使わないのでそれぞれのリクエストに独立的です</small>
+## RESTの原則
+<small>RESTを支持する人々は、ウェブのスケーラビリティと成長は、次に述べるような、いくつかのキーとなる設計原則の結果であると論じます。</small>
+##### ステートレスなクライアント/サーバプロトコル
+<small>HTTPの一つ一つが、そのリクエストを理解するために必要な全ての情報を含みます。そのため、クライアントもサーバも、メッセージ間におけるセッションの状態を記憶しておく必要がありません。ただし実際には、多くのHTTPベースのアプリケーションはクッキーやその他の仕掛けを使ってセッションの状態を管理しています (URLリライティングのような一部のセッション管理手法を使うシステムは、RESTful ではありません)。</small>
+##### すべての情報 (リソース) に適用できる「よく定義された操作」のセット
+<small>HTTP では操作 (メソッド) の小さなセットが定義されています。最も重要なのは "GET"、"POST"、"PUT"、"DELETE" であります。これらはデータ永続化に要求される CRUD と比較されることがあります。</small>
+##### リソースを一意に識別する「汎用的な構文」
+<small>RESTful なシステムでは、すべてのリソースは URI (Uniform Resource Identifier) で表される一意的な (ユニークな) アドレスを持ちます。</small>
+##### アプリケーションの情報と状態遷移の両方を扱うことができる「ハイパーメディアの使用」
+<small>RESTシステムでは、多くの場合、HTML文書またはXML文書を使います。こうした文書に情報およびその他のリソースへのリンクを含めます。こうすることにより、あるRESTリソースから他のRESTリソースを参照したい場合は単にリンクを辿るだけでよい。レジストリなどの他の基盤的な機能を使う必要はありません。</small>
+### URLの設計
+##### ひと目でAPIと分かるようなURLにする
+<small>APIを利用する人がURLを見た時にAPIと分かるようなURLにするのが良いです。<br>
+例えは、ディレクトリに分ける場合と、サブドメインに切る場合があります。<br>
+http://example.com/api<br>
+http://api.example.com</small>
+##### URLにAPIのバージョンを含める
+<small>URLにAPIバージョンを含めるようにしたら管理もしやすいし、APIを使用する人がAPIのバージョンを選択しやすくなり、バージョンの切り分けも容易となるメリットが有ります。<br>
+http://api.example.com/1/article<br>
+http://api.example.com/v1/article/</small>
+##### URLに動詞を含めず、複数形の名詞のみで構成する
+<small>まず最初に好ましくないURLについて見てみると、<br>
+http://api.example.com/v1/createArticle<br>
+http://api.example.com/v1/article/create<br>
+http://api.example.com/v1/article/1/create<br>
+http://api.example.com/v1/article/createComment<br>
+http://api.example.com/v1/article/1/comment/1/create<br>
+<br>
+上記のリソースに対して一意ではないという問題と、一つのリソースに対してCRUDの操作が必要になった場合にその操作の分だけURLが増えてしまう問題があります。<br>
+<br>
+これを名詞のURLにすると、以下のようになります。<br>
+<br>
+http://api.example.com/v1/articles<br>
+<small>article全てを指す</small><br>
+http://api.example.com/v1/articles/1<br>
+<small>articlesの中のID：1を指す</small><br>
+http://api.example.com/v1/articles/1/comments<br>
+<small>articlesの	中のID:1についたcomment全てを指す</small><br>
+http://api.example.com/v1/articles/1/comments/1<br>
+<small>articlesの中のID:1についたcommentsの中のID:1を指す</small></small>
+##### リソースの関係性がひと目で分かるようにする
+<small>URLを見ただけで、リソースがどこに属しているか分かるようにするのがベストです。<br>
+例えば、記事に属するコメントを表す場合は以下のように書いてみます。<br>
+http://api.example.com/v1/articles/1/comments</small>
+##### アプリケーションや言語に依存する拡張子は含めない
+<small>URLの末尾に.htmlや.phpなど言語に関係した拡張子を付けないようにします。将来的にAPIの仕様変更で言語の変更などがあった場合に困ることになります。言語の拡張子がなければ、フレームワークや言語に縛られることがないので、様々な変更に対応ができます。</small>
+##### 長くしすぎない
+<small>http://api.example.com/articles/128/comments/10/tags/10/......<br>
+のように不要に長いURLをしないことが良いです。</small>
+<br>
+##参照
+<small>
+http://wp.tech-style.info/archives/683#URL_8211_Cool_URI<br>
+http://karur4n.hatenablog.com/entry/read-webtechbook<br>
+https://ja.wikipedia.org/wiki/REST
+</small>
