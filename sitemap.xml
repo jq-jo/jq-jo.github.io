@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://jq-jo.github.io/blog/2016/10/05/usewebview/</loc>
+<lastmod>2016-10-05T03:26:21+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/09/28/sessionmanagement/</loc>
+<lastmod>2016-09-28T14:09:14+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/09/21/about-gem/</loc>
+<lastmod>2016-09-21T15:36:47+09:00</lastmod>
+</url>
+<url>
 <loc>http://jq-jo.github.io/blog/2016/09/07/ios-webview/</loc>
 <lastmod>2016-09-07T15:21:16+09:00</lastmod>
 </url>

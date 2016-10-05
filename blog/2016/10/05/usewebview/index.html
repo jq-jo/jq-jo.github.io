@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>WebViewの作り方＆JavascriptInterface - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="WebViewを作る まず、プロジェクトを作ってみましょう。 下のようにアップ名とカンパニーのdomainを入力したらそれの組み合わせでPackage名が決められます。 ターゲットのデバイスとこのアプリで使える最小のSDKを選びます。 Activityを選びます。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2016/10/05/usewebview/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">WebViewの作り方＆JavascriptInterface</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-05T03:26:21+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:26 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>WebViewを作る</h2>
+
+<p>まず、プロジェクトを作ってみましょう。
+<img src="https://monosnap.com/file/zcNSh0T9E0IGr4sn6I2U49nvDsoynb.png"><br>
+下のようにアップ名とカンパニーのdomainを入力したらそれの組み合わせでPackage名が決められます。<br>
+<img src="https://monosnap.com/file/91DKw5Dxrq0xjpfwaquLb4kuVKKemp.png"><br>
+ターゲットのデバイスとこのアプリで使える最小のSDKを選びます。<br>
+<img src="https://monosnap.com/file/4uxXhAHZghjDddHRlqRhj6Qq7AcYgw.png"><br>
+Activityを選びます。Activityは該当アプリの使い方によって選んだら良いです。<br>
+<img src="https://monosnap.com/file/Mw7gGujs6eGDf9SeMocpsvTBltFe1f.png"><br>
+最後にActivityとLayoutの名前をついてFinishをクリックするとアプリが生成できます。<br>
+<img src="https://monosnap.com/file/3S16TCQNnA2lr2UEARc6uYXAmJtRPl.png"><br>
+初めての画面です。MainActivityはアプリが起動されるときのStartPointになるところです。<br>
+<img src="https://monosnap.com/file/R4LbMH5L6yChRGXjrOjw0mvoYlX0mg.png"><br>
+次はLayoutですが、下のactivity_main.xmlというものがMainActivityのLayoutになり、MainActivityはこのLayoutを通してデバイスの画面に表せます。<br>
+<img src="https://monosnap.com/file/naq9yOnw5K0Nz7FlucQVKQHDdVQX2P.png"><br>
+Fragmentを使うためにこのLayoutはFrameLayoutにします。<br>
+<img src="https://monosnap.com/file/gvI1KUjyuBClK3rCMqMVvhBpj7Hebh.png"><br>
+では、Fragmentファイルを作ります。該当のPackageに右クリック-> New -> Java Class にして新しいJava Classを生成します。<br>
+<img src="https://monosnap.com/file/RbJPARbQwh4GE5XjXO1BvWUuZczhqO.png"><br>
+<img src="https://monosnap.com/file/AJoWo66RzT8vI7tdgWHR7AYpR5oJgn.png"><br>
+上のように生成されたらそのClassの中身にコードを入れてみましょう。<br></p>
+
+<p><div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;MainFragment&nbsp;<span style="color:#ff3399">extends</span>&nbsp;Fragment&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;TAG&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;MainFragment.<span style="color:#ff3399">class</span>.getSimpleName();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;WebView&nbsp;mWebView;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;MainFragment()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;View&nbsp;onCreateView(LayoutInflater&nbsp;inflater,&nbsp;ViewGroup&nbsp;container,&nbsp;Bundle&nbsp;savedInstanceState)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;View&nbsp;rootView&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;inflater.inflate(R.layout.fragment_main,&nbsp;container,&nbsp;<span style="color:#c10aff">false</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(WebView)&nbsp;rootView.findViewById(R.id.fragment_main_webview);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setUpWebViewDefaults(mWebView);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.setWebChromeClient(<span style="color:#ff3399">new</span>&nbsp;WebChromeClient(){</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Override</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;onCreateWindow(WebView&nbsp;view,&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;isDialog,&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;isUserGesture,&nbsp;Message&nbsp;resultMsg)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">super</span>.onCreateWindow(view,&nbsp;isDialog,&nbsp;isUserGesture,&nbsp;resultMsg);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(mWebView.getUrl()&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">null</span>)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.loadUrl(<span style="color:#ffd500">&ldquo;<a href="https://www.google.co.jp">https://www.google.co.jp</a>&rdquo;</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;rootView;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@TargetApi(Build.VERSION_CODES.HONEYCOMB)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;setUpWebViewDefaults(WebView&nbsp;webView)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WebSettings&nbsp;settings&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;webView.getSettings();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;Javascript</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setJavaScriptEnabled(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Use&nbsp;WideViewport&nbsp;and&nbsp;Zoom&nbsp;out&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;viewport&nbsp;defined</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setUseWideViewPort(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setLoadWithOverviewMode(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;pinch&nbsp;to&nbsp;zoom&nbsp;without&nbsp;the&nbsp;zoom&nbsp;buttons</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setBuiltInZoomControls(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(Build.VERSION.SDK_INT&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;Build.VERSION_CODES.HONEYCOMB)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Hide&nbsp;the&nbsp;zoom&nbsp;controls&nbsp;for&nbsp;HONEYCOMB+</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setDisplayZoomControls(<span style="color:#c10aff">false</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;remote&nbsp;debugging&nbsp;via&nbsp;chrome://inspect</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(Build.VERSION.SDK_INT&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Build.VERSION_CODES.KITKAT)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WebView.setWebContentsDebuggingEnabled(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;We&nbsp;set&nbsp;the&nbsp;WebViewClient&nbsp;to&nbsp;ensure&nbsp;links&nbsp;are&nbsp;consumed&nbsp;by&nbsp;the&nbsp;WebView&nbsp;rather</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;than&nbsp;passed&nbsp;to&nbsp;a&nbsp;browser&nbsp;if&nbsp;it&nbsp;can</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.setWebViewClient(<span style="color:#ff3399">new</span>&nbsp;WebViewClient());</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+このFragmentにWebViewを入れ込むのでLayoutを作ります。<br>
+<img src="https://monosnap.com/file/mlvo7dFMsH9ufCb2WFrUvcP2hqRZ74.png"><br>
+<img src="https://monosnap.com/file/TBmAs5ZoSs9GK5jfd5KOt0OtjZ3Yac.png"><br>
+下のようにWebViewのコードを入れてみます。<br>
+<img src="https://monosnap.com/file/p1XkTbYVu9uzZpYLOueM7BtKI1cYPh.png"><br>
+InternetのPermissionを取ります。<br>
+<img src="https://monosnap.com/file/LOFKZuqf5LvMvBymESQ6TacdqTkwue.png"><br>
+すると、<br>
+<img src="https://monosnap.com/file/nnbEyiIdhIvfZEi4Oud5HicjJ3Qdth.png" style="width: 60%;"><br></p>
+
+<h2>JavascriptInterface</h2>
+
+<p>WebViewを通してJSとNative間のConnectingができます。
+<img src="https://monosnap.com/file/8Ois8MsX22mqIYtoBLPkP6TVEDnVit.png"><br>
+上の設定を説明します。<br>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">getSettings().setJavaScriptEnabled(<span style="color:#c10aff">true</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+これは文字そのとおりWebViewでJavascriptを使えるようになるものです。<br>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">addJavascriptInterface(<span style="color:#ff3399">new</span>&nbsp;AndroidBridge(),&nbsp;<span style="color:#ffd500">&ldquo;HybridApp&rdquo;</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+これはWebViewにJavascriptInterfaceを追加するもので、前の引数は実行するNative側のClassで、後ろの引数はJSから呼ぶときに使うキーです。<br>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">String</span>&nbsp;userAgent&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;mWebView.getSettings().getUserAgentString();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.getSettings().setUserAgentString(userAgent&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#ffd500">&ldquo;&nbsp;inuckapp&rdquo;</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+次はUserAgentの設定です。UserAgentを設定したら特定なアプリだけで呼ばれ、他のアプリやMobileブラウザーで無駄に呼ばれるのを止められます。<br>
+続いてJSから呼ばれるClassをみてみると、<br>
+<img src="https://monosnap.com/file/f2CqycMqiYP3ibV8WoxaXQDWG1QC8K.png"><br>
+inuckapp()というメソッドを呼ぶことにします。ではinuckapp()の上にJavascriptInterfaceというAnotationを必ずつけなきゃいけないです。<br>
+Native側からもJSのメソッドを呼ぶことができます。それはloadUrl()を使って、javascript:[メソッド名]を引数として入れます。<br>
+次はサーバ側です。<br>
+<img src="https://monosnap.com/file/QoWbqLzvAvpcc4RchSKy82g1zMOSfk.png"><br>
+navigator.userAgentを使ってどんなデバイスかを取得します。<br>
+Androidは「window.設定したキー.メソッド名」で簡単に呼べます。<br>
+さて、JS側のgoodMorning()を呼んでみます。<br>
+<img src="https://monosnap.com/file/Y6QmlWB0RRtC5BhQaZZywsOiPjdISl.png"><br>
+テストのため、ボタンを入れてみました。<br>
+<img src="https://monosnap.com/file/NGUC5bwtGl8R87difLA0iLsstM7WFk.png" style="width: 60%;"><br>
+ボタンをクリックすると、<br>
+<img src="https://monosnap.com/file/ZQCroY61ga4fL9aBVmj949AJ0wnvTn.png" style="width: 60%;"><br>
+JS側のメソッドが実行になり、Alertが出ました。<br>
+では、Native側からもデータを送ってみます。<br>
+メソッドの引数として渡すことができます。<br>
+<img src="https://monosnap.com/file/EHiux9F55evd7z4K5osc5FaZ9YXgwE.png"><br>
+すると、<br>
+<img src="https://monosnap.com/file/1Z8xXibNxUInayOurjwYlV7YNBRotu.png" style="width: 60%;"><br>
+Native側からJSにデータが送信されたのが確認できます。<br></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-10-05T03:26:21+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:26 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2016/10/05/usewebview/" data-via="" data-counturl="http://jq-jo.github.io/blog/2016/10/05/usewebview/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/09/28/sessionmanagement/" title="Previous Post: Railsにおけるセッション管理">&laquo; Railsにおけるセッション管理</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/10/05/usewebview/">WebViewの作り方＆JavascriptInterface</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/28/sessionmanagement/">Railsにおけるセッション管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/21/about-gem/">Gemの作り方</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/09/07/ios-webview/">iOS Webviewのまとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/31/Hybrid-Native-Responsive/">Hybrid, Native, Responsive</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
