@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-android/</loc>
+<lastmod>2016-11-16T17:31:59+09:00</lastmod>
+</url>
+<url>
+<loc>http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios/</loc>
+<lastmod>2016-11-16T15:29:27+09:00</lastmod>
+</url>
+<url>
 <loc>http://jq-jo.github.io/blog/2016/10/26/mobile-app-sinsa/</loc>
 <lastmod>2016-10-26T14:55:41+09:00</lastmod>
 </url>

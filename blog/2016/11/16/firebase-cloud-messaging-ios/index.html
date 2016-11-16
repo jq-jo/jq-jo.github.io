@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Firebase Cloud Message in iOS - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="FCM (Firebase Cloud Message) Firebaseとは FirebaseはGoogleが運営しているmBaaS(Mobile Backend as a Service)であり、Backend as a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Firebase Cloud Message in iOS</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-16T15:29:27+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:29 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>FCM (Firebase Cloud Message)</h1>
+
+<h2>Firebaseとは</h2>
+
+<p>FirebaseはGoogleが運営しているmBaaS(Mobile Backend as a Service)であり、Backend as a Serviceとは一般的にアプリケーションに要求される色んな機能をまとめて提供してくれるサービスだ。</p>
+
+<h2>Firebaseの提供機能</h2>
+
+<ol>
+<li>Analytics</li>
+<li>Cloud Messaging</li>
+<li>認証</li>
+<li>Realtime Database</li>
+<li>Storage</li>
+<li>Hosting</li>
+<li>Remote Config</li>
+<li>Test Lab</li>
+<li>Crash Reporting</li>
+<li>Notifications</li>
+<li>App Indexing</li>
+<li>Dynamic Links</li>
+<li>Invites</li>
+<li>AdWords</li>
+</ol>
+
+
+<p><br>詳しい情報はこちら。<br>
+&ndash; <a href="https://firebase.google.com/features/">https://firebase.google.com/features/</a><br><br></p>
+
+<p>値段によってプランがそれぞれ違うけど、もちろん無料プランもある<br>
+<img src="https://monosnap.com/file/boWswwYmYeYfDDxw4cLJzxCr5rB1pK.png" alt="Alt text" /></p>
+
+<h2>FCM 使い方</h2>
+
+<h3>iOS (Swift基準)</h3>
+
+<ul>
+<li>Firebaseにアプリを登録<br>
+<img src="https://monosnap.com/file/gpotQYhuSizvMb0v4eXnJtemkm7E9R.png" alt="Alt text" />
+<img src="https://monosnap.com/file/vq9PlFYrWL6ARYj8iPlwI1dBLICUcO.png" alt="Alt text" />
+<img src="https://monosnap.com/file/z8uyP5c2SQS2Kh1HF3bNSadeb9BUvw.png" alt="Alt text" /></li>
+<li>pod追加<br>
+
+<ul>
+<li>まずcocoapodsをインストールする。</li>
+</ul>
+</li>
+<li><pre><code>$ sudo gem install cocoapods
+$ pod setup
+</code></pre>
+
+<ul>
+<li>そしてPodfileを作る。</li>
+</ul>
+</li>
+<li><pre><code>$ cd your-project directory
+$ pod init
+</code></pre>
+
+<ul>
+<li>Podfileが作られたらファイルの中に必要なpodを追加する。</li>
+</ul>
+</li>
+<li><pre><code>pod 'Firebase/Messaging'
+</code></pre>
+
+<ul>
+<li>podをインストールして.xcworkspaceファイルを開いてプロジェクトを確認する。</li>
+</ul>
+</li>
+<li><pre><code>$ pod install
+$ open your-project.xcworkspace
+</code></pre>
+
+<ul>
+<li>FirebaseコンソールでGoogleService-Info.plistをダウンロードしてプロジェクトに入れる。</li>
+</ul>
+</li>
+</ul>
+
+
+<p><img src="https://monosnap.com/file/gT1lH6wOd02epXkIuURW9ZChZFSA8W.png" alt="Alt text" />
+<img src="https://monosnap.com/file/RoO3sspdEKqfNxJpaX0iUqTkeQUz3v.png" alt="Alt text" /></p>
+
+<ul>
+<li>ソースコード追加<br>
+Firebaseには基本的なソースコードを提供してくれるのでそれを使えば少なくともサーバから送るプッシュ通知を受信するのはできる。
+
+<ul>
+<li><a href="https://github.com/firebase/quickstart-ios/tree/master/messaging/">https://github.com/firebase/quickstart-ios/tree/master/messaging/</a>
+大事なのはiOS10とその以下のバージョンを分岐することと、
+<code>
+FIRApp.configure()
+</code>
+メソッドで初期化すること。後は自分の環境に合わせてメソッドをカスタマイズする。</li>
+</ul>
+</li>
+<li>APNsのSSL証明書のプロビジョニング
+
+<ul>
+<li><a href="https://firebase.google.com/docs/cloud-messaging/ios/certs">https://firebase.google.com/docs/cloud-messaging/ios/certs</a></li>
+</ul>
+</li>
+</ul>
+
+
+<p>上記のリンクのとおり正しく進んだらp12ファイルを保存できるが、その保存したp12ファイルを下の画面にみえるところにアップすればセッティングは終わり。</p>
+
+<p><img src="https://monosnap.com/file/ryYwUyf6v5XIx8aB1SYSx5TuNJE0Yi.png" alt="Alt text" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-11-16T15:29:27+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:29 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios/" data-via="" data-counturl="http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/10/26/mobile-app-sinsa/" title="Previous Post: iOS, Androidの申請">&laquo; iOS, Androidの申請</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/11/16/firebase-cloud-messaging-android/" title="Next Post: Firebase Cloud Message in Android">Firebase Cloud Message in Android &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/26/mobile-app-sinsa/">iOS, Androidの申請</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/19/android-camera-gallery/">Androidでカメラ＆ギャラリーの使い方</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/05/usewebview/">WebViewの作り方＆JavascriptInterface</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
