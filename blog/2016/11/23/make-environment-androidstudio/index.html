@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ビルド環境設定(Android Studio) - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="アプリを開発するとき、ビルドを分けて開発することになるので、ビルド環境を分ける方法についてまとめてみた。 AndroidStudio AndroidStudioの場合はモジュールのbuild.gradleで設定ができる。
+最初プロジェクトを作ってbuild. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2016/11/23/make-environment-androidstudio/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ビルド環境設定(Android Studio)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-23T13:39:57+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>1:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>アプリを開発するとき、ビルドを分けて開発することになるので、ビルド環境を分ける方法についてまとめてみた。<br></p>
+
+<h2>AndroidStudio</h2>
+
+<p>AndroidStudioの場合はモジュールのbuild.gradleで設定ができる。<br>
+最初プロジェクトを作ってbuild.gradleをみると下のようにdebugとreleaseがdefaultに設定されているのが確認できる。
+<img src="https://monosnap.com/file/pNizvnR2X6tz1YG7GUeq4wIGYKCkvH.png" alt="Alt text" />
+環境を分けるには二つの方法がある。buildTypesを追加するのとproductFlavorsを追加すること。<br><br></p>
+
+<h3>BuildTypes</h3>
+
+<p>まず、staging環境を作りたいとしたら、<br>
+上段のバーの Build -> Edit Build Types のところでビルドタイプを下のように追加する。<br>
+<img src="https://monosnap.com/file/vO2FJYYgTWtXXpSfhiil1IfdlCK3NF.png" alt="Alt text" />
+<img src="https://monosnap.com/file/L4ZeARWVwNTfM4Smuja6UKEA3x69Cx.png" alt="Alt text" />
+すると、buildTypesに追加されることが確認できる。<br>
+<img src="https://monosnap.com/file/fjGAYTKan4QwnhvuIo0wTPuVcHNpNF.png" alt="Alt text" />
+もし、それぞれの機能や設定を指定する場合は、たとえば、Webviewのそれぞれのurlをセッティングするときだとしたら<code>BuildConfig.BUILD_TYPE</code>メソッドを使って分岐して処理することができる。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">BuildConfig</span><span class="o">.</span><span class="na">BUILD_TYPE</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;debug&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">DEV_URL</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">BuildConfig</span><span class="o">.</span><span class="na">BUILD_TYPE</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;staging&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">STG_URL</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">RELEASE_URL</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br></p>
+
+<h3>ProductFlavors</h3>
+
+<p>ここで同じソースコードを使って別のアプリを作らなきゃいけないときがあるかもしれない。たとえば、無料バージョンと有料バージョンを分けるとしたらProductFlavorsを設定する。<br>
+上段のバーの Build -> Edit Flavor のところでflavorを追加する。
+<img src="https://monosnap.com/file/pn0WWImKCE39t8ETMptxCjnYx0aalG.png" alt="Alt text" />
+<img src="https://monosnap.com/file/0pxdvAQsB58VpXH4e4GUfaLn7n0a9e.png" alt="Alt text" />
+すると、productFlavorsに追加されることが確認できる。
+<img src="https://monosnap.com/file/C4PkorQHyCFBiovzwAxd49zn9ZBEu5.png" alt="Alt text" />
+productFlavorsも<code>BuildConfig.FLAVOR</code>を使って分岐ができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">BuildConfig</span><span class="o">.</span><span class="na">FLAVOR</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;free&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">FREE_URL</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">PAID_URL</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br>
+上の画像をみたらわかるように各flavorの下にbuildTypesがつく。今までのセッティングでfreeDebug,freeStaging,freeRelease,paidDebug,paidStaging,paidRelease全部で6個のビルドが生成される。<br>
+で、問題はこの分けられた6個のビルドのapplicationIdやversionNameが同じでインストールやリリースのときにうまくできないことだ。なので、<code>applicationIdSuffix</code>,<code>versionNameSuffix</code>を使ってそれぞれのapplicationIdとversionNameを持つようにする。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">buildTypes</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">release</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">staging</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">applicationIdSuffix</span> <span class="err">&#39;</span><span class="o">.</span><span class="na">staging</span><span class="err">&#39;</span>
+</span><span class='line'>        <span class="n">versionNameSuffix</span> <span class="err">&#39;</span><span class="o">-</span><span class="n">staging</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">debug</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">applicationIdSuffix</span> <span class="err">&#39;</span><span class="o">.</span><span class="na">debug</span><span class="err">&#39;</span>
+</span><span class='line'>        <span class="n">versionNameSuffix</span> <span class="err">&#39;</span><span class="o">-</span><span class="n">debug</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">paid</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">applicationIdSuffix</span> <span class="err">&#39;</span><span class="o">.</span><span class="na">free</span><span class="err">&#39;</span>
+</span><span class='line'>        <span class="n">versionNameSuffix</span> <span class="err">&#39;</span><span class="o">-</span><span class="n">free</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">free</span> <span class="o">{</span>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">applicationIdSuffix</span> <span class="err">&#39;</span><span class="o">.</span><span class="na">staging</span><span class="err">&#39;</span>
+</span><span class='line'>        <span class="n">versionNameSuffix</span> <span class="err">&#39;</span><span class="o">-</span><span class="n">staging</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、アプリ名も別にする必要があるので設定させる。アプリ名はAndroidManifestで変更できるが。<br>
+<img src="https://monosnap.com/file/I2Qyc3kkI1gSyQP8P3wvdVNwpJtCLF.png" alt="Alt text" />
+build.gradleで<code>manifestPlaceholders</code>を使ったらAndroidManifestで使用できる。たとえば、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">manifestPlaceholders</span> <span class="o">=</span> <span class="o">[</span><span class="nl">appName:</span> <span class="s">&quot;environment&quot;</span><span class="o">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上のように設定すると、AndroidManifestで</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nl">android:</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;${appName}&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに使うことができる。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-11-23T13:39:57+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>1:39 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2016/11/23/make-environment-androidstudio/" data-via="" data-counturl="http://jq-jo.github.io/blog/2016/11/23/make-environment-androidstudio/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/11/16/firebase-cloud-messaging-android/" title="Previous Post: Firebase Cloud Message in Android">&laquo; Firebase Cloud Message in Android</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/11/23/make-environment-androidstudio/">ビルド環境設定(Android Studio)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/26/mobile-app-sinsa/">iOS, Androidの申請</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/19/android-camera-gallery/">Androidでカメラ＆ギャラリーの使い方</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
