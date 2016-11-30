@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ビルド環境設定(XCode) - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="XCode XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。
+◎ Configurationsを分ける方法
+まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ビルド環境設定(XCode)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-30T12:23:41+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>XCode</h2>
+
+<p>XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。<br><br>
+◎ Configurationsを分ける方法<br><br>
+まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。ReleaseとDebugがDefaultされてあるのでその中にStagingを入れてみる。<br>
+<img src="https://monosnap.com/file/Q3O8utFKCtm5zg1p0Z3GoWfu4rFUco.png" alt="Alt text" />
+<code>+</code>を押し、DebugかReleaseをduplicateして名前を変える。
+<img src="https://monosnap.com/file/aFsMeAhXPgkctvXCw03jPw61GpWSpg.png" alt="Alt text" />
+続いてTargetsのBuildSettingsの<code>+</code>を押し、User-DefinedにBUNDLE_DISPLAY_NAME_PREFIXとBUNDLE_IDENTIFIER_SUFFIXを追加する。そしてActiveConpilationConditionsも下のように変える。BUNDLE_DISPLAY_NAME_PREFIXはアプリ名を分けるために追加、BUNDLE_IDENTIFIER_SUFFIXはアプリのBundleIdをそれぞれ分けるために追加する。また、ActiveConpilationConditionsはそれぞれのビルドの機能を分岐させるために追加する。
+<img src="https://monosnap.com/file/JK5RqnvNu5iG0jEU35kC6anLKbHFow.png" alt="Alt text" />
+<img src="https://monosnap.com/file/8WwygchOcTeNfveXhUyVHMCJj9DMsH.png" alt="Alt text" />
+次はschemeを分けて管理する。左上のschemeのところで<code>New Scheme</code>を押してDebugとStagingのschemeを追加する。また、<code>Edit Scheme</code>でRelease,Debug,Stagingのそれぞれの設定をする。
+<img src="https://monosnap.com/file/DdgdmUzq2UVIa30kWZiptqU0KKSvy5.png" alt="Alt text" />
+<img src="https://monosnap.com/file/4eeSZVYzL1r3c852b7yzzeYBxSWOKS.png" alt="Alt text" />
+そこまでできたらTargetsのinfoでBundle identifierとBundle nameを変更する。Bundle identifierは$(PRODUCT_BUNDLE_IDENTIFIER)の後ろに$(BUNDLE_IDENTIFIER_SUFFIX)を、Bundle nameは$(PRODUCT_NAME)の前に$(BUNDLE_DISPLAY_NAME_PREFIX)を入れる。
+<img src="https://monosnap.com/file/hZBoQgZnVpl9OVgYINvjgOOubUTsoH.png" alt="Alt text" />
+そうすれば下のようにGeneralで変更されたのを確認できる。
+<img src="https://monosnap.com/file/vdIoWGmaDrrt8nGg5rI1uMkdodxCJa.png" alt="Alt text" />
+それぞれのビルドに機能を分岐させる場合は下のように<code>#if</code>を使う。#ifのところにさっきのActiveConpilationConditionsに設定したのを入れる。
+<img src="https://monosnap.com/file/lTp2TdWE3BsKrapycZtPep3lJoEEWl.png" alt="Alt text" />
+ビルド別にビルドしてみると、<br></p>
+
+<h5>Release</h5>
+
+<p><img src="https://monosnap.com/file/QkGImbr37gD8Y7JyAvxxpi52zoHuPV.png" alt="Alt text" /></p>
+
+<h5>Debug</h5>
+
+<p><img src="https://monosnap.com/file/KlSkLEKfDVMXsWl7MyN3XzsPIbrVvL.png" alt="Alt text" /></p>
+
+<h5>Staging</h5>
+
+<p><img src="https://monosnap.com/file/raVMMgsr3Gvy02ih0hUZy86pxPZIkC.png" alt="Alt text" />
+それぞれ違うソースコードが実行されたことをみることができる。<br>
+インストールされたデバイスをみたら、
+<img src="https://monosnap.com/file/MKAP87DCtdgFOg0kcTQo3IJqS7r4cM.png" alt="Alt text" />
+三つのアプリがインストールされる。<br><br>
+◎ Targetを分ける方法<br><br>
+今のTargetをduplicateしてもう一つのTargetを作る。もちろん<code>+</code>で追加しても良いが、同じソースコードを使うならばduplicateでも全然構わない。作ったら名前を変更し、また自動にinfo.plistファイルも生成されるのでそれのファイル名も変更。その後にGeneralでinfo.plistを選んで設定する。
+<img src="https://monosnap.com/file/lM4SmNEhPp2AIL61Z6rKJOmyEGGq3H.png" alt="Alt text" />
+そしてBuild SettingsでProduct Bundle Identifierを変更すればする。
+<img src="https://monosnap.com/file/hBfhNcDfOoPxGT2mrNAaLe5jCbBbwj.png" alt="Alt text" />
+さっきと同じようにschemeを追加する。
+<img src="https://monosnap.com/file/78PpR1UeYXfOGLrywsrJP0fr6b7E5M.png" alt="Alt text" />
+ActiveConpilationConditionsをカスタマイズするが、Targetを間違わないよう気をつける。
+<img src="https://monosnap.com/file/yq1WCEKKQIKD8NcEFOCkblOp1ypMjV.png" alt="Alt text" />
+さっきの分岐のうえにさらに分岐してみる。
+<img src="https://monosnap.com/file/Vqy7Sz343KYnnO1WokdGwBafGhTqUP.png" alt="Alt text" />
+すると、新たのプロジェクトのRelease,Debug,Stagingをそれぞれ使うことができる。
+<img src="https://monosnap.com/file/E7uYaDWIxb8G3meokqY7V0JffVggzP.png" alt="Alt text" />
+<img src="https://monosnap.com/file/ia7prDT8OLMrKf9jHhd637uHXBgoJ6.png" alt="Alt text" />
+<img src="https://monosnap.com/file/mHxnMnR7C8ikmFrdsY6GYEUHcvoczK.png" alt="Alt text" />
+そして、デバイスで確認してみるとまた三つが増えて六つもアプリがインストールされたのを確認できる。
+<img src="https://monosnap.com/file/3v0ZtxQX4GRtZmgy7DGF5EhmKlBjal.png" alt="Alt text" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-11-30T12:23:41+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:23 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/" data-via="" data-counturl="http://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/11/23/make-environment-androidstudio/" title="Previous Post: ビルド環境設定(Android Studio)">&laquo; ビルド環境設定(Android Studio)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/11/30/make-environment-xcode/">ビルド環境設定(XCode)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/23/make-environment-androidstudio/">ビルド環境設定(Android Studio)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/10/26/mobile-app-sinsa/">iOS, Androidの申請</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
