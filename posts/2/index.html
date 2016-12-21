@@ -9,9 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Mobile Applicationの種類 1. Native Application
-2. Hybrid Application
-3. Responsive Web Application Native Application Native Appの開発でアプリはios, &hellip;">
+  <meta name="description" content="Project 作成 まずプロジェクトを作成します。 Webviewを入れ込む プロジェクトが作成できると上の写真のようにMain.storyboardが作られてます。右側の下のところにあるobject liblaryでWebviewを探してview controllerに入れ込みます。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +63,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/07/ios-webview/">iOS Webviewのまとめ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-07T15:21:16+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:21 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Project 作成</h3>
+
+<p>まずプロジェクトを作成します。<br>
+<img src="https://www.evernote.com/l/Aj-3dSPSUctGQKIqs055VX_XEZPnNlR0MMYB/image.png" /><br>
+<img src="https://www.evernote.com/l/Aj-pEsLUGBtG15Vjvd1lC9sQ7UFtz0Rsm7wB/image.png" /><br></p>
+
+<h3>Webviewを入れ込む</h3>
+
+<p><img src="https://www.evernote.com/l/Aj8g5xqFJHNBhofYe02KBDokRoUWEeh8qWwB/image.png" /><br>
+プロジェクトが作成できると上の写真のようにMain.storyboardが作られてます。右側の下のところにあるobject liblaryでWebviewを探してview controllerに入れ込みます。<br>
+<img src="https://www.evernote.com/l/Aj-NLrtHcw9J1quIgvhSvv-6XmlxEY26UD8B/image.png" /><br>
+右側の上の方にあるassistant editorをクリックすると下のように画面が分けられてWebviewをオブジェクト化しやすくなります。<br>
+<img src="https://www.evernote.com/l/Aj-wZ8hGHSNM9L6hJYnlLQr8Y6lEKvypu9AB/image.png" /><br>
+<img src="https://www.evernote.com/l/Aj86fjzYepJHYKLdbDXNojr9Rd9GwnJS1_4B/image.png" /><br>
+名前を作成したら、<br>
+<img src="https://www.evernote.com/l/Aj8EwHqIebpEmo8g3LWqX2R9P6Z1U6hMp5cB/image.png" /><br>
+その名前を持つオブジェクトが作れます。<br></p>
+
+<h3>Webviewの設定</h3>
+
+<p><img src="https://www.evernote.com/l/Aj-4IidQy9tM2akZ6EQXUrGZoT742mKP8OgB/image.png" /><br>
+上のようにWebviewを設定してURLをロードします。<br>
+delegateを指定しないとエラーになるので必ず入力します。そしてloadRequestメソッドを使ってURLを読み込みます。<br>
+<img src="https://www.evernote.com/l/Aj9oN5HjMUdAWb-eyGCUtNWD1EjNrdaL4JwB/image.png" /><br>
+Webviewのlayoutを指定して、<br>
+<img src="https://www.evernote.com/l/Aj946gcePApPK6zNRxbl2EDeIR7E_Su1ErwB/image.png" /><br>
+デバイスを選択し、runすると、<br>
+<img src="https://www.evernote.com/l/Aj_0gcm7p5BLapIRAH4RPkySEbI2IS741VYB/image.png" style="width: 50%;" /><br>
+こういうふうに起動します。<br>
+単純にview controllerだけではなくてTabbar ControllerやNavigation Controllerを使うことも可能です。<br>
+今回はTabbar Controllerを使ってみます。<br></p>
+
+<h3>Tabbar Controllerの使い方</h3>
+
+<p><img src="https://www.evernote.com/l/Aj80Vt-JCuVBh5asIYsDZM62ga5TQVsr3koB/image.png" /><br>
+まず、右下のObject LibraryでTabbar Controllerを探して中に入れ込みます。<br>
+<img src="https://www.evernote.com/l/Aj8jVthnKFtFMq4-8mimtjiLlRBlI0RBdKMB/image.png" /><br>
+View Controllerの隣にある'->&lsquo;をEntryPointと言います。簡単にいうとアプリのスタートになるところを指定するPointです。<br>
+<img src="https://www.evernote.com/l/Aj_uujrGbjVN3qZXCbEdPAugVo_mQyWOPZIB/image.png" /><br>
+View ControllerにあるEntryPointをTabbar Controllerに移動します。<br>
+<img src="https://www.evernote.com/l/Aj_0nHriQNZAjorF-C0aPmsAm8XXJatnaTEB/image.png" /><br>
+次は、Tabbar ControllerのSegueを該当View ControllerにつないでRelationshipを作ります。<br>
+<img src="https://monosnap.com/file/ZSHIOPqrBkqscUoRN89VfXV9sAT8d5.png"><br>
+そしたら上のようにView ControllerはTabbar Controllerの一つのItemとなります。<br>
+<img src="https://monosnap.com/file/CzoLNql2j34gJey0Mw70el1YcRFTXU.png"><br>
+Tabbar Itemを編集して名前やImageも変えることができます。右のところで編集すると、<br>
+<img src="https://monosnap.com/file/Wl81tRb4VgMMVZy0GhGKuYQcJuyivE.png"><br>
+簡単に変わります。<br>
+デバイスで確認すると、<br>
+<img src="https://monosnap.com/file/e3Ke7c7dk4nuBupiaI4PiixgTNucFg.png" style="width: 50%;"><br>
+こう変わりました。<br>
+<img src="https://monosnap.com/file/UWCF2Yn6KFh7IkyFxE387x6alyjU7Z.png"><br>
+次は、Tabbarの色を変えてみます。Tabbarを選択し、右のところを編集すると、<br>
+<img src="https://monosnap.com/file/FJfKiSGiz2UErNL9FRjSpa438b1Y8K.png"><br>
+色が変わります。<br>
+もう一度デバイスで確認すると、<br>
+<img src="https://monosnap.com/file/yiS5jc2v16Yds9vgTXF6cOrs66vx1d.png" style="width: 50%;"><br>
+こういうふうに変わるのを見ることができます。<br><br><br></p>
+
+<p>個人的な意見では、Tabbar Controllerはそれぞれの機能を持てる画面を使用するNativeアプリにもっと合う気がします。Webviewを使うHybridアプリにはNativeアプリに使うことよりは効率性が高くないんじゃないかなと思います。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -983,6 +1069,10 @@ showの部分はちょっと迷いましたけど、</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/11/30/make-environment-xcode/">ビルド環境設定(XCode)</a>
       </li>
     
@@ -996,10 +1086,6 @@ showの部分はちょっと迷いましたけど、</p>
     
       <li class="post">
         <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/10/26/mobile-app-sinsa/">iOS, Androidの申請</a>
       </li>
     
   </ul>
