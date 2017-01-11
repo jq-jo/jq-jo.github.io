@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ビルド環境設定(XCode)2 - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="問題 この前、ここの記事のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。 ソリューション 例えば、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/01/11/make-environment-xcode2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ビルド環境設定(XCode)2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-11T10:04:36+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:04 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>問題</h2>
+
+<p>この前、<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">ここの記事</a>のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。</p>
+
+<h2>ソリューション</h2>
+
+<p>例えば、Railsにはymlファイルに環境別に変数を設定したり、environmentsフォルダーにconfigの設定をするようにXCodeにもPlistファイルに設定して使う。<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">前の記事</a>に続いてセッティングしたら良いと。</p>
+
+<h2>使い方</h2>
+
+<h3>1. info.plistを編集</h3>
+
+<p><img src="https://monosnap.com/file/m0cQfWs4DcRqy48GpdP8N7iXD7q476.png" alt="Alt text" /></p>
+
+<h3>2. Environment.plistを追加</h3>
+
+<p>plistの新規作成
+<img src="https://monosnap.com/file/0X16dE8UFtdkaPiXUQXUVciKRVWlp7.png" alt="Alt text" />
+項目追加
+<img src="https://monosnap.com/file/GNcdNK4Rw2X9hpdiFkIXmSrEpg88Xn.png" alt="Alt text" /></p>
+
+<h3>3. AppDelegateに設定</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  let bundle = NSBundle.bundle()
+</span><span class='line'>  // Configuration取得
+</span><span class='line'>  let configuration = bundle.infoDictionary!["Configuration"]
+</span><span class='line'>
+</span><span class='line'>  // Configurations.plist読み込み
+</span><span class='line'>  let path = bundle.pathForResource("Environments", ofType: "plist")
+</span><span class='line'>  let configurations = NSDictionary(contentsOfFile: path!)
+</span><span class='line'>
+</span><span class='line'>  // URL取得
+</span><span class='line'>  let variables = configurations?.objectForKey(configuration!) as! [String : AnyObject]
+</span><span class='line'>
+</span><span class='line'>  let urlStr = variables["URL"]
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ViewController</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
+</span><span class='line'>
+</span><span class='line'>  @IBOutlet weak var webView: UIWebView!
+</span><span class='line'>  var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+</span><span class='line'>
+</span><span class='line'>  override func viewDidLoad() {
+</span><span class='line'>        super.viewDidLoad()
+</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
+</span><span class='line'>        self.webView.delegate = self
+</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
+</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
+</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
+</span><span class='line'>        webView.scrollView.isScrollEnabled = true
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 使いやすい方法</h3>
+
+<p>Configurationクラスを新規作成</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
+</span><span class='line'>
+</span><span class='line'>final class ConfigurationManager {
+</span><span class='line'>
+</span><span class='line'>    private static let sharedInstance = ConfigurationManager()
+</span><span class='line'>
+</span><span class='line'>    private var configuration: String
+</span><span class='line'>    private var variables: NSDictionary
+</span><span class='line'>
+</span><span class='line'>    private init() {
+</span><span class='line'>
+</span><span class='line'>        // Singletonの確認用
+</span><span class='line'>        print("Configuration initialization")
+</span><span class='line'>
+</span><span class='line'>        let bundle = Bundle.main
+</span><span class='line'>        // Fetch Current Configuration
+</span><span class='line'>        self.configuration = (bundle.infoDictionary?["Configuration"]) as! String
+</span><span class='line'>        // Load Configurations
+</span><span class='line'>        guard let path = bundle.path(forResource: "Environments", ofType: "plist") else {
+</span><span class='line'>            self.variables = [:]
+</span><span class='line'>            return
+</span><span class='line'>        }
+</span><span class='line'>        let configurations =  NSDictionary(contentsOfFile: path)
+</span><span class='line'>        // Load Variables for Current Configuration
+</span><span class='line'>        self.variables = configurations?.object(forKey: self.configuration) as! NSDictionary
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    class func Configuration() -&gt; String {
+</span><span class='line'>        return sharedInstance.configuration
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    class func URL() -&gt; String {
+</span><span class='line'>        guard let url = sharedInstance.variables["URL"] else {
+</span><span class='line'>            return ""
+</span><span class='line'>        }
+</span><span class='line'>        return url as! String
+</span><span class='line'>    }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Appdelegate編集</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  let urlStr = ConfigurationManager.URL()
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. 結果</h3>
+
+<div>
+<img src="https://monosnap.com/file/MWaisZvYficmUHFcvpSzpnfSYdQlrP.png" style="width: 32%;">
+<img src="https://monosnap.com/file/SaK6q623KKMxNVnA3S9ErtUghksOFD.png" style="width: 32%;">
+<img src="https://monosnap.com/file/kGcje9rS0P0UScxwBoq7bKX65ijm4m.png" style="width: 32%;">
+</div>
+
+
+<h2>適用</h2>
+
+<h3>1. Environment.plistに追加</h3>
+
+<p><img src="https://monosnap.com/file/bnSdtBjYdERQ8AV4u30YbvbC6VxJ60.png" alt="Alt text" /></p>
+
+<h3>2. ConfigurationManager.swiftにコード追加</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
+</span><span class='line'>
+</span><span class='line'>final class ConfigurationManager {
+</span><span class='line'>
+</span><span class='line'>  (略)
+</span><span class='line'>
+</span><span class='line'>  class func BarColor() -&gt; NSDictionary {
+</span><span class='line'>      guard let barColor = sharedInstance.variables["BarColor"] else {
+</span><span class='line'>          return "" as! NSDictionary
+</span><span class='line'>      }
+</span><span class='line'>      return barColor as! NSDictionary
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. AppDelegate</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  var window: UIWindow?
+</span><span class='line'>  let urlStr = ConfigurationManager.URL()
+</span><span class='line'>  let barColor = ConfigurationManager.BarColor()
+</span><span class='line'>  let appEnvironment = ConfigurationManager.Configuration()
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -&gt; Bool {
+</span><span class='line'>      // Override point for customization after application launch.
+</span><span class='line'>
+</span><span class='line'>      return true
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  (略)
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ViewController</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
+</span><span class='line'>
+</span><span class='line'>    @IBOutlet weak var webView: UIWebView!
+</span><span class='line'>    var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+</span><span class='line'>    @IBOutlet weak var Environment: UILabel!
+</span><span class='line'>
+</span><span class='line'>    override func viewDidLoad() {
+</span><span class='line'>        super.viewDidLoad()
+</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
+</span><span class='line'>        self.webView.delegate = self
+</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
+</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
+</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
+</span><span class='line'>        webView.scrollView.isScrollEnabled = true
+</span><span class='line'>        Environment.text = appDelegate.appEnvironment
+</span><span class='line'>        Environment.backgroundColor = UIColor(red: self.appDelegate.barColor["Red"] as! CGFloat, green: self.appDelegate.barColor["Green"] as! CGFloat, blue: self.appDelegate.barColor["Blue"] as! CGFloat, alpha: 1.0)
+</span><span class='line'>        Environment.textColor = UIColor.white
+</span><span class='line'>        Environment.textAlignment = .center
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    override func didReceiveMemoryWarning() {
+</span><span class='line'>        super.didReceiveMemoryWarning()
+</span><span class='line'>        // Dispose of any resources that can be recreated.
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 結果</h3>
+
+<div>
+<img src="https://monosnap.com/file/ELhzOprPWibPz7EijtFXFE6PTbSGjt.png" style="width: 32%;">
+<img src="https://monosnap.com/file/77vXKNb9cyZiR1RAqi1MHzrzlyHUri.png" style="width: 32%;">
+<img src="https://monosnap.com/file/GyBMCa15r5EI6uNLBU069dBu1D2AZl.png" style="width: 32%;">
+</div>
+
+
+<p><br><br></p>
+
+<h2>参照</h2>
+
+<p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
+<a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-01-11T10:04:36+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:04 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/01/11/make-environment-xcode2/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/01/11/make-environment-xcode2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/21/make-environment-androidstudio2/" title="Previous Post: ビルド環境設定(Android Studio)2">&laquo; ビルド環境設定(Android Studio)2</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/01/11/make-environment-xcode2/">ビルド環境設定(XCode)2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/30/make-environment-xcode/">ビルド環境設定(XCode)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/23/make-environment-androidstudio/">ビルド環境設定(Android Studio)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -9,8 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="はじめに 前回にAndroidStudio, XCodeのビルド環境設定の記事を書いたとき、環境変数とか環境によって違う機能を分けることについてもっといい方法があるんじゃないかなという疑問ができたので調べてみたのをまとめた。
-その中で見つけたのがbuildConfigFieldだった。 &hellip;">
+  <meta name="description" content="問題 この前、ここの記事のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。 ソリューション 例えば、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +63,408 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/11/make-environment-xcode2/">ビルド環境設定(XCode)2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-11T10:04:36+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:04 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>問題</h2>
+
+<p>この前、<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">ここの記事</a>のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。</p>
+
+<h2>ソリューション</h2>
+
+<p>例えば、Railsにはymlファイルに環境別に変数を設定したり、environmentsフォルダーにconfigの設定をするようにXCodeにもPlistファイルに設定して使う。<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">前の記事</a>に続いてセッティングしたら良いと。</p>
+
+<h2>使い方</h2>
+
+<h3>1. info.plistを編集</h3>
+
+<p><img src="https://monosnap.com/file/m0cQfWs4DcRqy48GpdP8N7iXD7q476.png" alt="Alt text" /></p>
+
+<h3>2. Environment.plistを追加</h3>
+
+<p>plistの新規作成
+<img src="https://monosnap.com/file/0X16dE8UFtdkaPiXUQXUVciKRVWlp7.png" alt="Alt text" />
+項目追加
+<img src="https://monosnap.com/file/GNcdNK4Rw2X9hpdiFkIXmSrEpg88Xn.png" alt="Alt text" /></p>
+
+<h3>3. AppDelegateに設定</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  let bundle = NSBundle.bundle()
+</span><span class='line'>  // Configuration取得
+</span><span class='line'>  let configuration = bundle.infoDictionary!["Configuration"]
+</span><span class='line'>
+</span><span class='line'>  // Configurations.plist読み込み
+</span><span class='line'>  let path = bundle.pathForResource("Environments", ofType: "plist")
+</span><span class='line'>  let configurations = NSDictionary(contentsOfFile: path!)
+</span><span class='line'>
+</span><span class='line'>  // URL取得
+</span><span class='line'>  let variables = configurations?.objectForKey(configuration!) as! [String : AnyObject]
+</span><span class='line'>
+</span><span class='line'>  let urlStr = variables["URL"]
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ViewController</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
+</span><span class='line'>
+</span><span class='line'>  @IBOutlet weak var webView: UIWebView!
+</span><span class='line'>  var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+</span><span class='line'>
+</span><span class='line'>  override func viewDidLoad() {
+</span><span class='line'>        super.viewDidLoad()
+</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
+</span><span class='line'>        self.webView.delegate = self
+</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
+</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
+</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
+</span><span class='line'>        webView.scrollView.isScrollEnabled = true
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 使いやすい方法</h3>
+
+<p>Configurationクラスを新規作成</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
+</span><span class='line'>
+</span><span class='line'>final class ConfigurationManager {
+</span><span class='line'>
+</span><span class='line'>    private static let sharedInstance = ConfigurationManager()
+</span><span class='line'>
+</span><span class='line'>    private var configuration: String
+</span><span class='line'>    private var variables: NSDictionary
+</span><span class='line'>
+</span><span class='line'>    private init() {
+</span><span class='line'>
+</span><span class='line'>        // Singletonの確認用
+</span><span class='line'>        print("Configuration initialization")
+</span><span class='line'>
+</span><span class='line'>        let bundle = Bundle.main
+</span><span class='line'>        // Fetch Current Configuration
+</span><span class='line'>        self.configuration = (bundle.infoDictionary?["Configuration"]) as! String
+</span><span class='line'>        // Load Configurations
+</span><span class='line'>        guard let path = bundle.path(forResource: "Environments", ofType: "plist") else {
+</span><span class='line'>            self.variables = [:]
+</span><span class='line'>            return
+</span><span class='line'>        }
+</span><span class='line'>        let configurations =  NSDictionary(contentsOfFile: path)
+</span><span class='line'>        // Load Variables for Current Configuration
+</span><span class='line'>        self.variables = configurations?.object(forKey: self.configuration) as! NSDictionary
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    class func Configuration() -&gt; String {
+</span><span class='line'>        return sharedInstance.configuration
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    class func URL() -&gt; String {
+</span><span class='line'>        guard let url = sharedInstance.variables["URL"] else {
+</span><span class='line'>            return ""
+</span><span class='line'>        }
+</span><span class='line'>        return url as! String
+</span><span class='line'>    }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Appdelegate編集</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  let urlStr = ConfigurationManager.URL()
+</span><span class='line'>
+</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6. 結果</h3>
+
+<div>
+<img src="https://monosnap.com/file/MWaisZvYficmUHFcvpSzpnfSYdQlrP.png" style="width: 32%;">
+<img src="https://monosnap.com/file/SaK6q623KKMxNVnA3S9ErtUghksOFD.png" style="width: 32%;">
+<img src="https://monosnap.com/file/kGcje9rS0P0UScxwBoq7bKX65ijm4m.png" style="width: 32%;">
+</div>
+
+
+<h2>適用</h2>
+
+<h3>1. Environment.plistに追加</h3>
+
+<p><img src="https://monosnap.com/file/bnSdtBjYdERQ8AV4u30YbvbC6VxJ60.png" alt="Alt text" /></p>
+
+<h3>2. ConfigurationManager.swiftにコード追加</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
+</span><span class='line'>
+</span><span class='line'>final class ConfigurationManager {
+</span><span class='line'>
+</span><span class='line'>  (略)
+</span><span class='line'>
+</span><span class='line'>  class func BarColor() -&gt; NSDictionary {
+</span><span class='line'>      guard let barColor = sharedInstance.variables["BarColor"] else {
+</span><span class='line'>          return "" as! NSDictionary
+</span><span class='line'>      }
+</span><span class='line'>      return barColor as! NSDictionary
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. AppDelegate</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>@UIApplicationMain
+</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
+</span><span class='line'>
+</span><span class='line'>  var window: UIWindow?
+</span><span class='line'>  let urlStr = ConfigurationManager.URL()
+</span><span class='line'>  let barColor = ConfigurationManager.BarColor()
+</span><span class='line'>  let appEnvironment = ConfigurationManager.Configuration()
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -&gt; Bool {
+</span><span class='line'>      // Override point for customization after application launch.
+</span><span class='line'>
+</span><span class='line'>      return true
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  (略)
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. ViewController</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
+</span><span class='line'>
+</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
+</span><span class='line'>
+</span><span class='line'>    @IBOutlet weak var webView: UIWebView!
+</span><span class='line'>    var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
+</span><span class='line'>    @IBOutlet weak var Environment: UILabel!
+</span><span class='line'>
+</span><span class='line'>    override func viewDidLoad() {
+</span><span class='line'>        super.viewDidLoad()
+</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
+</span><span class='line'>        self.webView.delegate = self
+</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
+</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
+</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
+</span><span class='line'>        webView.scrollView.isScrollEnabled = true
+</span><span class='line'>        Environment.text = appDelegate.appEnvironment
+</span><span class='line'>        Environment.backgroundColor = UIColor(red: self.appDelegate.barColor["Red"] as! CGFloat, green: self.appDelegate.barColor["Green"] as! CGFloat, blue: self.appDelegate.barColor["Blue"] as! CGFloat, alpha: 1.0)
+</span><span class='line'>        Environment.textColor = UIColor.white
+</span><span class='line'>        Environment.textAlignment = .center
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    override func didReceiveMemoryWarning() {
+</span><span class='line'>        super.didReceiveMemoryWarning()
+</span><span class='line'>        // Dispose of any resources that can be recreated.
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 結果</h3>
+
+<div>
+<img src="https://monosnap.com/file/ELhzOprPWibPz7EijtFXFE6PTbSGjt.png" style="width: 32%;">
+<img src="https://monosnap.com/file/77vXKNb9cyZiR1RAqi1MHzrzlyHUri.png" style="width: 32%;">
+<img src="https://monosnap.com/file/GyBMCa15r5EI6uNLBU069dBu1D2AZl.png" style="width: 32%;">
+</div>
+
+
+<p><br><br></p>
+
+<h2>参照</h2>
+
+<p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
+<a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1669,93 +2070,6 @@ Native側からJSにデータが送信されたのが確認できます。<br></
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/21/about-gem/">Gemの作り方</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-21T15:36:47+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:36 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Gemとは</h2>
-
-<p>言語によってそれぞれ使用しやすい方式で作ったものを提供させています。それをライブラリ、またはフレームワークといいます。RailsがフレームワークだとしたらGemはライブラリです。つまり、必要な機能がある場合追加して使用したら良いです。<br>
-基本的にオープンソースとしてディストリビューションされていて、誰でも検索し、使用法を調べて使用したら良いです。</p>
-
-<h3>例え</h3>
-
-<h5>devise</h5>
-
-<p>会員登録やログインシステムのためによく使われるGemのdeviseを例に取ってみます。<br>
-まず、<b><a href="https://rubygems.org">https://rubygems.org</a><b>でdeviseを検索してみると、<br>
-<img src="https://monosnap.com/file/roucgQ03rPFDUOeMncRDbc4VVGOdDK.png"><br>
-上記のように色んなバージョンにできています。その中で自分がインストールしたいバージョンを選んでインストールしたら良いです。<br>
-次はgithubで検索してみると、<br>
-<img src="https://monosnap.com/file/fdvk59gCh6h2InQQG0Prc7828IcOqH.png"><br>
-<img src="https://monosnap.com/file/loOJDPdGcmpoqEGt9DltZwmrBMCPYD.png"><br>
-全てのGemはこのようにソースコードと使い方を公開しています。<br></p>
-
-<h2>　作り方</h2>
-
-<p>さて、本格的にGemの作り方を見てみましょう。<br>
-Gemの作り方は以外と簡単です。<br></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;gem&nbsp;「Gem名」</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p>こういうふうにすると下のように作成ができます。<br>
-<img src="https://monosnap.com/file/JcBC289LEHlEjtc4liLqoqc9Rpn8MY.png"><br>
-作成が終わったらディレクトリの中にlibフォルダーが確認できます。<br>
-<img src="https://monosnap.com/file/nIIEjjx6RXpYs3F7zSwRoUcRFTfM58.png"><br>
-この場合、hello_system_team.rbが本体になり、このGemをrequireすると、最初にこのファイルが呼ばれ、次にこのファイルでrequireしているものが呼ばれるという形になります。<br>
-version.rbは単純にGemのバージョン管理に必要なファイルです。<br>
-まず、hello_system_team.rbをみると、</p>
-
-<p><div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team/version&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">module</span>&nbsp;HelloSystemTeam</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Your&nbsp;code&nbsp;goes&nbsp;here&hellip;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
-こうなっていますが<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
-後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#111;&#x3a;&#x66;&#97;&#x6e;&#116;&#97;&#115;&#x74;&#x69;&#x63;&#106;&#121;&#x63;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#x66;&#x61;&#x6e;&#116;&#97;&#115;&#x74;&#105;&#x63;&#106;&#x79;&#x63;&#64;&#x67;&#x6d;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#109;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
-正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
-そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
-でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
-<img src="https://monosnap.com/file/h5kTn3dIfmOWVSLwOH9VN8MqkNC40D.png"><br>
-<img src="https://monosnap.com/file/XKh2f66LFf1eqPwR0d2nvNWkjfhxhF.png"><br>
-無事にテストまでできればBuildとPushをします。<br>
-<img src="https://monosnap.com/file/8gExpFLiFE3bp3aSETRDbMr2ve8HWl.png"><br>
-<img src="https://monosnap.com/file/DQvQmAEby99zCjsm78cthxoP9eYtuY.png"><br>
-そして、Gemを検索してみると出てきますね！<br>
-<img src="https://monosnap.com/file/XSuEglI37Wj3JrGewJpA5snRgZP1xJ.png"><br>
-他のプロジェクトでこのGemをインストールしたらGemに入っているメソッドを使うことができます。
-<img src="https://monosnap.com/file/0Xs0Nkdr239XWyr1jrqy3iYNV6XAsr.png"><br></p>
-
-<h2>参照</h2>
-
-<p><small>
-<a href="http://qiita.com/takashi/items/672781ed1b6255303381">http://qiita.com/takashi/items/672781ed1b6255303381</a>
-</small>
-<br><br><br></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1769,6 +2083,10 @@ moduleの中にこれを入れます。上記のメソッドは例えなので�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/01/11/make-environment-xcode2/">ビルド環境設定(XCode)2</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a>
@@ -1786,10 +2104,6 @@ moduleの中にこれを入れます。上記のメソッドは例えなので�
         <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1803,7 +2117,7 @@ moduleの中にこれを入れます。上記のメソッドは例えなので�
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - Jo -
+  Copyright &copy; 2017 - Jo -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

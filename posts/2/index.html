@@ -9,7 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Project 作成 まずプロジェクトを作成します。 Webviewを入れ込む プロジェクトが作成できると上の写真のようにMain.storyboardが作られてます。右側の下のところにあるobject liblaryでWebviewを探してview controllerに入れ込みます。 &hellip;">
+  <meta name="description" content="Gemとは 言語によってそれぞれ使用しやすい方式で作ったものを提供させています。それをライブラリ、またはフレームワークといいます。RailsがフレームワークだとしたらGemはライブラリです。つまり、必要な機能がある場合追加して使用したら良いです。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/21/about-gem/">Gemの作り方</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-21T15:36:47+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>3:36 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Gemとは</h2>
+
+<p>言語によってそれぞれ使用しやすい方式で作ったものを提供させています。それをライブラリ、またはフレームワークといいます。RailsがフレームワークだとしたらGemはライブラリです。つまり、必要な機能がある場合追加して使用したら良いです。<br>
+基本的にオープンソースとしてディストリビューションされていて、誰でも検索し、使用法を調べて使用したら良いです。</p>
+
+<h3>例え</h3>
+
+<h5>devise</h5>
+
+<p>会員登録やログインシステムのためによく使われるGemのdeviseを例に取ってみます。<br>
+まず、<b><a href="https://rubygems.org">https://rubygems.org</a><b>でdeviseを検索してみると、<br>
+<img src="https://monosnap.com/file/roucgQ03rPFDUOeMncRDbc4VVGOdDK.png"><br>
+上記のように色んなバージョンにできています。その中で自分がインストールしたいバージョンを選んでインストールしたら良いです。<br>
+次はgithubで検索してみると、<br>
+<img src="https://monosnap.com/file/fdvk59gCh6h2InQQG0Prc7828IcOqH.png"><br>
+<img src="https://monosnap.com/file/loOJDPdGcmpoqEGt9DltZwmrBMCPYD.png"><br>
+全てのGemはこのようにソースコードと使い方を公開しています。<br></p>
+
+<h2>　作り方</h2>
+
+<p>さて、本格的にGemの作り方を見てみましょう。<br>
+Gemの作り方は以外と簡単です。<br></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;gem&nbsp;「Gem名」</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p>こういうふうにすると下のように作成ができます。<br>
+<img src="https://monosnap.com/file/JcBC289LEHlEjtc4liLqoqc9Rpn8MY.png"><br>
+作成が終わったらディレクトリの中にlibフォルダーが確認できます。<br>
+<img src="https://monosnap.com/file/nIIEjjx6RXpYs3F7zSwRoUcRFTfM58.png"><br>
+この場合、hello_system_team.rbが本体になり、このGemをrequireすると、最初にこのファイルが呼ばれ、次にこのファイルでrequireしているものが呼ばれるという形になります。<br>
+version.rbは単純にGemのバージョン管理に必要なファイルです。<br>
+まず、hello_system_team.rbをみると、</p>
+
+<p><div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team/version&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">module</span>&nbsp;HelloSystemTeam</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Your&nbsp;code&nbsp;goes&nbsp;here&hellip;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+こうなっていますが<br>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
+後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#58;&#x66;&#97;&#x6e;&#116;&#97;&#115;&#x74;&#105;&#99;&#106;&#121;&#x63;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#102;&#97;&#x6e;&#116;&#97;&#115;&#116;&#x69;&#x63;&#x6a;&#121;&#99;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
+そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
+でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
+<img src="https://monosnap.com/file/h5kTn3dIfmOWVSLwOH9VN8MqkNC40D.png"><br>
+<img src="https://monosnap.com/file/XKh2f66LFf1eqPwR0d2nvNWkjfhxhF.png"><br>
+無事にテストまでできればBuildとPushをします。<br>
+<img src="https://monosnap.com/file/8gExpFLiFE3bp3aSETRDbMr2ve8HWl.png"><br>
+<img src="https://monosnap.com/file/DQvQmAEby99zCjsm78cthxoP9eYtuY.png"><br>
+そして、Gemを検索してみると出てきますね！<br>
+<img src="https://monosnap.com/file/XSuEglI37Wj3JrGewJpA5snRgZP1xJ.png"><br>
+他のプロジェクトでこのGemをインストールしたらGemに入っているメソッドを使うことができます。
+<img src="https://monosnap.com/file/0Xs0Nkdr239XWyr1jrqy3iYNV6XAsr.png"><br></p>
+
+<h2>参照</h2>
+
+<p><small>
+<a href="http://qiita.com/takashi/items/672781ed1b6255303381">http://qiita.com/takashi/items/672781ed1b6255303381</a>
+</small>
+<br><br><br></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1069,6 +1156,10 @@ showの部分はちょっと迷いましたけど、</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/01/11/make-environment-xcode2/">ビルド環境設定(XCode)2</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a>
       </li>
     
@@ -1084,10 +1175,6 @@ showの部分はちょっと迷いましたけど、</p>
         <a href="/blog/2016/11/16/firebase-cloud-messaging-android/">Firebase Cloud Message in Android</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1101,7 +1188,7 @@ showの部分はちょっと迷いましたけど、</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - Jo -
+  Copyright &copy; 2017 - Jo -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
