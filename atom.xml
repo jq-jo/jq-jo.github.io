@@ -4,7 +4,7 @@
   <title><![CDATA[Jo's Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-02-01T18:13:19+09:00</updated>
+  <updated>2017-02-15T23:27:42+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,172 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Railsにおけるキャッシュの使い方]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/02/08/using-cache-with-rails/"/>
+    <updated>2017-02-08T18:19:00+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/02/08/using-cache-with-rails</id>
+    <content type="html"><![CDATA[<h2>キャッシュ</h2>
+
+<ul>
+<li>キャッシュとは、使用頻度の高いデータを高速な記憶装置に蓄えておくことにより、いちいち低速な装置から読み出す無駄を省いて高速化すること。また、その際に使われる高速な記憶装置や、複製されたデータそのもののこと。</li>
+</ul>
+
+
+<h2>Railsにおけるキャッシュ</h2>
+
+<h4>Rails3</h4>
+
+<ul>
+<li>ページキャッシュ（ページ全体をキャッシュ）</li>
+<li>アクションキャッシュ（アクション単位でキャッシュ）</li>
+<li>フラグメントキャッシュ（ページの一部をキャッシュ）</li>
+</ul>
+
+
+<h4>Rails4</h4>
+
+<p>Rails4ではページキャッシュとアクションキャシュは廃止され、フラグメントキャシュのみ使える。</p>
+
+<h2>フラグメントキャッシュとは</h2>
+
+<p>rails で利用できる view の一部分をキャッシュする機能。rails 3以上ならデフォルトで利用できる。railsは view のレンダリングが遅いので、アクセスの多いサイトはキャッシュの利用が必要になってくる。</p>
+
+<h4>書き方(Slim)</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="p">{</span><span class="n">some_key</span><span class="p">}</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="c1"># cache したい HTML</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>キーにStringを指定した場合</h4>
+
+<p>下記のような場合に、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この<code>@some_db_data</code>の中身が変更されても、キャッシュには変更が反映されない。キャッシュのキーに含まれるdigestはあくまでHTMLを元に作られるため、データの変更があってもdigestは変更されないからである。<br>
+また、自動で付与されるdigestを利用しないようにするには</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="ss">skip_digest</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とする。この場合、HTMLに変更があったとしても、キャッシュには反映されず変更前のものが表示される。</p>
+
+<h4>キーを省略した場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように、キーを省略した場合は、ページのurlからキーが自動で作られる。url依存のキーなので、同じページでこの形を複数記述すると、どちらかのキャッシュが上書きされてめちゃくちゃになる。</p>
+
+<h4>キーにオブジェクトを指定した場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@object</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@object</span><span class="o">.</span><span class="n">text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>オブジェクトを指定した場合は、<code>@object.cache_key</code>がキャッシュのキーとなる。<code>ActiveRecord</code>のオブジェクトの場合、<code>ID</code>や、<code>updated_at</code>を元にキーが作成されるので、オブジェクトの<code>updated_at</code>が変更されると自動でキャッシュも更新される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@objects</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">-</span> <span class="vi">@objects</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">object</span><span class="o">|</span>
+</span><span class='line'>    <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように配列にした場合は、各オブジェクトに対して cache_key が呼ばれてそれを連結したものがキャッシュのキーになる。よって配列の順番や中身が変更されればキャッシュは更新される。</p>
+
+<h2>Russian Doll Caching（ロシアンドールキャッシング）とは</h2>
+
+<p>ネストされたフラグメントキャッシュの内側のキャッシュが更新されると、外側のキャッシュも更新してくれる機能。rails 4ならデフォルトで利用可能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">h1</span>
+</span><span class='line'>    <span class="o">=</span> <span class="vi">@company</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>  <span class="n">ul</span>
+</span><span class='line'>    <span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span>
+</span><span class='line'>      <span class="o">-</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">member</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">li</span>
+</span><span class='line'>          <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">name</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のようなネストされた構造のとき、membersに変更があったとしても、companyに変更がなければcompanyのキーが変更されず、キャッシュは更新されない。<br>
+しかし、memberのmodelに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Member</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:company</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と書いておくと、ネストされた親のキーにも更新が伝搬してくれるようになる。</p>
+
+<h2>テスト</h2>
+
+<p>70個の親テーブルと1440個の子テーブルをViewに出すことでキャッシュのテストを実行してみたら、</p>
+
+<ul>
+<li>キャッシュしていない場合</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">791</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">685</span><span class="o">.</span><span class="mi">4</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">93</span><span class="o">.</span><span class="mi">5</span><span class="n">ms</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>キャッシュした場合</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">31</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">28</span><span class="o">.</span><span class="mi">8</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="n">ms</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>圧倒的な結果が出てきた。</p>
+
+<h2>参照</h2>
+
+<p><a href="http://qiita.com/jianghan0/items/44e558c49677062d120b">RailsにおけるCacheの概念と使い方</a><br/>
+<a href="http://qiita.com/moriteru/items/493a4d43bd7a77f38424">rails 4 の fragment cache（フラグメントキャッシュ）まとめ</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Railsのincludesとjoins]]></title>
@@ -4094,7 +4260,7 @@ version.rbは単純にGemのバージョン管理に必要なファイルです�
 <div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
 moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
 後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#102;&#x61;&#x6e;&#116;&#97;&#x73;&#x74;&#105;&#99;&#106;&#121;&#99;&#x40;&#x67;&#109;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;">&#x66;&#97;&#110;&#116;&#97;&#x73;&#116;&#x69;&#99;&#106;&#121;&#x63;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#58;&#x66;&#97;&#x6e;&#x74;&#x61;&#115;&#116;&#x69;&#99;&#x6a;&#x79;&#x63;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x66;&#97;&#x6e;&#x74;&#97;&#x73;&#116;&#105;&#x63;&#106;&#x79;&#x63;&#x40;&#103;&#x6d;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#109;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
 正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
 そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
 でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
@@ -4779,152 +4945,6 @@ RSS</small></p>
 <a href="http://wp.tech-style.info/archives/683#URL_8211_Cool_URI">http://wp.tech-style.info/archives/683#URL_8211_Cool_URI</a><br>
 <a href="http://karur4n.hatenablog.com/entry/read-webtechbook">http://karur4n.hatenablog.com/entry/read-webtechbook</a><br>
 <a href="https://ja.wikipedia.org/wiki/REST">https://ja.wikipedia.org/wiki/REST</a>
-</small></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Grape Gem]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/07/26/grape-gem/"/>
-    <updated>2016-07-26T10:54:56+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/07/26/grape-gem</id>
-    <content type="html"><![CDATA[<p><small></p>
-
-<h1>Grapeとは</h1>
-
-<p>Grape gemはruby用のREST-APIフレームワークです。簡単にRESTfulなAPIを開発するための単純なDSLを提供することによって、Railsとシナトラなどの既存のWebアプリケーションフレームワークを補完するために設計されています。</p>
-
-<h1>Grape gemの実装</h1>
-
-<h3>Grape gemのインストール</h3>
-
-<p>まず、GemfileにGrapeを追加します。<br>
-<small>Gemfile</small></p>
-
-<div class="colorscripter-code" style="width: 100%; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;'grape'</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-bundle installをします。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;install</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>model追加</h3>
-
-<p>modelを追加してみます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;g&nbsp;model&nbsp;test_data&nbsp;name:string&nbsp;age:integer</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">rake&nbsp;db:migrate</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>application.rbの設定</h3>
-
-<p>application.rbに以下のように書き、apiのパスを設定します。<br>
-<small>application.rb</small></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">config.paths.add&nbsp;File.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'app'</span>,&nbsp;<span style="color:#ffd500">'api'</span>),&nbsp;glob:&nbsp;File.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'**'</span>,&nbsp;<span style="color:#ffd500">'*.rb'</span>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">config.autoload_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Dir[Rails.root.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'app'</span>,&nbsp;<span style="color:#ffd500">'api'</span>,&nbsp;<span style="color:#ffd500">'*'</span>)]</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>API作成</h3>
-
-<p>appフォルダーにapiフォルダーを追加します。
-ここに二つのファイルを作ります。一つは実際にapiとして動くファイルで、もう一つはそのファイルをmountするファイルです。
-下のように書いてみます。<br>
-<small>api/user/data.rb</small></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">resource&nbsp;:user_data&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;desc&nbsp;<span style="color:#ffd500">"List&nbsp;all&nbsp;User"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TestData.all</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-<small>api/api.rb</small></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;API&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;Grape::API</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;prefix&nbsp;<span style="color:#ffd500">'api'</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;version&nbsp;<span style="color:#ffd500">'v1'</span>,&nbsp;using:&nbsp;:path</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;mount&nbsp;User::Data</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>APIのルーティング追加</h3>
-
-<p>route.rbにルーティング追加します。<br>
-<small>route.rb</small></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">mount&nbsp;API&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ffd500">'/'</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-それからrailsのserverを起動します。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;server</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-タミナールに下のように入力してみます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-そうすると、databaseに何もないので 「[ ]」 しか出てこないです。<br>
-では、データーを入れてみましょう。<br>
-まずはdata.rbにソースコードを追加します。もっと楽にするようにヘルパーを書きます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">helpers&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;user_params</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ActionController::Parameters.<span style="color:#ff3399">new</span>(params).permit(:name,&nbsp;:age)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;TestData.find(params[:id])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-そして、下のようにcreateのコードを書きます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"create&nbsp;a&nbsp;new&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:name,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:age,&nbsp;type:&nbsp;Integer</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">post&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;TestData.create<span style="color:#0086b3"></span><span style="color:#ff3399">!</span>(user_params)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-タミナールにこう書くと、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json&nbsp;-d&nbsp;"name=Jo&age=30"</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":1,"name":"Jo","age":30,"created_at":"2016-07-26T07:15:11.212Z","updated_at":"2016-07-26T07:15:11.212Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p>簡単にデーターベースに入れ込みます。<br>
-deleteとupdateも同じように作成します。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"delete&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">delete&nbsp;<span style="color:#ffd500">':id'</span>&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;@user.destroy<span style="color:#0086b3"></span><span style="color:#ff3399">!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"update&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">put&nbsp;<span style="color:#ffd500">':id'</span>&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;@user.update(user_params)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-タミナールで実行してみると、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;-X&nbsp;DELETE&nbsp;http://localhost:3000/api/v1/user_data/1.json</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":1,"name":"Jo","age":30,"created_at":"2016-07-26T05:11:16.608Z","updated_at":"2016-07-26T05:11:16.608Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-もう一度データーを作って</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json&nbsp;-d&nbsp;"name=Jo&age=30"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":2,"name":"Jo","age":30,"created_at":"2016-07-26T05:16:45.169Z","updated_at":"2016-07-26T05:16:45.169Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;-X&nbsp;PUT&nbsp;http://localhost:3000/api/v1/user_data/2.json&nbsp;-d&nbsp;"age=100"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">true</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-showの部分はちょっと迷いましたけど、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"show&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">route_param&nbsp;:id&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;get&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<p><br>
-こういうふうにGETをroute_paramに変えると簡単にできました。
 </small></p>
 ]]></content>
   </entry>
