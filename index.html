@@ -9,14 +9,14 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="カウンターキャッシュ in Rails カウンターキャッシュとは Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる 設定 1
+  <meta name="description" content="カウンターキャッシュとは Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる 設定 1
 2
 3
 4
 5
 6
 7
-class Survey &lt; ApplicationRecord &hellip;">
+class Survey &lt; ApplicationRecord has_many :questions, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,9 +92,7 @@ class Survey &lt; ApplicationRecord &hellip;">
   </header>
 
 
-  <div class="entry-content"><h1>カウンターキャッシュ in Rails</h1>
-
-<h2>カウンターキャッシュとは</h2>
+  <div class="entry-content"><h2>カウンターキャッシュとは</h2>
 
 <ul>
 <li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
