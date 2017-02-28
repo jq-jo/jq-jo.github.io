@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Firebase Analyticsを利用してEventを発生させる方法 - Jo's Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="Android アプリにFirebase追加 Rootのbuild.gradleファイルにgoogle-servicesプラグインを追加する 1
+2
+3
+4
+5
+6
+7
+buildscript { // ... dependencies { // ... classpath &#39;com. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/02/28/firebase-analytics-event/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Jo's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jo's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jq-jo.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Firebase Analyticsを利用してEventを発生させる方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-28T10:55:13+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:55 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Android</h2>
+
+<h4>アプリにFirebase追加</h4>
+
+<p>Rootのbuild.gradleファイルにgoogle-servicesプラグインを追加する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">buildscript</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'>    <span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// ...</span>
+</span><span class='line'>        <span class="n">classpath</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">:</span><span class="n">google</span><span class="o">-</span><span class="nl">services:</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">0</span><span class="err">&#39;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次にモジュールのbuild.gradleファイルにapply pluginを追加して使用設定をする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">application</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">android</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// ...</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// ...</span>
+</span><span class='line'>  <span class="n">compile</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">firebase</span><span class="o">:</span><span class="n">firebase</span><span class="o">-</span><span class="nl">core:</span><span class="mf">10.0</span><span class="o">.</span><span class="mi">1</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Getting a &quot;Could not find&quot; error? Make sure you have</span>
+</span><span class='line'>  <span class="c1">// the latest Google Repository in the Android SDK manager</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ADD THIS AT THE BOTTOM</span>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">.</span><span class="na">google</span><span class="o">-</span><span class="n">services</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最後にgoogle-services.jsonファイルをプロジェクトに追加する</p>
+
+<h4>Android Manifestファイルの設定</h4>
+
+<p>まず、Android Manifestファイルに下記の設定をする</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.ACCESS_NETWORK_STATE&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.INTERNET&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.WAKE_LOCK&quot;</span> <span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Firebase Analyticsの設定</h4>
+
+<p>上記のコードのように</p>
+
+<blockquote><p>compile &lsquo;com.google.firebase:firebase-core:10.0.1&rsquo;</p></blockquote>
+
+<p>を追加するとFirebaseのAnalyticsを使用できるようになる
+それからプロジェクトのActivityに変数を作る</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">FirebaseAnalytics</span> <span class="n">mFirebaseAnalytics</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br><code>onCreate()</code>メソッドに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Obtain the FirebaseAnalytics instance.</span>
+</span><span class='line'><span class="n">mFirebaseAnalytics</span> <span class="o">=</span> <span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>を追加する</p>
+
+<h4>Eventの設定</h4>
+
+<p>Eventをかけたいところ(たとえば、リンクとかタブなど)に</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
+</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_ID</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_NAME</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">CONTENT_TYPE</span><span class="o">,</span> <span class="s">&quot;image&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Event</span><span class="o">.</span><span class="na">SELECT_CONTENT</span><span class="o">,</span> <span class="n">bundle</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように追加するとFirebaseで事前定義されたEventに記録することができる
+上記の例には<code>SELECT_CONTENT</code>というEventに<code>ITEM_ID</code>,<code>ITEM_NAME</code>というValueを記録するようになる</p>
+
+<h4>Eventのカスタマイズ</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;image_name&quot;</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;full_text&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
+</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="s">&quot;share_image&quot;</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の例には<code>share_image</code>というEventに<code>image_name</code>,<code>full_text</code>というValue記録するようになる</p>
+
+<h4>Eventの確認</h4>
+
+<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
+
+<h2>iOS - Swift</h2>
+
+<h4>アプリにFirebase追加</h4>
+
+<p>プロジェクトにpodを追加する
+podがなければプロジェクトDirectoryで<code>pod init</code>をしてpodfileを生成する
+それからpodfileに次のようにpodを追加する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">pod</span> <span class="err">&#39;</span><span class="n">Firebase</span><span class="o">/</span><span class="n">Core</span><span class="err">&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コンソールで</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">pod</span> <span class="n">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Firebaseの呼び出し</h4>
+
+<p>プロジェクトのDelegateに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">import</span> <span class="n">Firebase</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして<code>application:didFinishLaunchingWithOptions:</code>メソッドに下記のようにFirebaseを呼び出す</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRApp</span><span class="p">.</span><span class="n">configure</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Eventの設定</h4>
+
+<p>下記はkFIRSelectContentの基本Eventを記録する方法である</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="n">kFIREventSelectContent</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>  <span class="nl">kFIRParameterItemID</span><span class="p">:</span> <span class="s">&quot;id-\(title!)&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
+</span><span class='line'>  <span class="nl">kFIRParameterItemName</span><span class="p">:</span> <span class="n">title</span><span class="o">!</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
+</span><span class='line'>  <span class="nl">kFIRParameterContentType</span><span class="p">:</span> <span class="s">&quot;cont&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Eventのカスタマイズ</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="s">&quot;share_image&quot;</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>  <span class="s">&quot;name&quot;</span><span class="o">:</span> <span class="n">name</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
+</span><span class='line'>  <span class="s">&quot;full_text&quot;</span><span class="o">:</span> <span class="n">text</span> <span class="kt">as</span> <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに<code>share_image</code>というEventに<code>name</code>,<code>full_text</code>というValueを記録することができる</p>
+
+<h4>Eventの確認</h4>
+
+<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jo</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-02-28T10:55:13+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:55 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/02/28/firebase-analytics-event/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/02/28/firebase-analytics-event/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/02/20/counter-cache-in-rails/" title="Previous Post: カウンターキャッシュについて">&laquo; カウンターキャッシュについて</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/02/28/firebase-analytics-event/">Firebase Analyticsを利用してEventを発生させる方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/02/20/counter-cache-in-rails/">カウンターキャッシュについて</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/02/08/using-cache-with-rails/">Railsにおけるキャッシュの使い方</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/02/01/includes-and-joins-in-rails/">Railsのincludesとjoins</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/01/25/railsmodelcallback/">RailsのModelのコールバック</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
