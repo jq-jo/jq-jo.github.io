@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Jo's Blog]]></title>
+  <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-02-28T11:01:20+09:00</updated>
+  <updated>2017-03-02T19:18:52+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,458 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rails5のActionCable]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/03/02/rails5-action-cable/"/>
+    <updated>2017-03-02T17:35:53+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/03/02/rails5-action-cable</id>
+    <content type="html"><![CDATA[<h2>はじめに</h2>
+
+<h3>Action Cableとは</h3>
+
+<p>RailsにWebSocketを組み込む機能で、クライアントサイドからサーバサイドまでフルスタックな機能が提供されるということ。</p>
+
+<h2>大きな流れ</h2>
+
+<p>ビューのEvent発生(ex: onclick) -> coffeescriptのfunction呼び出し -> channelのメソッド呼び出し -> 必要な処理をする(ex: モデルのcreate,update,deployなど)</p>
+
+<h2>チャットサンプルを作ってみる</h2>
+
+<p>簡単に説明をすると、<code>Rooms_controller</code>を通してチャットルームを作り、<code>Message</code>モデルを通してチャットルームの中のメッセージを管理する。
+その中でチャットルームでリアルタイムの通信を行ってみる。</p>
+
+<h3>Roomsコントローラの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">controller</span> <span class="n">rooms</span> <span class="n">index</span> <span class="n">show</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Messageモデルの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">message</span> <span class="ss">content</span><span class="p">:</span><span class="n">text</span>
+</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Viewの作成</h3>
+
+<p>Roomsコントローラを編集し、Messageの配列をインスタンス変数に設定する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">RoomsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@rooms</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="vi">@room</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@messages</span> <span class="o">=</span> <span class="vi">@room</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></><code>app/views/messages/_message.html.slim</code>を作成する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">.</span><span class="n">message</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;message_</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">commenter</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2"> : &quot;</span>
+</span><span class='line'>  <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="n">i</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">fa</span><span class="o">-</span><span class="n">times</span><span class="o">.</span><span class="n">remove</span><span class="o">-</span><span class="n">icon</span> <span class="n">data</span><span class="o">-</span><span class="n">message</span><span class="o">-</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></><code>app/views/rooms/show.html.slim</code>を編集して、Messageの一覧を表示できるようにする。
+renderはどんな形でも構わないがここには簡単にメッセージのrenderだけでしてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">h1</span> Chat Room
+</span><span class='line'><span class="nf">#myRoom</span><span class="na"> data-room-id</span><span class="p">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@room</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">render</span> <span class="vi">@messages</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">div</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;text-align: center; margin-top: 50px;&quot;</span>
+</span><span class='line'>  <span class="nt">form</span>
+</span><span class='line'>    <span class="nt">label</span>
+</span><span class='line'>      |say something:
+</span><span class='line'>      <span class="nt">input</span><span class="na"> type</span><span class="p">=</span><span class="s2">&quot;text&quot;</span><span class="na"> data-behavior</span><span class="p">=</span><span class="s2">&quot;room_input&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>チャンネルの作成</h3>
+
+<p>speakというアクションを持つ、Roomチャンネルを作成する。
+</><code>rails g channel room speak</code>というコマンドを実行すると、以下の通り2つのファイルが作成される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'>$ rails g channel room speak
+</span><span class='line'>    <span class="nt">create</span>  app/channels/room_channel.rb
+</span><span class='line'>    <span class="nt">create</span>  app/assets/javascripts/channels/room.coffee
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></><code>app/channels/room_channel.rb</code>はサーバーサイドの処理を受け持つチャンネルである。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file. Action Cable runs in an EventMachine loop that does not support auto reloading.</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">RoomChannel</span> <span class="o">&lt;</span> <span class="no">ApplicationCable</span><span class="o">::</span><span class="no">Channel</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">subscribed</span>
+</span><span class='line'>    <span class="c1"># stream_from &quot;some_channel&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">unsubscribed</span>
+</span><span class='line'>    <span class="c1"># Any cleanup needed when channel is unsubscribed</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">speak</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></><code>app/assets/javascripts/channels/room.coffee</code>はクライアントサイドの処理を受け持つチャンネルである。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">App.room = </span><span class="nx">App</span><span class="p">.</span><span class="nx">cable</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">create</span> <span class="s">&quot;RoomChannel&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nv">connected: </span><span class="nf">-&gt;</span>
+</span><span class='line'>    <span class="c1"># Called when the subscription is ready for use on the server</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">disconnected: </span><span class="nf">-&gt;</span>
+</span><span class='line'>    <span class="c1"># Called when the subscription has been terminated by the server</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">received: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>    <span class="c1"># Called when there&#39;s incoming data on the websocket for this channel</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">speak: </span><span class="nf">-&gt;</span>
+</span><span class='line'>    <span class="nx">@perform</span> <span class="s">&#39;speak&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>routesにmountする</h3>
+
+<p>Action Cableを有効にするため、<code>mount ActionCable.server =&gt; '/cable'</code>をroutesに追加。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># (省略)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Serve websocket cable requests in-process</span>
+</span><span class='line'>  <span class="n">mount</span> <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span> <span class="o">=&gt;</span> <span class="s1">&#39;/cable&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>アクションの設定</h3>
+
+<p></><code>app/assets/javascripts/channels/room.coffee</code>で、クライアントサイドのspeakアクションを定義する。
+ここではサーバーサイドのspeakアクションを呼びだし、messageをパラメータとして渡す。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">App.room = </span><span class="nx">App</span><span class="p">.</span><span class="nx">cable</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">create</span> <span class="s">&quot;RoomChannel&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># (省略)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">speak: </span><span class="nf">(message) -&gt;</span>
+</span><span class='line'>    <span class="nx">@perform</span> <span class="s">&#39;speak&#39;</span><span class="p">,</span> <span class="nv">message: </span><span class="nx">message</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に、<code>app/channels/room_channel.rb</code>を編集して、サーバーサイドのspeakアクションを定義する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">RoomChannel</span> <span class="o">&lt;</span> <span class="no">ApplicationCable</span><span class="o">::</span><span class="no">Channel</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">subscribed</span>
+</span><span class='line'>    <span class="c1"># stream_from &quot;some_channel&quot;</span>
+</span><span class='line'>    <span class="n">stream_from</span> <span class="s2">&quot;room_channel&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># (省略)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">room</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">room</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create!</span> <span class="ss">body</span><span class="p">:</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;message&#39;</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>speakのメソッドが呼ばれるとモデルを生成する。モデルが生成されたらjobを通して画面を更新するようにする。</p>
+
+<h3>フォームを使ったデータの送信</h3>
+
+<p>さっき<code>app/views/rooms/show.html.slim</code>のところに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">div</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;text-align: center; margin-top: 50px;&quot;</span>
+</span><span class='line'>  <span class="nt">form</span>
+</span><span class='line'>    <span class="nt">label</span>
+</span><span class='line'>      |say something:
+</span><span class='line'>      <span class="nt">input</span><span class="na"> type</span><span class="p">=</span><span class="s2">&quot;text&quot;</span><span class="na"> data-behavior</span><span class="p">=</span><span class="s2">&quot;room_input&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>を書いておいたからこのフォームを使ってデータを送信する。
+</><code>app/assets/javascripts/channels/room.coffee</code>に</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'>$(document).on &#39;keypress&#39;, &#39;[data-behavior~=room_input]&#39;, (event) -&gt;
+</span><span class='line'>　　if event.keyCode is 13 # return = send
+</span><span class='line'>　　　　if !(event.target.value == &#39;&#39;)
+</span><span class='line'>       <span class="nt">App</span><span class="nc">.room.speak</span> event.target.value
+</span><span class='line'>       <span class="nt">event</span><span class="nc">.target.value</span><span class="p"> =</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>       <span class="nt">event</span><span class="nc">.preventDefault</span>()
+</span><span class='line'>　　else
+</span><span class='line'>　　　　event.preventDefault()
+</span><span class='line'>$(document).on &#39;click&#39;, &#39;.remove-icon&#39;, (event) -&gt;
+</span><span class='line'>　　id = $(event.target).data(&#39;message-id&#39;)
+</span><span class='line'>　　App.room.remove id
+</span><span class='line'>　　event.target.value = &#39;&#39;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>データの保存の後、ブロードキャスト処理</h3>
+
+<p>次に、Messageモデルのコールバックを定義し、データが作成されたら非同期でブロードキャスト処理を実行するようにします。トランザクションをコミットしたあとでブロードキャストしないと、他のクライアントからデータが見えない恐れがあるので<code>after_create</code>ではなく<code>after_create_commit</code>を使う。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Message</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:room</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:room_id</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">after_create_commit</span> <span class="p">{</span> <span class="no">MessageBroadcastJob</span><span class="o">.</span><span class="n">perform_later</span> <span class="nb">self</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">after_destroy_commit</span> <span class="p">{</span> <span class="no">MessageBroadcastJob</span><span class="o">.</span><span class="n">perform_later</span> <span class="nb">self</span><span class="o">.</span><span class="n">id</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>続いて、非同期でブロードキャストするためのMessageBroadcastジョブを作成する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">job</span> <span class="n">message_broadcast</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></><code>ApplicationController.renderer.render</code>メソッドを使うと、コントローラ以外の場所でビューをレンダリングできます。なのでこのジョブにはパーシャルビューのHTMLを返す。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MessageBroadcastJob</span> <span class="o">&lt;</span> <span class="no">ApplicationJob</span>
+</span><span class='line'>  <span class="n">queue_as</span> <span class="ss">:default</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">)</span>
+</span><span class='line'>      <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">broadcast</span> <span class="s1">&#39;room_channel&#39;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="n">render_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">broadcast</span> <span class="s1">&#39;room_channel&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">message</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">render_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">ApplicationController</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="ss">partial</span><span class="p">:</span> <span class="s1">&#39;messages/message&#39;</span><span class="p">,</span> <span class="ss">locals</span><span class="p">:</span> <span class="p">{</span><span class="ss">message</span><span class="p">:</span> <span class="n">message</span><span class="p">})</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>サーバーからデータを受け取ったらブラウザ内の表示を書き換える</h3>
+
+<p>ジョブから返されたパーシャルビューは<code>app/assets/javascripts/channels/room.coffee</code>の<code>received</code>メソッドに渡されるので<code>received</code>メソッドを編集する。
+今回はメッセージの削除も行うのでメッセージを受け取った場合と削除ボタンを押した場合を分岐して処理する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="c1"># (省略)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">received: </span><span class="nf">(data) -&gt;</span>
+</span><span class='line'>  <span class="c1"># Called when there&#39;s incoming data on the websocket for this channel</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">undefined</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s">&#39;#myRoom&#39;</span><span class="p">).</span><span class="nx">append</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s">&#39;.message_&#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]).</span><span class="nx">remove</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># (省略)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ログの内容</h3>
+
+<p>ビューで<code>hello, rails!</code>とメッセージを入力すると下記のログが出る。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nx">RoomChannel</span><span class="c1">#speak({&quot;message&quot;=&gt;&quot;hello, rails!&quot;})</span>
+</span><span class='line'>  <span class="nx">Room</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.4</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'>  <span class="nx">User</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;users&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'>   <span class="p">(</span><span class="mf">0.1</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">BEGIN</span>
+</span><span class='line'>  <span class="nx">CACHE</span> <span class="p">(</span><span class="mf">0.0</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'>  <span class="nx">SQL</span> <span class="p">(</span><span class="mf">0.9</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">INSERT</span> <span class="nx">INTO</span> <span class="s">&quot;messages&quot;</span> <span class="p">(</span><span class="s">&quot;body&quot;</span><span class="p">,</span> <span class="s">&quot;created_at&quot;</span><span class="p">,</span> <span class="s">&quot;updated_at&quot;</span><span class="p">,</span> <span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="s">&quot;commenter_type&quot;</span><span class="p">,</span> <span class="s">&quot;commenter_id&quot;</span><span class="p">)</span> <span class="nx">VALUES</span> <span class="p">(</span><span class="nx">$1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">,</span> <span class="nx">$3</span><span class="p">,</span> <span class="nx">$4</span><span class="p">,</span> <span class="nx">$5</span><span class="p">,</span> <span class="nx">$6</span><span class="p">)</span> <span class="nx">RETURNING</span> <span class="s">&quot;id&quot;</span>  <span class="p">[[</span><span class="s">&quot;body&quot;</span><span class="p">,</span> <span class="s">&quot;hello, rails!&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;created_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">02</span> <span class="mi">10</span><span class="o">:</span><span class="mi">04</span><span class="o">:</span><span class="mi">50</span> <span class="nx">UTC</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;updated_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">02</span> <span class="mi">10</span><span class="o">:</span><span class="mi">04</span><span class="o">:</span><span class="mi">50</span> <span class="nx">UTC</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;commenter_type&quot;</span><span class="p">,</span> <span class="s">&quot;User&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;commenter_id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+</span><span class='line'>   <span class="p">(</span><span class="mf">1.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">COMMIT</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="nx">Enqueued</span> <span class="nx">MessageBroadcastJob</span> <span class="p">(</span><span class="nx">Job</span> <span class="nv">ID: </span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">)</span> <span class="nx">to</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="c1">#&lt;GlobalID:0x007feee520cf20 @uri=#&lt;URI::GID gid://practice/Message/335&gt;&gt;</span>
+</span><span class='line'>  <span class="nx">Message</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="nx">Performing</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="c1">#&lt;GlobalID:0x007feee5214ae0 @uri=#&lt;URI::GID gid://practice/Message/335&gt;&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span>   <span class="nx">User</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;users&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span>   <span class="nx">Rendered</span> <span class="nx">u</span><span class="o">/</span><span class="nx">messages</span><span class="o">/</span><span class="nx">_message</span><span class="p">.</span><span class="nx">html</span><span class="p">.</span><span class="nx">slim</span> <span class="p">(</span><span class="mf">4.7</span><span class="nx">ms</span><span class="p">)</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="p">[</span><span class="nx">ActionCable</span><span class="p">]</span> <span class="nx">Broadcasting</span> <span class="nx">to</span> <span class="nv">room_channel: </span><span class="p">{</span><span class="o">:</span><span class="nx">message</span><span class="nf">=&gt;</span><span class="s">&quot;&lt;div class=\&quot;message message_335\&quot;&gt;&lt;div class=\&quot;message-p\&quot;&gt;user4@example.com : hello, rails!&lt;i class=\&quot;fa fa-times remove-icon\&quot; data-message-id=\&quot;335\&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="nx">Performed</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="k">in</span> <span class="mf">15.06</span><span class="nx">ms</span>
+</span><span class='line'><span class="nx">RoomChannel</span> <span class="nx">transmitting</span> <span class="p">{</span><span class="s">&quot;message&quot;</span><span class="nf">=&gt;</span><span class="s">&quot;&lt;div class=\&quot;message message_335\&quot;&gt;&lt;div class=\&quot;message-p\&quot;&gt;user4@example.com : hello, rails!&lt;i class=\&quot;fa fa-times remove-icon\&quot; data-message-id=\&quot;335\&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">}</span> <span class="p">(</span><span class="nx">via</span> <span class="nx">streamed</span> <span class="nx">from</span> <span class="nx">room_channel</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、削除ボタンを押したら下記のログが出る。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nx">RoomChannel</span><span class="c1">#remove({&quot;id&quot;=&gt;335})</span>
+</span><span class='line'>  <span class="nx">Room</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'>  <span class="nx">Message</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.4</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;room_id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">AND</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$2</span> <span class="nx">LIMIT</span> <span class="nx">$3</span>  <span class="p">[[</span><span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+</span><span class='line'>   <span class="p">(</span><span class="mf">0.1</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">BEGIN</span>
+</span><span class='line'>  <span class="nx">SQL</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">DELETE</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">]]</span>
+</span><span class='line'>   <span class="p">(</span><span class="mf">1.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">COMMIT</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="nx">Performing</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="mi">335</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="nx">Enqueued</span> <span class="nx">MessageBroadcastJob</span> <span class="p">(</span><span class="nx">Job</span> <span class="nv">ID: </span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">)</span> <span class="nx">to</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="mi">335</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="p">[</span><span class="nx">ActionCable</span><span class="p">]</span> <span class="nx">Broadcasting</span> <span class="nx">to</span> <span class="nv">room_channel: </span><span class="p">{</span><span class="o">:</span><span class="nx">id</span><span class="nf">=&gt;</span><span class="mi">335</span><span class="p">}</span>
+</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="nx">Performed</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="k">in</span> <span class="mf">0.6</span><span class="nx">ms</span>
+</span><span class='line'><span class="nx">RoomChannel</span> <span class="nx">transmitting</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="nf">=&gt;</span><span class="mi">335</span><span class="p">}</span> <span class="p">(</span><span class="nx">via</span> <span class="nx">streamed</span> <span class="nx">from</span> <span class="nx">room_channel</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>参考</h4>
+
+<p><a href="http://qiita.com/jnchito/items/aec75fab42804287d71b">Rails 5 + ActionCableで作る！シンプルなチャットアプリ（DHH氏のデモ動画より）</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Firebase Analyticsを利用してEventを発生させる方法]]></title>
@@ -4584,7 +5036,7 @@ version.rbは単純にGemのバージョン管理に必要なファイルです�
 <div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
 moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
 後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#102;&#97;&#110;&#116;&#x61;&#x73;&#116;&#x69;&#x63;&#106;&#x79;&#99;&#64;&#x67;&#109;&#x61;&#x69;&#108;&#46;&#99;&#111;&#x6d;">&#102;&#97;&#110;&#116;&#x61;&#115;&#x74;&#x69;&#99;&#106;&#x79;&#99;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#102;&#97;&#110;&#116;&#x61;&#x73;&#116;&#x69;&#99;&#106;&#121;&#99;&#x40;&#103;&#x6d;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#x6d;">&#x66;&#97;&#x6e;&#x74;&#97;&#x73;&#x74;&#x69;&#99;&#x6a;&#x79;&#99;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#109;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
 正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
 そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
 でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
@@ -4775,210 +5227,6 @@ Tabbar Itemを編集して名前やImageも変えることができます。右�
 
 <p><small>
 <a href="http://www.itworld.co.kr/news/95791">http://www.itworld.co.kr/news/95791</a></p>
-
-<p></small></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HAML & Slim]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/08/24/HAML%20&%20Slim/"/>
-    <updated>2016-08-24T10:25:08+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/08/24/HAML & Slim</id>
-    <content type="html"><![CDATA[<p><small></p>
-
-<h1>HAML (HTML Abstraction Markup Language)</h1>
-
-<p>インラインコードを使わなくてウェブHTML文書を記述することに使用するマークアップ言語です。PHPやASP、ほとんどのRubyOnRails Applicationで使用されています。コードが簡単になる長所がありますが、デザイナーやパブリッシャーとの協業が必要なプロジェクトには使用が難しくなる短所があります。</p>
-
-<h2>Gem HAMLのインストール</h2>
-
-<p>HAMLのGemをプロジェクトに追加します。Gemfileを開いて、 次のコードを「追加」します。<br></p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;<span style="color:#ffd500">'haml-rails'</span></div></div></td></tr></table></div>
-
-
-<p>そしてインストールします。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;install</div></div></td></tr></table></div>
-
-
-<p>これからHAMLを使えます！！</p>
-
-<h2>書き方</h2>
-
-<h3>一番基本的な記法</h3>
-
-<p>(例)</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">!!!</div><div style="padding:0 6px; white-space:pre; line-height:130%">%html{lang:&nbsp;"ja"}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%head</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;%meta{charset:&nbsp;"utf-8"}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%body</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;hello&nbsp;world!</div></div></td></tr></table></div>
-
-
-<p><br><br></p>
-
-<h4>&lt;コード解説></h4>
-
-<p>1.!!!<br>
-&lt;!DOCTYPE html>を表す<br>
-2.%<br>
-タグの前に%を付けると&lt;開始タグ>と&lt;終了タグ>を表す。%html => &lt;html>&lt;/html><br>
-3.インデントを必ず入れる<br>
-親子関係のタグは必ずインデントを入れて関係性を作る。<br>
-4.属性を入れる場合<br>
-Ruby風に{}とシンボルで書ける。<br>
-また、HTML風に書くなら「%html(lang=&ldquo;ja&rdquo;)」<br><br>
-こんなにもできます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">%div{id:&nbsp;"my-id"}&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">%div{class:&nbsp;"my-class"}&nbsp;Contents</div></div></td></tr></table></div>
-
-
-<p>ちなみにidやclassは次のように書いても同じものが表示されます。divタグの場合のみ%divを省略することもできます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">#my-id&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">.my-class&nbsp;Contents</div></div></td></tr></table></div>
-
-
-<p>これをHTMLで書くと、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">id</span>=<span style="color:#ffd500">"my-id"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"my-class"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<p>こういうふうになります。<br><br></p>
-
-<h3>HTMLに記述されないコメント</h3>
-
-<p>次のように-#をつけて書いた文字列はHTMLには記述されません。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">-#&nbsp;test&nbsp;comment</span></div></div></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>HTMLに残すコメント</h3>
-
-<p>HTMLに残すコメントはHAMLでは次のように書きます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/&nbsp;This&nbsp;is&nbsp;the&nbsp;peanutbutterjelly&nbsp;element</span></div></div></td></tr></table></div>
-
-
-<p>すると、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&lt;!--&nbsp;This&nbsp;is&nbsp;the&nbsp;peanutbutterjelly&nbsp;element&nbsp;--&gt;</span></div></div></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>Rubyの変数を使う</h3>
-
-<p>HAML内ではRubyの変数を簡単に呼び出せます。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;text&nbsp;=&nbsp;"good"</div><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;text2&nbsp;=&nbsp;'HAML'</div><div style="padding:0 6px; white-space:pre; line-height:130%">%div{class:&nbsp;hoge}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;test&nbsp;message&nbsp;is&nbsp;#{text}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;text2</div></div></td></tr></table></div>
-
-
-<p>これをHTMLに変換すると次のようになります。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"good"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;test&nbsp;message&nbsp;is&nbsp;good</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;HAML</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>Rubyのif文やcase文を埋め込む</h3>
-
-<p>Rubyのif文やcase文も埋め込むことが可能です。</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">%p</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;case&nbsp;1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"1!"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;2</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"2?"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;3</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"3."</div></div></td></tr></table></div>
-
-
-<p><br></p>
-
-<h3>Rubyのブロックを使う</h3>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;(42...47).each&nbsp;do&nbsp;|i|</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%p=&nbsp;i</div><div style="padding:0 6px; white-space:pre; line-height:130%">%p&nbsp;See,&nbsp;I&nbsp;can&nbsp;count!</div></div></td></tr></table></div>
-
-
-<p><br></p>
-
-<h1>Slim</h1>
-
-<p>SlimのgithubページにはSlimを
-&ldquo;Slim は 不可解にならないように view の構文を本質的な部品まで減らすことを目指したテンプレート言語です。標準的な HTML テンプレートからどれだけのものが削除できるか確かめるところから始まりました。(&lt;, >, 閉じタグなど) 多くの人が Slim に興味を持ったことで, 機能性は発展し, 柔軟な構文をもたらしました&rdquo;
-と紹介しています。</p>
-
-<h2>Gem Slimのインストール</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;install&nbsp;slim</div></div></td></tr></table></div>
-
-
-<h2>Slimの書き方</h2>
-
-<p>まず、HTMLとSlimを比べてみると、</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">head</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">meta</span>&nbsp;<span style="color:#a8ff58">charset</span>=<span style="color:#ffd500">"utf-8"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">title</span><span style="color:#f0f0f0">&gt;</span>Jo's&nbsp;Training<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">title</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">head</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">body</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"sample"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">id</span>=<span style="color:#ffd500">"contents"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">h1</span><span style="color:#f0f0f0">&gt;</span>Sample&nbsp;File<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">h1</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">img</span>&nbsp;<span style="color:#a8ff58">alt</span>=<span style="color:#ffd500">"sampleImage"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">src</span>=<span style="color:#ffd500">"http://www.jotraining.com/images/sampleImage.jpg"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span>テキストテキストテキスト<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span>テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;テキストテキストテキスト<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">body</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">html</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<p>上記のようなHTMLは</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;html</div><div style="padding:0 6px; white-space:pre; line-height:130%">html</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;head</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;meta&nbsp;charset="utf-8"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;title&nbsp;Sample&nbsp;File</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;body.sample</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;#contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h1&nbsp;Sample&nbsp;File</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;img&nbsp;src="http://www.e2esound.com/images/yterajima.jpg"&nbsp;alt="yterajima"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;テキストテキストテキスト</div></div></td></tr></table></div>
-
-
-<p>Slimではこういうふうに書けます。<br>
-Slimはインデントを用いてHTMLの入れ子を表現します。このインデントの深さは自由に決めることができます。<br></p>
-
-<h2>3つのポイント</h2>
-
-<p>1.通常のHTMLから &lt;, >, /> を取り除く<br>
-2.doctype<br>
-3.テキストと | (パイプ)の扱い<br>
-4.コメント<br></p>
-
-<h3>通常のHTMLから&lt;, >, />を取り除く</h3>
-
-<p>上記の例を見ると</p>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">img</span>&nbsp;<span style="color:#a8ff58">alt</span>=<span style="color:#ffd500">"sampleImage"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">src</span>=<span style="color:#ffd500">"http://www.jotraining.com/images/sampleImage.jpg"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">img&nbsp;src="http://www.jotraining.com/images/sampleImage.jpg"&nbsp;alt="sampleImage"</div></div></td></tr></table></div>
-
-
-<h3>doctype</h3>
-
-<p>上記のslimの1行目、doctype htmlはHTMLの&lt;!DOCTYPE html>を表しています。</p>
-
-<h4>XML 宣言</h4>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;xml</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">?xml</span>&nbsp;<span style="color:#a8ff58">version</span>=<span style="color:#ffd500">"1.0"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">encoding</span>=<span style="color:#ffd500">"utf-8"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">?</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;xml&nbsp;ISO-8859-1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">?xml</span>&nbsp;<span style="color:#a8ff58">version</span>=<span style="color:#ffd500">"1.0"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">encoding</span>=<span style="color:#ffd500">"iso-8859-1"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">?</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<h4>XHTML ドキュメントタイプ</h4>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;html</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;5</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;1.1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.1//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;strict</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Strict//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;frameset</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Frameset//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;mobile</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//WAPFORUM//DTD&nbsp;XHTML&nbsp;Mobile&nbsp;1.2//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;basic</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;Basic&nbsp;1.1//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;transitional</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Transitional//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<h4>HTML 4 ドキュメントタイプ</h4>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;strict</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/strict.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;frameset</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01&nbsp;Frameset//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/frameset.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;transitional</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01&nbsp;Transitional//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/loose.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
-
-
-<h3>コメント</h3>
-
-<p>Slimのコメントには変換後出力されるコメントとされないコメントの2種類があります。<br></p>
-
-<h4>HTMLに記述されないコメント</h4>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/&nbsp;このコメントは変換後表示されない</span></div></div></td></tr></table></div>
-
-
-<h4>HTMLに残すコメント</h4>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/!&nbsp;このコメントは変換後HTMLコメントになる</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&lt;!--&nbsp;このコメントは変換後HTMLコメントになる&nbsp;--&gt;</span></div></div></td></tr></table></div>
-
-
-<p></small></p>
-
-<h2>参照</h2>
-
-<p><small>
-<a href="http://morizyun.github.io/blog/beginner-rails-tutorial-haml/">http://morizyun.github.io/blog/beginner-rails-tutorial-haml/</a>
-<a href="http://qiita.com/watak676/items/525ad3d8a1297e3244e3">http://qiita.com/watak676/items/525ad3d8a1297e3244e3</a>
-<a href="http://qiita.com/yterajima/items/53fd0387279510ff082a">http://qiita.com/yterajima/items/53fd0387279510ff082a</a>
-<a href="https://github.com/slim-template/slim/blob/master/README.jp.md">https://github.com/slim-template/slim/blob/master/README.jp.md</a></p>
 
 <p></small></p>
 ]]></content>

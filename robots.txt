@@ -1,4 +1,4 @@
 User-agent: *
-Disallow: 
+Disallow:
 
-Sitemap: http://jq-jo.github.io/sitemap.xml 
+Sitemap: http://jq-jo.github.io/sitemap.xml
