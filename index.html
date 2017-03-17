@@ -144,23 +144,45 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>説明すると
-1. クラスを定義する
-    <code>ruby
-    class クラス名
-      # クラスの内容
-    end
-   </code>
-1. メソッドを定義する
-    <code>ruby
-    def メソッド名
-      # 実行する処理
-    end
-   </code>
-1. インスタンスを作成
-    <code>ruby
-    インスタンス名 = クラス名.new
-   </code></p>
+<p>説明すると</p>
+
+<ol>
+<li>クラスを定義する</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="err">クラス名</span>
+</span><span class='line'>  <span class="c1"># クラスの内容</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>メソッドを定義する</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="err">メソッド名</span>
+</span><span class='line'>  <span class="c1"># 実行する処理</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>インスタンスを作成</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">インスタンス名</span> <span class="o">=</span> <span class="err">クラス名</span><span class="o">.</span><span class="n">new</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>newメソッドを用いることでインスタンスを作成できる。</p>
 
@@ -207,7 +229,7 @@
 
 <p><a href="https://docs.ruby-lang.org/ja/2.3.0/class/Class.html">class Class - Ruby 2.3.0 リファレンスマニュアル</a></p>
 
-<p>上記の特性を見ると、モジュールはあくまでクラスの機能を補助（拡張）するものというイメージ。
+<p>上記の特性を見ると、モジュールはあくまでクラスの機能を補助（拡張）するものというイメージ。<br/>
 下記は一番シンプルな例。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -233,15 +255,19 @@
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'> <span class="c1"># =&gt; module method</span>
+</span><span class='line'><span class="c1"># =&gt; module method</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <h4>Rubyでのモジュールの役割</h4>
 
-<p>大きく二つの役割がある
-- Mix-in
-- Namespace</p>
+<p>大きく二つの役割がある</p>
+
+<ul>
+<li>Mix-in</li>
+<li>Namespace</li>
+</ul>
+
 
 <h4>Mix-in</h4>
 
@@ -288,8 +314,8 @@ Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数
 </span><span class='line'>
 </span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
 </span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
-</span><span class='line'>  <span class="c1"># =&gt; method foo</span>
-</span><span class='line'>  <span class="c1"># =&gt; method bar</span>
+</span><span class='line'><span class="c1"># =&gt; method foo</span>
+</span><span class='line'><span class="c1"># =&gt; method bar</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -335,8 +361,8 @@ Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数
 </span><span class='line'>
 </span><span class='line'><span class="nb">puts</span> <span class="no">M1</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
 </span><span class='line'><span class="nb">puts</span> <span class="no">M2</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
-</span><span class='line'>  <span class="c1"># =&gt; foo</span>
-</span><span class='line'>  <span class="c1"># =&gt; bar</span>
+</span><span class='line'><span class="c1"># =&gt; foo</span>
+</span><span class='line'><span class="c1"># =&gt; bar</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -379,7 +405,7 @@ Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="nb">puts</span> <span class="n">B</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'>  <span class="c1"># =&gt; module foo</span>
+</span><span class='line'><span class="c1"># =&gt; module foo</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -422,7 +448,7 @@ Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="nb">puts</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'>  <span class="c1"># =&gt; M2 foo</span>
+</span><span class='line'><span class="c1"># =&gt; M2 foo</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
