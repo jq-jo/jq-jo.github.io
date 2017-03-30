@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-03-29T18:27:55+09:00</updated>
+  <updated>2017-03-30T19:17:21+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -14,7 +14,260 @@
 
   
   <entry>
-    <title type="html"><![CDATA[クラス変数、インスタンス変数及びMix-in(クラスメソッド、インスタンスメソッド、concerns)の使い方]]></title>
+    <title type="html"><![CDATA[Mix-in(クラスメソッド、インスタンスメソッド),concernsの使い方]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/03/29/mixin/"/>
+    <updated>2017-03-29T18:28:51+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/03/29/mixin</id>
+    <content type="html"><![CDATA[<p>Rubyのクラスは多重継承ができない。そういう限界を解決できるようにしてくれるのが<code>Mix-in</code>という開発パタン。<br>
+モジュールを通して複数の機能を追加することができる。</p>
+
+<h3>インスタンスメソッドの場合</h3>
+
+<p>基本的にincludeするとモジュールのメソッドをインスタンスメソッドとして使用できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h3>クラスメソッドの場合</h3>
+
+<p>モジュールのメソッドをクラスメソッドとして使用するためには</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">ClassMethods</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>クラスでインクルードされたら<code>self.included(base)</code>にコールバックされる。ここで引数に渡されるのはインクルードしたクラスになる。そこにモジュールをextendしたらクラスメソッドとしても使用できる。</p>
+
+<h3>concernsの使い方</h3>
+
+<p>concernsは<code>ActiveSupport::Concern</code>をextendするだけでmix-inの複雑な記述を省略できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># なくても良い</span>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>concernsのメリット</strong><br/>
+複雑な依存関係を考えなくても良い。<code>Foo</code>をextendする<code>Bar</code>をHogeクラスでextendするとしたら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># なくても良い</span>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Foo&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Foo class good job!&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Bar</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Bar&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
+</span><span class='line'>      <span class="k">super</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Bar class good job!&quot;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Bar</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_method</span> <span class="c1"># =&gt;</span>
+</span><span class='line'><span class="c1"># &quot;included Foo&quot;</span>
+</span><span class='line'><span class="c1"># &quot;included Bar&quot;</span>
+</span><span class='line'><span class="c1"># &quot;Foo class good job!&quot;</span>
+</span><span class='line'><span class="c1"># &quot;Bar class good job!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに簡単にできる。</p>
+
+<h3>終わり</h3>
+
+<ul>
+<li>モジュールをインクルードすることでモジュールのメソッドをインスタンスメソッドとして使用できる</li>
+<li>includedメソッドを使ってextendさせたらインスタンスメソッドを使いながらクラスメソッドも使用できる</li>
+<li>concernsを使ったらもっと簡単に<code>mix-in</code>ができる</li>
+<li>concernsで複雑な依存関係をさらに簡単にまとめられる</li>
+</ul>
+
+
+<h3>参考</h3>
+
+<p><a href="http://www.techscore.com/blog/2013/03/01/rails-include%E3%81%95%E3%82%8C%E3%81%9F%E6%99%82%E3%81%AB%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%A8%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%83%A1/">Rails: includeされた時にクラスメソッドとインスタンスメソッドを同時に追加する頻出パターン</a><br/>
+<a href="http://blog.yujigraffiti.com/2015/01/rails-42module-classmethodsconcernclass.html">Rails 4.2からはmodule ClassMethodsではなくConcern#class_methodsを使おう</a><br/>
+<a href="http://qiita.com/castaneai/items/6dc121ce6ff100614f42">[Rails] ActiveSupport::Concern の存在理由</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[クラス変数、インスタンス変数]]></title>
     <link href="http://jq-jo.github.io/blog/2017/03/23/class-instance-method-and-mixin/"/>
     <updated>2017-03-23T17:38:37+09:00</updated>
     <id>http://jq-jo.github.io/blog/2017/03/23/class-instance-method-and-mixin</id>
@@ -254,55 +507,6 @@
 
 
 <p>のように使える。</p>
-
-<h2>Mix-in</h2>
-
-<p>includeとextendを通してインスタンスメソッド、クラスメソッドに分けて使用できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">a</span>
-</span><span class='line'>    <span class="s1">&#39;ok Foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Bar</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">b</span>
-</span><span class='line'>    <span class="s1">&#39;ok Bar&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Klass</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Bar</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">p</span> <span class="no">Klass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">a</span> <span class="c1">#=&gt; &quot;ok Foo&quot;</span>
-</span><span class='line'><span class="nb">p</span> <span class="no">Klass</span><span class="o">.</span><span class="n">b</span>     <span class="c1">#=&gt; &quot;ok Bar&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>concerns</h4>
-
-<p><strong># concernsは今度に。。。</strong></p>
 
 <h3>参照</h3>
 
@@ -5992,38 +6196,6 @@ JS側のメソッドが実行になり、Alertが出ました。<br>
 すると、<br>
 <img src="https://monosnap.com/file/1Z8xXibNxUInayOurjwYlV7YNBRotu.png" style="width: 60%;"><br>
 Native側からJSにデータが送信されたのが確認できます。<br></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Railsにおけるセッション管理]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/09/28/sessionmanagement/"/>
-    <updated>2016-09-28T14:09:14+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/09/28/sessionmanagement</id>
-    <content type="html"><![CDATA[<h2>セッションとは</h2>
-
-<h2>セッションを設定</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;LoginsController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ApplicationController</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ログインする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;create</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;User.authenticate(params[:username],&nbsp;params[:password])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ユーザーIDをセッションに保存する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session[:user_id]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;user.id</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redirect_to&nbsp;root_url</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f; text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<h2>セッションを取得</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ApplicationController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ActionController::Base</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;private</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;現在のユーザーを取得する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;@_current_userが空の場合は、session情報をキーにしてDBから検索する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;current_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@_current_user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span><span style="color:#0086b3"></span><span style="color:#ff3399">|</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;User.find_by(id:&nbsp;session[:user_id])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td></tr></table></div>
-
-
-<h2>セッションを削除する</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;LoginsController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ApplicationController</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ログアウトする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;destroy</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;@_current_userの値をnilにする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@_current_user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">nil</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;reset_session</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;redirect_to&nbsp;root_url</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td></tr></table></div>
-
-
-<h2>Railsのセッション管理方法</h2>
-
-<h4>CookieStore</h4>
-
-<h4>ActiveRecordSessionStore</h4>
-
-<h4>DalliStore</h4>
 ]]></content>
   </entry>
   
