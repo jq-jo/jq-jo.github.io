@@ -9,10 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Rubyのクラスは多重継承ができない。そういう限界を解決できるようにしてくれるのがMix-inという開発パタン。
-モジュールを通して複数の機能を追加することができる。 インスタンスメソッドの場合 基本的にincludeするとモジュールのメソッドをインスタンスメソッドとして使用できる。 1
-2
-3 &hellip;">
+  <meta name="description" content="MVCはモデル/ビュー/コントローラーの頭文字を取ってMVCと呼ばれていて、各役割について処理を分割する。分割することでフロントエンドとバックエンドの業務を分けてさらに効率的な作業が可能になる。MVCパターンの基本的な流れとしては下記のようになる。 (参照 - MVCパターン再考) MVCの目的 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +76,188 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/13/mvc-pattern/">RailsにおけるMVC</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-13T18:53:33+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:53 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>MVCはモデル/ビュー/コントローラーの頭文字を取ってMVCと呼ばれていて、各役割について処理を分割する。分割することでフロントエンドとバックエンドの業務を分けてさらに効率的な作業が可能になる。MVCパターンの基本的な流れとしては下記のようになる。
+<img src="https://monosnap.com/file/6D4KRnFkJP48XmI74QxbiF8kJRlES2.png" alt="Alt text" /></p>
+
+<p><sub>(参照 - <a href="http://super-apparel-engineer.hatenablog.com/entry/2016/10/11/102637">MVCパターン再考</a>)<sub></p>
+
+<h3>MVCの目的</h3>
+
+<ul>
+<li>コードの再利用性を高める: ビジネスロジックをモデルに詰め込むことで、コードの再利用性を上げる</li>
+<li>処理の分割: 分割することでフロントエンドとバックエンドの業務を分け、さらに効率的な作業が可能になる</li>
+</ul>
+
+
+<h3>MVCの役割</h3>
+
+<h5>コントローラ</h5>
+
+<p><img src="https://monosnap.com/file/h5gecR0zZhPHnPHpZqDuDuF9F5bqxW.png" alt="Alt text" />
+<sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
+
+<p>利用者がブラウザ経由でRailアプリケーションにリクエストを送信すると、まずはWebサーバでそのリクエストを受け取る。そのリクエストはURLとして届くようになる。届いたURLを分析し、どのコントローラーに含まれるアクションを実行すればいいのかを判断する時に使われるのが「routes.rb」ファイルである。コントローラーのアクションが呼び出されるとそのアクションによって必要なモデルを呼び出したりビューをレンダーしたりする。</p>
+
+<h5>モデル</h5>
+
+<ul>
+<li>データベース管理</li>
+<li>ビジネスロジックを実行</li>
+</ul>
+
+
+<p>Railsのモデルはデータベースとのやり取りを行うクラスのことであり、データベースはテーブルの集合でできている。</p>
+
+<p><sub>テーブルの例<sub></p>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>ユーザー名</th>
+<th>ユーザー年齢</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>鈴木</td>
+<td>36</td>
+</tr>
+<tr>
+<td>2</td>
+<td>佐藤</td>
+<td>30</td>
+</tr>
+<tr>
+<td>3</td>
+<td>高橋</td>
+<td>32</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>モデルのクラスはテーブルの各カラムをそれぞれのインスタンスとして持ち、活用できるようになる。<br>
+例えば、</p>
+
+<table>
+<thead>
+<tr>
+<th>インスタンス1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+</tr>
+<tr>
+<td>鈴木</td>
+</tr>
+<tr>
+<td>36</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th>インスタンス2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+</tr>
+<tr>
+<td>佐藤</td>
+</tr>
+<tr>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th>インスタンス3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+</tr>
+<tr>
+<td>高橋</td>
+</tr>
+<tr>
+<td>32</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>のようになる。モデルを使うと、直感的で記述しやすいコードでデータベースの処理ができる。
+MVCの流れに戻ってみると、コントローラーにある何かのアクションから呼ばれ、必要なロジックを行う。</p>
+
+<p><img src="https://monosnap.com/file/sn4NbwHa50fZbFypbSY8vMmtwGxvlN.png" alt="Alt text" /></p>
+
+<p><sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
+
+<h5>ビュー</h5>
+
+<p><img src="https://monosnap.com/file/8E9jSA9L9i6IR4k8DTz0kXmo5ffgPl.png" alt="Alt text" /><br/>
+<sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
+
+<p>モデルを通して取得したデータをコントローラーに返し、コントローラーは変数としてビューにデータを渡す。ビューは渡されたデータを活用してHTML文書を作成、またコントローラーに返す。</p>
+
+<h5>結果を返す</h5>
+
+<p>返したビューはコントローラーによってブラウザを通してクライアントに見えるようになる。
+<img src="https://monosnap.com/file/DlhLikO7H5hfcCWTVqG1dccYFcUE1F.png" alt="Alt text" /></p>
+
+<p><sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
+
+<h2>参照</h2>
+
+<p><a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a><br/>
+<a href="http://udemy.benesse.co.jp/development/rails-model.html">Railsのmodelを徹底解説！知っておくべき3つの知識も紹介</a><br/>
+<a href="http://udemy.benesse.co.jp/development/rails-controller.html">Rails controllerを徹底解説！知っておくべき3つの知識も紹介</a><br/>
+<a href="http://kasei-san.hatenablog.com/entry/2015/09/19/204803">
+MVCのおさらいと、RailsのMVCについて説明する</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -4345,149 +4524,6 @@ consoleで確認してみたら</p>
 
 <p><a href="http://south37.hatenablog.com/entry/2014/08/10/Activerecord%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8Bincludes%E3%81%A8joins%E3%81%AE%E6%8C%AF%E3%82%8B%E8%88%9E%E3%81%84%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">Activerecordにおけるincludesとjoinsの振る舞いについて</a><br/>
 <a href="http://qiita.com/south37/items/b2c81932756d2cd84d7d">似ているようで全然違う!?Activerecordにおけるincludesとjoinsの振る舞いまとめ</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/25/railsmodelcallback/">RailsのModelのコールバック</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-25T14:30:52+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:30 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Active Recordのコールバック</h1>
-
-<p>Rails側では、内部でオブジェクトが作成されたり、更新されたり削除されたりする。コールバックとは、オブジェクトのライフサイクル期間における特定の瞬間に呼び出されるメソッドである。<br>
-コールバックを利用することで、Active Recordオブジェクトが作成、保存、更新、削除などのイベント発生の時に常に実行されるコードを書くことができる。</p>
-
-<h3>種類と順番</h3>
-
-<ul>
-<li><p>オブジェクトの生成</p>
-
-<ul>
-<li>before_validation</li>
-<li>after_validation</li>
-<li>before_save</li>
-<li>around_save</li>
-<li>before_create</li>
-<li>around_create</li>
-<li>after_create</li>
-<li>after_save</li>
-</ul>
-</li>
-<li><p>オブジェクトの更新</p>
-
-<ul>
-<li>before_validation</li>
-<li>after_validation</li>
-<li>before_save</li>
-<li>around_save</li>
-<li>before_update</li>
-<li>around_update</li>
-<li>after_update</li>
-<li>after_save</li>
-</ul>
-</li>
-<li><p>オブジェクトの削除</p>
-
-<ul>
-<li>before_destroy</li>
-<li>around_destroy</li>
-<li>after_destroy</li>
-</ul>
-</li>
-<li><p>オブジェクトのinstance化</p>
-
-<ul>
-<li>after_initialize</li>
-</ul>
-</li>
-<li><p>find</p>
-
-<ul>
-<li>after_find</li>
-</ul>
-</li>
-<li><p>touch</p>
-
-<ul>
-<li>after_touch</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>使い方</h3>
-
-<p>普通にモデルクラスの中に書いたら良い。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="ss">:hoge</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hoge</span>
-</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="k">do</span>
-</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="s2">&quot;何かのコード&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上の三つの書き方で自分が実行したい瞬間に実行されるコードを書くことができる。<br><br><br></p>
-
-<h2>参照</h2>
-
-<p><a href="https://railsguides.jp/active_record_callbacks.html">Active Record コールバック</a><br/>
-<a href="http://ruby-rails.hatenadiary.com/entry/20141211/1418301640">Rails4でモデルのコールバックの一覧と順番</a><br/>
-<a href="http://qiita.com/rtoya/items/29cef3e328299781a328">Railsのcallbackについて調べた</a><br/>
-<a href="http://blog.toshimaru.net/active-record-callbacks/">ActiveRecordのコールバックの順序・コールバック内のロールバック処理について</a></p>
 </div>
   
   
