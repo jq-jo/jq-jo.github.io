@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-04-13T19:36:29+09:00</updated>
+  <updated>2017-04-21T10:22:33+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,57 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Client-side MVC]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/04/20/clientside-mvc/"/>
+    <updated>2017-04-20T10:19:30+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/04/20/clientside-mvc</id>
+    <content type="html"><![CDATA[<h3>なぜClient-sideのMVCが出たのか</h3>
+
+<h5>昔のウェブページは静的であった</h5>
+
+<p>昔のウェブはページの全てのコンテンツが静的だったので既存サーバサイドのMVCパターンで十分だった。その時まではjavascriptというものはページのコンテンツに関するものではなかった。</p>
+
+<h5>Ajaxの登場</h5>
+
+<p>2005年度からAjaxが本格的に流行り始めて、それから動的なコンテンツの時代が来る。その頃jqueryも出てきながらjsを通した動的なウェブページというものが広がる。</p>
+
+<h5>問題の発生</h5>
+
+<p>フロントサイドが段々複雑になってきながらhtmlとjavascriptが混ざり、可読性も悪くなりつつjs自体のコードもとても複雑で保守が大変になるということと、それ以外にもセキュリティーとかの問題が発生する。</p>
+
+<h5>フレームワークの登場</h5>
+
+<p>ウェブの環境は段々リッチになり、そのウェブを利用する人々はもっとシンプル、楽なサービスを求めることになる。そんな状況で既存の問題を改善しながら技術的にはもっと高めるようなClient-sideMVCのフレームワークが出てくる。</p>
+
+<h3>Client-sideMVCの目的</h3>
+
+<ul>
+<li>サーバサイドとの分離によって効率性を高める</li>
+<li>ビューの細分化によってコードの再使用性を高める</li>
+<li>保守の便利性</li>
+</ul>
+
+
+<h3>クライアント側フレームワークの種類</h3>
+
+<ul>
+<li>React.js</li>
+<li>Angular.js</li>
+<li>Angular.js 2.0</li>
+<li>Backbone.js</li>
+<li>Vue.js</li>
+<li>Mithril.js</li>
+<li>Aurelia.js</li>
+<li>Knockout.js</li>
+<li>Ember.js</li>
+<li>Riot.js</li>
+<li>Ractive.js</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RailsにおけるMVC]]></title>
@@ -5804,488 +5855,6 @@ iOSはプレビューとスクリーンショット以外にはそんなに難�
 </li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Androidでカメラ＆ギャラリーの使い方]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/10/19/android-camera-gallery/"/>
-    <updated>2016-10-19T14:51:05+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/10/19/android-camera-gallery</id>
-    <content type="html"><![CDATA[<h2>はじめに</h2>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<p>今回のinuckのアプリでファイルアップロードのためにカメラやギャラリーの機能を使って、Android側でも対応することになりましたので情報をまとめました。</p>
-
-<h2>説明</h2>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<p>Android 4.4に変わってからWebviewはChromium基盤として変更されたため、WebviewにもMobile Chrome Browserと同じようなレベルのパフォーマンスを持って最新HTML5やCSS3のWeb標準をサポートし、V8 Javascript エンジンを乗せた最新バージョンに適用しました。<br>
-なので、Webviewのパフォーマンスについて色んな変更が発生され、ここで話すファイルアップロードについた部分も適用されました。
-ここには4.4以外のバージョンをまとめます。</p>
-
-<h2>権限</h2>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<h3>AndroidManifest.xml</h3>
-
-<p>まず、Permissionを設定します。<br>
-カメラとギャラリーを使うためには<br>
-この三つが必要です。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.CAMERA&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span><span class="o">/&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>この三つをAndroidManifestに入れます。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;?</span><span class="n">xml</span> <span class="n">version</span><span class="o">=</span><span class="s">&quot;1.0&quot;</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="o">?&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">manifest</span> <span class="nl">xmlns:</span><span class="n">android</span><span class="o">=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
-</span><span class='line'>    <span class="n">package</span><span class="o">=</span><span class="s">&quot;jp.inuck.inuckapp&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.INTERNET&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.CAMERA&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">&lt;</span><span class="n">application</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">allowBackup</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">icon</span><span class="o">=</span><span class="s">&quot;@mipmap/ic_launcher&quot;</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;@string/app_name&quot;</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">supportsRtl</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">theme</span><span class="o">=</span><span class="s">&quot;@style/AppTheme&quot;</span>
-</span><span class='line'>        <span class="nl">android:</span><span class="n">minSdkVersion</span><span class="o">=</span><span class="s">&quot;8&quot;</span>
-</span><span class='line'>        <span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">activity</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;.MainActivity&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="n">action</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>
-</span><span class='line'>                <span class="o">&lt;</span><span class="n">category</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.intent.category.LAUNCHER&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'>            <span class="o">&lt;/</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;/</span><span class="n">activity</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">service</span>
-</span><span class='line'>            <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;.MyFirebaseMessagingService&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="n">action</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.google.firebase.MESSAGING_EVENT&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>            <span class="o">&lt;/</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;/</span><span class="n">service</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="n">service</span>
-</span><span class='line'>            <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;.MyFirebaseInstanceIDService&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>                <span class="o">&lt;</span><span class="n">action</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.google.firebase.INSTANCE_ID_EVENT&quot;</span><span class="o">/&gt;</span>
-</span><span class='line'>            <span class="o">&lt;/</span><span class="n">intent</span><span class="o">-</span><span class="n">filter</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;/</span><span class="n">service</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;/</span><span class="n">application</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">manifest</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Android 6.0になってからPermissionについて変わりまして6.0の前まではAndroidManifestに設定したら勝手に権限をとることになったんですが、6.0からは直接確認しないと権限が取れないところがありましてそのセッティングは相当めんどくさいので<br>
-私の場合はTedPermissionというライブラリを使いました。<br>
-ライブラリを使いたいなら下のようにbundle.gradleに設定したら良いです。
-<img src="https://monosnap.com/file/f8JmmzE2Fqy1PFuJ8luT7m2dycRNjh.png" alt="Alt text" /></p>
-
-<h2>4.4以外 <small><small>（Android Version &lt; 3.0&nbsp;&nbsp;/&nbsp;&nbsp;3.0 &lt;= Android Version &lt; 4.1&nbsp;&nbsp;/&nbsp;&nbsp;4.1 &lt;= Android Version &lt; 4.4&nbsp;&nbsp;/&nbsp;&nbsp;Android Version 5.0+）</small></small></h2>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);"><br>
-
-
-<h3>共通で使うメソッド</h3>
-
-<p><br></p>
-
-<h4>imageChooser()</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">imageChooser</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Intent</span> <span class="n">takePictureIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">ACTION_IMAGE_CAPTURE</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">takePictureIntent</span><span class="o">.</span><span class="na">resolveActivity</span><span class="o">(</span><span class="n">getContext</span><span class="o">().</span><span class="na">getPackageManager</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// Create the File where the photo should go</span>
-</span><span class='line'>        <span class="n">File</span> <span class="n">photoFile</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">photoFile</span> <span class="o">=</span> <span class="n">createImageFile</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">takePictureIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;PhotoPath&quot;</span><span class="o">,</span> <span class="n">mCameraPhotoPath</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="c1">// Error occurred while creating the File</span>
-</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="s">&quot;Unable to create Image File&quot;</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Continue only if the File was successfully created</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">photoFile</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">mCameraPhotoPath</span> <span class="o">=</span> <span class="s">&quot;file:&quot;</span><span class="o">+</span><span class="n">photoFile</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">();</span>
-</span><span class='line'>            <span class="n">takePictureIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">MediaStore</span><span class="o">.</span><span class="na">EXTRA_OUTPUT</span><span class="o">,</span>
-</span><span class='line'>                    <span class="n">Uri</span><span class="o">.</span><span class="na">fromFile</span><span class="o">(</span><span class="n">photoFile</span><span class="o">));</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">takePictureIntent</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Intent</span> <span class="n">contentSelectionIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_GET_CONTENT</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">contentSelectionIntent</span><span class="o">.</span><span class="na">addCategory</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">CATEGORY_OPENABLE</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">contentSelectionIntent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">TYPE_IMAGE</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Intent</span><span class="o">[]</span> <span class="n">intentArray</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">takePictureIntent</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">intentArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">[]{</span><span class="n">takePictureIntent</span><span class="o">};</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">intentArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Intent</span> <span class="n">chooserIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_CHOOSER</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">chooserIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_INTENT</span><span class="o">,</span> <span class="n">contentSelectionIntent</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">chooserIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_TITLE</span><span class="o">,</span> <span class="s">&quot;Image Chooser&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">chooserIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_INITIAL_INTENTS</span><span class="o">,</span> <span class="n">intentArray</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">startActivityForResult</span><span class="o">(</span><span class="n">chooserIntent</span><span class="o">,</span> <span class="n">INPUT_FILE_REQUEST_CODE</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br></p>
-
-<h4>createImageFile()</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">File</span> <span class="nf">createImageFile</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">// Create an image file name</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">timeStamp</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">SimpleDateFormat</span><span class="o">(</span><span class="s">&quot;yyyyMMdd_HHmmss&quot;</span><span class="o">).</span><span class="na">format</span><span class="o">(</span><span class="k">new</span> <span class="nf">Date</span><span class="o">());</span>
-</span><span class='line'>    <span class="n">String</span> <span class="n">imageFileName</span> <span class="o">=</span> <span class="s">&quot;JPEG_&quot;</span> <span class="o">+</span> <span class="n">timeStamp</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">File</span> <span class="n">storageDir</span> <span class="o">=</span> <span class="n">Environment</span><span class="o">.</span><span class="na">getExternalStoragePublicDirectory</span><span class="o">(</span>
-</span><span class='line'>            <span class="n">Environment</span><span class="o">.</span><span class="na">DIRECTORY_PICTURES</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">File</span> <span class="n">imageFile</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="na">createTempFile</span><span class="o">(</span>
-</span><span class='line'>            <span class="n">imageFileName</span><span class="o">,</span>  <span class="cm">/* prefix */</span>
-</span><span class='line'>            <span class="s">&quot;.jpg&quot;</span><span class="o">,</span>         <span class="cm">/* suffix */</span>
-</span><span class='line'>            <span class="n">storageDir</span>      <span class="cm">/* directory */</span>
-</span><span class='line'>    <span class="o">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">imageFile</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br></p>
-
-<h4>onActivityResult (int, int, Intent)</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onActivityResult</span> <span class="o">(</span><span class="kt">int</span> <span class="n">requestCode</span><span class="o">,</span> <span class="kt">int</span> <span class="n">resultCode</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">requestCode</span> <span class="o">==</span> <span class="n">INPUT_FILE_REQUEST_CODE</span> <span class="o">&amp;&amp;</span> <span class="n">resultCode</span> <span class="o">==</span> <span class="n">getActivity</span><span class="o">().</span><span class="na">RESULT_OK</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="n">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">LOLLIPOP</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">filePathCallbackLollipop</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                <span class="kd">super</span><span class="o">.</span><span class="na">onActivityResult</span><span class="o">(</span><span class="n">requestCode</span><span class="o">,</span> <span class="n">resultCode</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">Uri</span><span class="o">[]</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Uri</span><span class="o">[]{</span><span class="n">getResultUri</span><span class="o">(</span><span class="n">data</span><span class="o">)};</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">filePathCallbackLollipop</span><span class="o">.</span><span class="na">onReceiveValue</span><span class="o">(</span><span class="n">results</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">filePathCallbackLollipop</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">filePathCallbackNormal</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>                <span class="kd">super</span><span class="o">.</span><span class="na">onActivityResult</span><span class="o">(</span><span class="n">requestCode</span><span class="o">,</span> <span class="n">resultCode</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
-</span><span class='line'>                <span class="k">return</span><span class="o">;</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>            <span class="n">Uri</span> <span class="n">result</span> <span class="o">=</span> <span class="n">getResultUri</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="s">&quot;openFileChooser : &quot;</span><span class="o">+</span><span class="n">result</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">filePathCallbackNormal</span><span class="o">.</span><span class="na">onReceiveValue</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">filePathCallbackNormal</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mFilePathCallback</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">mFilePathCallback</span><span class="o">.</span><span class="na">onReceiveValue</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">filePathCallbackNormal</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">filePathCallbackNormal</span><span class="o">.</span><span class="na">onReceiveValue</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">mFilePathCallback</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="n">filePathCallbackNormal</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">onActivityResult</span><span class="o">(</span><span class="n">requestCode</span><span class="o">,</span> <span class="n">resultCode</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br></p>
-
-<h4>getResultUri(Intent)</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">Uri</span> <span class="nf">getResultUri</span><span class="o">(</span><span class="n">Intent</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Uri</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">data</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">TextUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getDataString</span><span class="o">()))</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// If there is not data, then we may have taken a photo</span>
-</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">mCameraPhotoPath</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">mCameraPhotoPath</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">String</span> <span class="n">filePath</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="n">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">LOLLIPOP</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">filePath</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getDataString</span><span class="o">();</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">filePath</span> <span class="o">=</span> <span class="s">&quot;file:&quot;</span> <span class="o">+</span> <span class="n">RealPathUtil</span><span class="o">.</span><span class="na">getRealPath</span><span class="o">(</span><span class="n">getContext</span><span class="o">(),</span> <span class="n">data</span><span class="o">.</span><span class="na">getData</span><span class="o">());</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="n">result</span> <span class="o">=</span> <span class="n">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">filePath</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br></p>
-
-<h3>バージョン別</h3>
-
-<p><br><strong>
-1. Android Version 5.0+<br></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onShowFileChooser</span><span class="o">(</span><span class="n">WebView</span> <span class="n">webView</span><span class="o">,</span>
-</span><span class='line'>                                 <span class="n">ValueCallback</span><span class="o">&lt;</span><span class="n">Uri</span><span class="o">[]&gt;</span> <span class="n">filePathCallback</span><span class="o">,</span> <span class="n">FileChooserParams</span> <span class="n">fileChooserParams</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;WebViewActivity A&gt;5, OS Version : &quot;</span> <span class="o">+</span> <span class="n">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">+</span> <span class="s">&quot;\t onSFC(WV,VCUB,FCP), n=3&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">filePathCallbackLollipop</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">filePathCallbackLollipop</span><span class="o">.</span><span class="na">onReceiveValue</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="n">filePathCallbackLollipop</span> <span class="o">=</span> <span class="n">filePathCallback</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">imageChooser</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><strong>
-2. 4.1 &lt;= Android Version &lt; 4.4<br></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">openFileChooser</span><span class="o">(</span><span class="n">ValueCallback</span><span class="o">&lt;</span><span class="n">Uri</span><span class="o">&gt;</span> <span class="n">uploadFile</span><span class="o">,</span> <span class="n">String</span> <span class="n">acceptType</span><span class="o">,</span> <span class="n">String</span> <span class="n">capture</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="n">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span> <span class="s">&quot;openFileChooser : &quot;</span><span class="o">+</span><span class="n">acceptType</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">capture</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">filePathCallbackNormal</span> <span class="o">=</span> <span class="n">uploadFile</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">imageChooser</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><strong>
-3. 3.0 &lt;= Android Version &lt; 4.1<br></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">openFileChooser</span><span class="o">(</span><span class="n">ValueCallback</span><span class="o">&lt;</span><span class="n">Uri</span><span class="o">&gt;</span> <span class="n">uploadMsg</span><span class="o">,</span> <span class="n">String</span> <span class="n">acceptType</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//System.out.println(&quot;WebViewActivity 3&lt;A&lt;4.1, OS Version : &quot; + Build.VERSION.SDK_INT + &quot;\t openFC(VCU,aT), n=2&quot;);</span>
-</span><span class='line'>    <span class="n">filePathCallbackNormal</span> <span class="o">=</span> <span class="n">uploadFile</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">imageChooser</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><strong>
-4. Android Version &lt; 3.0<br></strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">openFileChooser</span><span class="o">(</span><span class="n">ValueCallback</span><span class="o">&lt;</span><span class="n">Uri</span><span class="o">&gt;</span> <span class="n">uploadMsg</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//System.out.println(&quot;WebViewActivity OS Version : &quot; + Build.VERSION.SDK_INT + &quot;\t openFC(VCU), n=1&quot;);</span>
-</span><span class='line'>    <span class="n">filePathCallbackNormal</span> <span class="o">=</span> <span class="n">uploadMsg</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_GET_CONTENT</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">intent</span><span class="o">.</span><span class="na">addCategory</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">CATEGORY_OPENABLE</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">intent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">TYPE_IMAGE</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">startActivityForResult</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">INPUT_FILE_REQUEST_CODE</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br></p>
-
-<h2>テスト</h2>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);"><br>
-
-
-<p><br><strong>
-1. Android 6.0<br></strong><br>
-<img src="https://monosnap.com/file/i4St10LZC6hGt5xvI8PecmQMXk0tcd.png" style="width: 50%; float: left;">
-<img src="https://monosnap.com/file/EfhnOQcLSkzNMxOj1wQB7yZlF9kzs6.png" style="width: 50%;">
-<br><strong><br>
-2. Android 5.1<br></strong><br>
-<img src="https://monosnap.com/file/mcgXOTDiBcfMMPGsPr31GvBQrDiCME.png" style="width: 50%; float: left;">
-<img src="https://monosnap.com/file/HHnJECNfOfRm9mx3gMDuofUXUfNzDC.png" style="width: 50%;">
-<br><strong><br>
-3. Android 4.2<br></strong><br>
-<img src="https://monosnap.com/file/rpTQ1JSdrqyULk7VMhACNKqxFctp1s.png" style="width: 50%; float: left;">
-<img src="https://monosnap.com/file/wGalecUVjVX5q0GVkpxYQcAfj3s6Ua.png" style="width: 50%;"></p>
 ]]></content>
   </entry>
   
