@@ -9,8 +9,14 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Rails側で関係あるモデル同士をまとめて取得したいときがある。そのとき効率的に使えるのがincludesとjoins。だが、この二つは振る舞いがちょっと違うので二つの違いや使い方をまとめてみる。
-includesはデータを先読みしてキャッシュするのでさらに効率的に使える。 &hellip;">
+  <meta name="description" content="カウンターキャッシュとは Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる 設定 1
+2
+3
+4
+5
+6
+7
+class Survey &lt; ApplicationRecord has_many :questions, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +83,315 @@ includesはデータを先読みしてキャッシュするのでさらに効率
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/20/counter-cache-in-rails/">カウンターキャッシュについて</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-20T16:35:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:35 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>カウンターキャッシュとは</h2>
+
+<ul>
+<li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
+</ul>
+
+
+<h2>設定</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Survey</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:questions</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Question&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のような関係を持つモデルの子モデルに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <code>counter_cache: :カラム名</code>のように追加する<br/>
+それからmigrationを追加する</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_column_questions_count_to_qualitative_surveys</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そこに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddColumnInquiresCountToSurveys</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
+</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:surveys</span><span class="p">,</span> <span class="ss">:questions_count</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">reversible</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">dir</span><span class="o">.</span><span class="n">up</span> <span class="k">do</span>
+</span><span class='line'>      <span class="no">Survey</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">survey</span><span class="o">|</span>
+</span><span class='line'>        <span class="no">Survey</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">(</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">:questions</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <code>default: 0</code>を追加し、今持っている子モデルのカウントをセッティングする場合は上記のように<code>reset_counters</code>メソッドを使って更新する
+consoleで確認してみたら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span> <span class="o">=</span> <span class="no">Survey</span><span class="o">.</span><span class="n">last</span>
+</span><span class='line'><span class="no">Survey</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span>  <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;surveys&quot;</span> <span class="no">ORDER</span> <span class="no">BY</span> <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="s2">&quot;id&quot;</span> <span class="no">DESC</span> <span class="no">LIMIT</span> <span class="vg">$1</span>  <span class="o">[[</span><span class="s2">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">]]</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Survey id: 83, title: &quot;Survey_title_49&quot;, content: nil, created_at: &quot;2017-02-08 10:26:51&quot;, updated_at: &quot;2017-02-16 02:55:41&quot;, questions_count: 43&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span><span class="o">.</span><span class="n">questions_count</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">43</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように確認できる</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/02/08/using-cache-with-rails/">Railsにおけるキャッシュの使い方</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-02-08T18:19:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:19 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>キャッシュ</h2>
+
+<ul>
+<li>キャッシュとは、使用頻度の高いデータを高速な記憶装置に蓄えておくことにより、いちいち低速な装置から読み出す無駄を省いて高速化すること。また、その際に使われる高速な記憶装置や、複製されたデータそのもののこと。</li>
+</ul>
+
+
+<h2>Railsにおけるキャッシュ</h2>
+
+<h4>Rails3</h4>
+
+<ul>
+<li>ページキャッシュ（ページ全体をキャッシュ）</li>
+<li>アクションキャッシュ（アクション単位でキャッシュ）</li>
+<li>フラグメントキャッシュ（ページの一部をキャッシュ）</li>
+</ul>
+
+
+<h4>Rails4</h4>
+
+<p>Rails4ではページキャッシュとアクションキャシュは廃止され、フラグメントキャシュのみ使える。</p>
+
+<h2>フラグメントキャッシュとは</h2>
+
+<p>rails で利用できる view の一部分をキャッシュする機能。rails 3以上ならデフォルトで利用できる。railsは view のレンダリングが遅いので、アクセスの多いサイトはキャッシュの利用が必要になってくる。</p>
+
+<h4>書き方(Slim)</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="p">{</span><span class="n">some_key</span><span class="p">}</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="c1"># cache したい HTML</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>キーにStringを指定した場合</h4>
+
+<p>下記のような場合に、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この<code>@some_db_data</code>の中身が変更されても、キャッシュには変更が反映されない。キャッシュのキーに含まれるdigestはあくまでHTMLを元に作られるため、データの変更があってもdigestは変更されないからである。<br>
+また、自動で付与されるdigestを利用しないようにするには</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="ss">skip_digest</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とする。この場合、HTMLに変更があったとしても、キャッシュには反映されず変更前のものが表示される。</p>
+
+<h4>キーを省略した場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように、キーを省略した場合は、ページのurlからキーが自動で作られる。url依存のキーなので、同じページでこの形を複数記述すると、どちらかのキャッシュが上書きされてめちゃくちゃになる。</p>
+
+<h4>キーにオブジェクトを指定した場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@object</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">=</span> <span class="vi">@object</span><span class="o">.</span><span class="n">text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>オブジェクトを指定した場合は、<code>@object.cache_key</code>がキャッシュのキーとなる。<code>ActiveRecord</code>のオブジェクトの場合、<code>ID</code>や、<code>updated_at</code>を元にキーが作成されるので、オブジェクトの<code>updated_at</code>が変更されると自動でキャッシュも更新される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@objects</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">-</span> <span class="vi">@objects</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">object</span><span class="o">|</span>
+</span><span class='line'>    <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように配列にした場合は、各オブジェクトに対して cache_key が呼ばれてそれを連結したものがキャッシュのキーになる。よって配列の順番や中身が変更されればキャッシュは更新される。</p>
+
+<h2>Russian Doll Caching（ロシアンドールキャッシング）とは</h2>
+
+<p>ネストされたフラグメントキャッシュの内側のキャッシュが更新されると、外側のキャッシュも更新してくれる機能。rails 4ならデフォルトで利用可能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">h1</span>
+</span><span class='line'>    <span class="o">=</span> <span class="vi">@company</span><span class="o">.</span><span class="n">name</span>
+</span><span class='line'>  <span class="n">ul</span>
+</span><span class='line'>    <span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span>
+</span><span class='line'>      <span class="o">-</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">member</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">li</span>
+</span><span class='line'>          <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">name</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のようなネストされた構造のとき、membersに変更があったとしても、companyに変更がなければcompanyのキーが変更されず、キャッシュは更新されない。<br>
+しかし、memberのmodelに</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Member</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:company</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と書いておくと、ネストされた親のキーにも更新が伝搬してくれるようになる。</p>
+
+<h2>テスト</h2>
+
+<p>70個の親テーブルと1440個の子テーブルをViewに出すことでキャッシュのテストを実行してみたら、</p>
+
+<ul>
+<li>キャッシュしていない場合</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">791</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">685</span><span class="o">.</span><span class="mi">4</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">93</span><span class="o">.</span><span class="mi">5</span><span class="n">ms</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>キャッシュした場合</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">31</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">28</span><span class="o">.</span><span class="mi">8</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="n">ms</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>圧倒的な結果が出てきた。</p>
+
+<h2>参照</h2>
+
+<p><a href="http://qiita.com/jianghan0/items/44e558c49677062d120b">RailsにおけるCacheの概念と使い方</a><br/>
+<a href="http://qiita.com/moriteru/items/493a4d43bd7a77f38424">rails 4 の fragment cache（フラグメントキャッシュ）まとめ</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3355,379 +3670,6 @@ apply plugin: 'com.google.gms.google-services'
 google-services.jsonファイルをFirebaseコンソールからダウンロードし、プロジェクトに入れ込む。
 <img src="https://monosnap.com/file/p8uiAYlbEALAWjL0TjsH4Yz4lPc8ei.png" alt="Alt text" />
 <img src="https://monosnap.com/file/YTXZIjFFnATOBSacyroYaotXk02imJ.png" alt="Alt text" /></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/16/firebase-cloud-messaging-ios/">Firebase Cloud Message in iOS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-16T15:29:27+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:29 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>FCM (Firebase Cloud Message)</h1>
-
-<h2>Firebaseとは</h2>
-
-<p>FirebaseはGoogleが運営しているmBaaS(Mobile Backend as a Service)であり、Backend as a Serviceとは一般的にアプリケーションに要求される色んな機能をまとめて提供してくれるサービスだ。</p>
-
-<h2>Firebaseの提供機能</h2>
-
-<ol>
-<li>Analytics</li>
-<li>Cloud Messaging</li>
-<li>認証</li>
-<li>Realtime Database</li>
-<li>Storage</li>
-<li>Hosting</li>
-<li>Remote Config</li>
-<li>Test Lab</li>
-<li>Crash Reporting</li>
-<li>Notifications</li>
-<li>App Indexing</li>
-<li>Dynamic Links</li>
-<li>Invites</li>
-<li>AdWords</li>
-</ol>
-
-
-<p><br>詳しい情報はこちら。<br>
-&ndash; <a href="https://firebase.google.com/features/">https://firebase.google.com/features/</a><br><br></p>
-
-<p>値段によってプランがそれぞれ違うけど、もちろん無料プランもある<br>
-<img src="https://monosnap.com/file/boWswwYmYeYfDDxw4cLJzxCr5rB1pK.png" alt="Alt text" /></p>
-
-<h2>FCM 使い方</h2>
-
-<h3>iOS (Swift基準)</h3>
-
-<ul>
-<li>Firebaseにアプリを登録<br>
-<img src="https://monosnap.com/file/gpotQYhuSizvMb0v4eXnJtemkm7E9R.png" alt="Alt text" />
-<img src="https://monosnap.com/file/vq9PlFYrWL6ARYj8iPlwI1dBLICUcO.png" alt="Alt text" />
-<img src="https://monosnap.com/file/z8uyP5c2SQS2Kh1HF3bNSadeb9BUvw.png" alt="Alt text" /></li>
-<li>pod追加<br>
-
-<ul>
-<li>まずcocoapodsをインストールする。</li>
-</ul>
-</li>
-<li><pre><code>$ sudo gem install cocoapods
-$ pod setup
-</code></pre>
-
-<ul>
-<li>そしてPodfileを作る。</li>
-</ul>
-</li>
-<li><pre><code>$ cd your-project directory
-$ pod init
-</code></pre>
-
-<ul>
-<li>Podfileが作られたらファイルの中に必要なpodを追加する。</li>
-</ul>
-</li>
-<li><pre><code>pod 'Firebase/Messaging'
-</code></pre>
-
-<ul>
-<li>podをインストールして.xcworkspaceファイルを開いてプロジェクトを確認する。</li>
-</ul>
-</li>
-<li><pre><code>$ pod install
-$ open your-project.xcworkspace
-</code></pre>
-
-<ul>
-<li>FirebaseコンソールでGoogleService-Info.plistをダウンロードしてプロジェクトに入れる。</li>
-</ul>
-</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/gT1lH6wOd02epXkIuURW9ZChZFSA8W.png" alt="Alt text" />
-<img src="https://monosnap.com/file/RoO3sspdEKqfNxJpaX0iUqTkeQUz3v.png" alt="Alt text" /></p>
-
-<ul>
-<li>ソースコード追加<br>
-Firebaseには基本的なソースコードを提供してくれるのでそれを使えば少なくともサーバから送るプッシュ通知を受信するのはできる。
-
-<ul>
-<li><a href="https://github.com/firebase/quickstart-ios/tree/master/messaging/">https://github.com/firebase/quickstart-ios/tree/master/messaging/</a>
-大事なのはiOS10とその以下のバージョンを分岐することと、
-<code>
-FIRApp.configure()
-</code>
-メソッドで初期化すること。後は自分の環境に合わせてメソッドをカスタマイズする。</li>
-</ul>
-</li>
-<li>APNsのSSL証明書のプロビジョニング
-
-<ul>
-<li><a href="https://firebase.google.com/docs/cloud-messaging/ios/certs">https://firebase.google.com/docs/cloud-messaging/ios/certs</a></li>
-</ul>
-</li>
-</ul>
-
-
-<p>上記のリンクのとおり正しく進んだらp12ファイルを保存できるが、その保存したp12ファイルを下の画面にみえるところにアップすればセッティングは終わり。</p>
-
-<p><img src="https://monosnap.com/file/ryYwUyf6v5XIx8aB1SYSx5TuNJE0Yi.png" alt="Alt text" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/26/mobile-app-sinsa/">iOS, Androidの申請</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-26T14:55:41+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:55 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>初めに</h2>
-
-<p>アプリ申請の手順のまとめ。</p>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<h3>使用機能</h3>
-
-<ul>
-<li>Android
-
-<ul>
-<li>Webview</li>
-<li>Tab Layout</li>
-<li>Push Notification</li>
-<li>NativeのCamera, Album 機能</li>
-</ul>
-</li>
-<li>iOS
-
-<ul>
-<li>UIWebview</li>
-<li>UITabbar</li>
-<li>Push Notification</li>
-<li>NativeのCamera, Album 機能</li>
-</ul>
-</li>
-</ul>
-
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<h3>手順</h3>
-
-<ul>
-<li>Android
-
-<ul>
-<li>まず、下の写真のように新しいアプリを追加する。
-<img src="https://monosnap.com/file/0oft4oL4j2UnOa98R6QjH5RcRUXR1h.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/VHZebUIkyhPtiWz29Drj5yD3EXNNvR.png" alt="Alt text" /><br></li>
-<li>APKをアップロードする。
-<img src="https://monosnap.com/file/ovRWMylsbMP3zBG4xHyU69fSdaHYZ2.png" alt="Alt text" /><br></li>
-<li>求められるものを手順に合わせて記入する。
-<img src="https://monosnap.com/file/RJ2FabWM459r5NP1m2qUhDIixNdtFq.png" alt="Alt text" /><br>
-
-<ul>
-<li>必須項目
-
-<ul>
-<li>タイトル(30文字)</li>
-<li>簡単な説明(80文字)</li>
-<li>詳しい説明(4000文字)</li>
-<li>スクリーンショット(2枚)</li>
-<li>高解像度アイコン(512x512, 32ビットPNG)</li>
-<li>ヘッダー画像(横1,024x縦500, JPGまたは24ビットPNG)</li>
-<li>アプリのタイプ</li>
-<li>カテゴリ</li>
-<li>コンテンツのレーティング</li>
-<li>新しいコンテンツ レーティング</li>
-<li>メール(連絡先のメールアドレスを入力, このアドレスはアプリと一緒に公開される)</li>
-<li>プライバシー ポリシー
-<img src="https://monosnap.com/file/AQ9iFtxUtatRKZHalXtO1jUmRCwgwr.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/f1dRjy5c5vRC0QIJEt3yutZno2bjbN.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/5ChIltchsvT4XpSA0OSuLQsMEreTKS.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/NpPqSIsqPI3qRMtYTGSzE0qWscsQi1.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>コンテンツのレーティングを取る。
-<img src="https://monosnap.com/file/Y8GJYzYgJogJSsc3PIjjcCRBvqZo2b.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/09bxiDWaQbxLHGgS0b6G0MiiphXkFM.png" alt="Alt text" /><br></li>
-<li>価格と販売/配布地域を設定する。
-
-<ul>
-<li>必須項目
-
-<ul>
-<li>国</li>
-<li>広告を含む</li>
-<li>コンテンツ ガイドライン</li>
-<li>米国輸出法
-<img src="https://monosnap.com/file/HuuNV8YxC8Oez7qgdd3g5kbXkLX4kF.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>下の写真のように全部記入すればチェック表示が現れアプリを公開できるようになる。
-<img src="https://monosnap.com/file/YaoEiy4ny2tqtA1zu17DTjXArb5QOi.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<ul>
-<li>iOS
-
-<ul>
-<li>新規アプリを登録する。
-<img src="https://monosnap.com/file/EtKbeKmRmOpJ0CtEIwbaXR8DJTUVkV.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/d6DRNAO6q6In0z8LkgxtH6aZoY0YIT.png" alt="Alt text" /><br></li>
-<li>Appleは必須項目とかは別に書いてないのでできるかぎり全部記入する方が良いと思う。
-<img src="https://monosnap.com/file/wdsW9eSrTlTbEpqJCWCl4TdMd2YvbR.png" alt="Alt text" /><br></li>
-<li>Appleはスクリーンショットにかなり厳しい。
-
-<ul>
-<li>プレビュー, スクリーンショット
-
-<ul>
-<li>5.5インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>1242 x 2208 pixels for hi-res portrait</li>
-<li>2208 x 1242 pixels for hi-res landscape</li>
-</ul>
-</li>
-<li>4.7インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>750 x 1334 pixels for hi-res portrait</li>
-<li>1334 x 750 pixels for hi-res landscape</li>
-</ul>
-</li>
-<li>4.0インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>Any of the following sizes:
-
-<ul>
-<li>640 x 1096 pixels for portrait (without status bar) minimum</li>
-<li>640 x 1136 pixels for portrait (full screen) maximum</li>
-<li>1136 x 600 pixels for landscape (without status bar) minimum</li>
-<li>1136 x 640 pixels for landscape (full screen) minimum</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>3.5インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>Any of the following sizes:
-
-<ul>
-<li>640 x 920 pixels for hi-res portrait (without status bar) minimum</li>
-<li>640 x 960 pixels for hi-res portrait (full screen) maximum</li>
-<li>960 x 600 pixels for hi-res landscape (without status bar) minimum</li>
-<li>960 x 640 pixels for hi-res landscape (full screen) maximum</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/vJ3VbzFkAfmhyYocoogIO343pmLpZK.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/GhF8DbfUculAL7fEFcDHkFE27zfhh3.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/yTh8YX221tKUiHkLbrypQL9yJlWpXM.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/Ioi3mDx6cI07SZNyKQjva6AsHlxlKe.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/KYltYTL3Takh69RnoQVLkTA8lazHaR.png" alt="Alt text" /><br>
-iOSはプレビューとスクリーンショット以外にはそんなに難しくはないので早めに終わらせるが、審査はAndroidが1日で終わる反面iOSは一週間くらいかかるし、審査も厳しくてよくrejectされる</p>
-
-<h2>追記</h2>
-
-<ul>
-<li>Reject
-
-<ul>
-<li>私の場合はセーフティーの項目にリジェクトされた。ソーシャル、コミュニティ系のアプリはユーザへのセーフティメカニズムが必要らしい。アップルからのメッセージは
-
-<ul>
-<li>不快なコンテンツをフィルタリングするための方法。</li>
-<li>不快なコンテンツのユーザーのためのメカニズム。</li>
-<li>不正なユーザをブロックするためのメカニズム。</li>
-<li>開発者は、不快なコンテンツを削除し、問題のあるコンテンツを提供するユーザーを吐出することにより、24時間以内に好ましくないコンテンツレポートに行動しなければなりません。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>解決
-
-<ul>
-<li>特定のユーザへのブロック機能を入れることで解決できた</li>
-</ul>
-</li>
 </ul>
 
 </div>

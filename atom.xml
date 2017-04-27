@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-04-21T10:22:33+09:00</updated>
+  <updated>2017-04-27T19:08:43+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,246 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JSのMVCフレームワーク]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/04/27/js-framework/"/>
+    <updated>2017-04-27T17:54:34+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/04/27/js-framework</id>
+    <content type="html"><![CDATA[<h3>種類</h3>
+
+<ul>
+<li>React.js
+
+<ul>
+<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
+<li>JSX、Virtual DOMという、新しいアプローチ</li>
+<li>MVCとは違う、Fluxという設計パターン</li>
+<li>Isomorphicなアーキテクチャが可能</li>
+</ul>
+</li>
+<li>Angular.js
+
+<ul>
+<li>Googleが開発している人気MVCフレームワーク</li>
+<li>フルスタックで、できないことは殆ど無い</li>
+<li>Yeomanなどを使うとSPA(Single Page Application)が30分位で作れてしまう</li>
+<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
+</ul>
+</li>
+<li>Angular.js 2.0
+
+<ul>
+<li>ES6等の最新のJavaScript規格を取り入れ、TypeScriptをベースとし記述する</li>
+<li>Angular.jsとはかなり書き方が違う</li>
+<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
+</ul>
+</li>
+<li>Backbone.js
+
+<ul>
+<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
+<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
+<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>MVVMパターン</li>
+<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
+<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
+<li>理解しやすいフレームワークとして有名</li>
+</ul>
+</li>
+<li>Mithril.js
+
+<ul>
+<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
+</ul>
+</li>
+<li>Aurelia.js
+
+<ul>
+<li>ES6、ES7なシンタックス</li>
+<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
+</ul>
+</li>
+<li>Knockout.js
+
+<ul>
+<li>MVVM</li>
+<li>Bindingに特化したフレームワーク</li>
+<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
+</ul>
+</li>
+<li>Ember.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Riot.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Ractive.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>まとめ
+
+<ul>
+<li>現存するフレームワークは多すぎる。その中でReact,Vueは早い速度で成長している。Angularは最もシェアが多いのでライブラリとかもちゃんとよいされ、安定的に開発できる。Backboneは段々シェアが落ちていくけど、影響力はまだかなり大きい。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>タスクランナー</h3>
+
+<ul>
+<li>Gulp
+
+<ul>
+<li>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。
+
+<h3>モデュール化</h3></li>
+</ul>
+</li>
+<li>Webpack
+
+<ul>
+<li>Webコンテンツには、CSS、JavaScript、画像、webフォント等多くのファイル（アセット）が必要になる。こういったwebで必要なファイルを取り扱うためのWebpackというものが最近人気になっている。</li>
+<li>webpackとは、 webコンテンツを構成するファイルを「モジュール」単位で取り扱い、最適な形に作り変えるためのツールである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>参考</h2>
+
+<p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
+<a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
+<a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RailsにおけるVue.jsの使い方]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/04/24/vuejs/"/>
+    <updated>2017-04-24T15:47:04+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/04/24/vuejs</id>
+    <content type="html"><![CDATA[<h2>環境</h2>
+
+<ul>
+<li>Rails
+
+<ul>
+<li>Rails 5.1.0.rc2</li>
+</ul>
+</li>
+<li>Ruby
+
+<ul>
+<li>ruby 2.4.0p0</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>2.0</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Vue.jsの使い方</h2>
+
+<h3>アプリケーション作成</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new vuejs -d postgresql --webpack=vue</span></code></pre></td></tr></table></div></figure>
+
+
+<p>rails newに <code>--webpack</code>をつけたらアプリケーションが生成した時点で<code>webpack</code>を使えるようになる。
+<code>app</code> フォルダーの下に <code>javascript</code> フォルダーが生成されていて、その下には <code>packs</code> フォルダーが生成されている。そこのjsファイルとvueファイルを通して <code>Vue.js</code> を使うことができる。</p>
+
+<h3>コントローラー作成</h3>
+
+<p>使うコントローラーとビューを作る。このアプリケーションにはtodoリストを作成してみるのでコントローラー名は <code>todos</code> にする。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g controller todos index</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>routesに追加</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">root</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;todos#index&#39;</span>
+</span><span class='line'><span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="ss">:index</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>js側</h3>
+
+<p><code>packs</code> フォルダーに <code>todo.js</code> ファイルを作る。そして <code>import Vue from 'vue/dist/vue.esm'</code> を記入してVueをimportする。</p>
+
+<h3>ビュー側</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>&lsquo;Hello Vue!'の出力</h3>
+
+<p>Vue.js公式サイトの最初の方に出ている最も基本的な <code>Hello Vue!</code> を出力してみる。まず、<code>todos/index.html.slim</code> に <code>object</code> を出力する <code>div</code> を入れる。それからこのビューにjsから <code>message</code> というデータをバインティングする。</p>
+
+<ul>
+<li>ビュー</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#app</span>
+</span><span class='line'>  | {{ message }}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>js</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#app&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Hello Vue!&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="http://qiita.com/jnchito/items/30ab14ebf29b945559f6">【動画付き】Rails 5.1で作るVue.jsアプリケーション ～Herokuデプロイからシステムテストまで～</a><br/>
+<a href="http://qiita.com/jacoyutorius/items/f39b7cd66092746d0664">Rails5.1.0 Beta1でVue.jsアプリケーションを作る</a><br/>
+<a href="https://kr.vuejs.org/v2/guide/">Vue.js_Guide</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Client-side MVC]]></title>
@@ -5522,337 +5762,6 @@ apply plugin: 'com.google.gms.google-services'
 google-services.jsonファイルをFirebaseコンソールからダウンロードし、プロジェクトに入れ込む。
 <img src="https://monosnap.com/file/p8uiAYlbEALAWjL0TjsH4Yz4lPc8ei.png" alt="Alt text" />
 <img src="https://monosnap.com/file/YTXZIjFFnATOBSacyroYaotXk02imJ.png" alt="Alt text" /></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Firebase Cloud Message in iOS]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios/"/>
-    <updated>2016-11-16T15:29:27+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/11/16/firebase-cloud-messaging-ios</id>
-    <content type="html"><![CDATA[<h1>FCM (Firebase Cloud Message)</h1>
-
-<h2>Firebaseとは</h2>
-
-<p>FirebaseはGoogleが運営しているmBaaS(Mobile Backend as a Service)であり、Backend as a Serviceとは一般的にアプリケーションに要求される色んな機能をまとめて提供してくれるサービスだ。</p>
-
-<h2>Firebaseの提供機能</h2>
-
-<ol>
-<li>Analytics</li>
-<li>Cloud Messaging</li>
-<li>認証</li>
-<li>Realtime Database</li>
-<li>Storage</li>
-<li>Hosting</li>
-<li>Remote Config</li>
-<li>Test Lab</li>
-<li>Crash Reporting</li>
-<li>Notifications</li>
-<li>App Indexing</li>
-<li>Dynamic Links</li>
-<li>Invites</li>
-<li>AdWords</li>
-</ol>
-
-
-<p><br>詳しい情報はこちら。<br>
-&ndash; <a href="https://firebase.google.com/features/">https://firebase.google.com/features/</a><br><br></p>
-
-<p>値段によってプランがそれぞれ違うけど、もちろん無料プランもある<br>
-<img src="https://monosnap.com/file/boWswwYmYeYfDDxw4cLJzxCr5rB1pK.png" alt="Alt text" /></p>
-
-<h2>FCM 使い方</h2>
-
-<h3>iOS (Swift基準)</h3>
-
-<ul>
-<li>Firebaseにアプリを登録<br>
-<img src="https://monosnap.com/file/gpotQYhuSizvMb0v4eXnJtemkm7E9R.png" alt="Alt text" />
-<img src="https://monosnap.com/file/vq9PlFYrWL6ARYj8iPlwI1dBLICUcO.png" alt="Alt text" />
-<img src="https://monosnap.com/file/z8uyP5c2SQS2Kh1HF3bNSadeb9BUvw.png" alt="Alt text" /></li>
-<li>pod追加<br>
-
-<ul>
-<li>まずcocoapodsをインストールする。</li>
-</ul>
-</li>
-<li><pre><code>$ sudo gem install cocoapods
-$ pod setup
-</code></pre>
-
-<ul>
-<li>そしてPodfileを作る。</li>
-</ul>
-</li>
-<li><pre><code>$ cd your-project directory
-$ pod init
-</code></pre>
-
-<ul>
-<li>Podfileが作られたらファイルの中に必要なpodを追加する。</li>
-</ul>
-</li>
-<li><pre><code>pod 'Firebase/Messaging'
-</code></pre>
-
-<ul>
-<li>podをインストールして.xcworkspaceファイルを開いてプロジェクトを確認する。</li>
-</ul>
-</li>
-<li><pre><code>$ pod install
-$ open your-project.xcworkspace
-</code></pre>
-
-<ul>
-<li>FirebaseコンソールでGoogleService-Info.plistをダウンロードしてプロジェクトに入れる。</li>
-</ul>
-</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/gT1lH6wOd02epXkIuURW9ZChZFSA8W.png" alt="Alt text" />
-<img src="https://monosnap.com/file/RoO3sspdEKqfNxJpaX0iUqTkeQUz3v.png" alt="Alt text" /></p>
-
-<ul>
-<li>ソースコード追加<br>
-Firebaseには基本的なソースコードを提供してくれるのでそれを使えば少なくともサーバから送るプッシュ通知を受信するのはできる。
-
-<ul>
-<li><a href="https://github.com/firebase/quickstart-ios/tree/master/messaging/">https://github.com/firebase/quickstart-ios/tree/master/messaging/</a>
-大事なのはiOS10とその以下のバージョンを分岐することと、
-<code>
-FIRApp.configure()
-</code>
-メソッドで初期化すること。後は自分の環境に合わせてメソッドをカスタマイズする。</li>
-</ul>
-</li>
-<li>APNsのSSL証明書のプロビジョニング
-
-<ul>
-<li><a href="https://firebase.google.com/docs/cloud-messaging/ios/certs">https://firebase.google.com/docs/cloud-messaging/ios/certs</a></li>
-</ul>
-</li>
-</ul>
-
-
-<p>上記のリンクのとおり正しく進んだらp12ファイルを保存できるが、その保存したp12ファイルを下の画面にみえるところにアップすればセッティングは終わり。</p>
-
-<p><img src="https://monosnap.com/file/ryYwUyf6v5XIx8aB1SYSx5TuNJE0Yi.png" alt="Alt text" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS, Androidの申請]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/10/26/mobile-app-sinsa/"/>
-    <updated>2016-10-26T14:55:41+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/10/26/mobile-app-sinsa</id>
-    <content type="html"><![CDATA[<h2>初めに</h2>
-
-<p>アプリ申請の手順のまとめ。</p>
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<h3>使用機能</h3>
-
-<ul>
-<li>Android
-
-<ul>
-<li>Webview</li>
-<li>Tab Layout</li>
-<li>Push Notification</li>
-<li>NativeのCamera, Album 機能</li>
-</ul>
-</li>
-<li>iOS
-
-<ul>
-<li>UIWebview</li>
-<li>UITabbar</li>
-<li>Push Notification</li>
-<li>NativeのCamera, Album 機能</li>
-</ul>
-</li>
-</ul>
-
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<h3>手順</h3>
-
-<ul>
-<li>Android
-
-<ul>
-<li>まず、下の写真のように新しいアプリを追加する。
-<img src="https://monosnap.com/file/0oft4oL4j2UnOa98R6QjH5RcRUXR1h.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/VHZebUIkyhPtiWz29Drj5yD3EXNNvR.png" alt="Alt text" /><br></li>
-<li>APKをアップロードする。
-<img src="https://monosnap.com/file/ovRWMylsbMP3zBG4xHyU69fSdaHYZ2.png" alt="Alt text" /><br></li>
-<li>求められるものを手順に合わせて記入する。
-<img src="https://monosnap.com/file/RJ2FabWM459r5NP1m2qUhDIixNdtFq.png" alt="Alt text" /><br>
-
-<ul>
-<li>必須項目
-
-<ul>
-<li>タイトル(30文字)</li>
-<li>簡単な説明(80文字)</li>
-<li>詳しい説明(4000文字)</li>
-<li>スクリーンショット(2枚)</li>
-<li>高解像度アイコン(512x512, 32ビットPNG)</li>
-<li>ヘッダー画像(横1,024x縦500, JPGまたは24ビットPNG)</li>
-<li>アプリのタイプ</li>
-<li>カテゴリ</li>
-<li>コンテンツのレーティング</li>
-<li>新しいコンテンツ レーティング</li>
-<li>メール(連絡先のメールアドレスを入力, このアドレスはアプリと一緒に公開される)</li>
-<li>プライバシー ポリシー
-<img src="https://monosnap.com/file/AQ9iFtxUtatRKZHalXtO1jUmRCwgwr.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/f1dRjy5c5vRC0QIJEt3yutZno2bjbN.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/5ChIltchsvT4XpSA0OSuLQsMEreTKS.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/NpPqSIsqPI3qRMtYTGSzE0qWscsQi1.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>コンテンツのレーティングを取る。
-<img src="https://monosnap.com/file/Y8GJYzYgJogJSsc3PIjjcCRBvqZo2b.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/09bxiDWaQbxLHGgS0b6G0MiiphXkFM.png" alt="Alt text" /><br></li>
-<li>価格と販売/配布地域を設定する。
-
-<ul>
-<li>必須項目
-
-<ul>
-<li>国</li>
-<li>広告を含む</li>
-<li>コンテンツ ガイドライン</li>
-<li>米国輸出法
-<img src="https://monosnap.com/file/HuuNV8YxC8Oez7qgdd3g5kbXkLX4kF.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>下の写真のように全部記入すればチェック表示が現れアプリを公開できるようになる。
-<img src="https://monosnap.com/file/YaoEiy4ny2tqtA1zu17DTjXArb5QOi.png" alt="Alt text" /><br></li>
-</ul>
-</li>
-</ul>
-
-
-<hr style="border-top: solid 1px rgba(128, 128, 128, 0.2); border-bottom: solid 1px rgba(128, 128, 128, 0.2);">
-
-
-<ul>
-<li>iOS
-
-<ul>
-<li>新規アプリを登録する。
-<img src="https://monosnap.com/file/EtKbeKmRmOpJ0CtEIwbaXR8DJTUVkV.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/d6DRNAO6q6In0z8LkgxtH6aZoY0YIT.png" alt="Alt text" /><br></li>
-<li>Appleは必須項目とかは別に書いてないのでできるかぎり全部記入する方が良いと思う。
-<img src="https://monosnap.com/file/wdsW9eSrTlTbEpqJCWCl4TdMd2YvbR.png" alt="Alt text" /><br></li>
-<li>Appleはスクリーンショットにかなり厳しい。
-
-<ul>
-<li>プレビュー, スクリーンショット
-
-<ul>
-<li>5.5インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>1242 x 2208 pixels for hi-res portrait</li>
-<li>2208 x 1242 pixels for hi-res landscape</li>
-</ul>
-</li>
-<li>4.7インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>750 x 1334 pixels for hi-res portrait</li>
-<li>1334 x 750 pixels for hi-res landscape</li>
-</ul>
-</li>
-<li>4.0インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>Any of the following sizes:
-
-<ul>
-<li>640 x 1096 pixels for portrait (without status bar) minimum</li>
-<li>640 x 1136 pixels for portrait (full screen) maximum</li>
-<li>1136 x 600 pixels for landscape (without status bar) minimum</li>
-<li>1136 x 640 pixels for landscape (full screen) minimum</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>3.5インチディスプレイ(App プレビュー(1枚) / スクリーンショット(5枚))
-
-<ul>
-<li>72 dpi, RGB, flattened, no transparency</li>
-<li>High-quality JPEG or PNG image file format</li>
-<li>Any of the following sizes:
-
-<ul>
-<li>640 x 920 pixels for hi-res portrait (without status bar) minimum</li>
-<li>640 x 960 pixels for hi-res portrait (full screen) maximum</li>
-<li>960 x 600 pixels for hi-res landscape (without status bar) minimum</li>
-<li>960 x 640 pixels for hi-res landscape (full screen) maximum</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/vJ3VbzFkAfmhyYocoogIO343pmLpZK.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/GhF8DbfUculAL7fEFcDHkFE27zfhh3.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/yTh8YX221tKUiHkLbrypQL9yJlWpXM.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/Ioi3mDx6cI07SZNyKQjva6AsHlxlKe.png" alt="Alt text" /><br>
-<img src="https://monosnap.com/file/KYltYTL3Takh69RnoQVLkTA8lazHaR.png" alt="Alt text" /><br>
-iOSはプレビューとスクリーンショット以外にはそんなに難しくはないので早めに終わらせるが、審査はAndroidが1日で終わる反面iOSは一週間くらいかかるし、審査も厳しくてよくrejectされる</p>
-
-<h2>追記</h2>
-
-<ul>
-<li>Reject
-
-<ul>
-<li>私の場合はセーフティーの項目にリジェクトされた。ソーシャル、コミュニティ系のアプリはユーザへのセーフティメカニズムが必要らしい。アップルからのメッセージは
-
-<ul>
-<li>不快なコンテンツをフィルタリングするための方法。</li>
-<li>不快なコンテンツのユーザーのためのメカニズム。</li>
-<li>不正なユーザをブロックするためのメカニズム。</li>
-<li>開発者は、不快なコンテンツを削除し、問題のあるコンテンツを提供するユーザーを吐出することにより、24時間以内に好ましくないコンテンツレポートに行動しなければなりません。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>解決
-
-<ul>
-<li>特定のユーザへのブロック機能を入れることで解決できた</li>
-</ul>
-</li>
 </ul>
 
 ]]></content>

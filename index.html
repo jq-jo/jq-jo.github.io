@@ -9,7 +9,10 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="なぜClient-sideのMVCが出たのか 昔のウェブページは静的であった 昔のウェブはページの全てのコンテンツが静的だったので既存サーバサイドのMVCパターンで十分だった。その時まではjavascriptというものはページのコンテンツに関するものではなかった。 Ajaxの登場 &hellip;">
+  <meta name="description" content="種類 React.js 最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する
+JSX、Virtual DOMという、新しいアプローチ
+MVCとは違う、Fluxという設計パターン
+Isomorphicなアーキテクチャが可能 Angular. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +79,288 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/27/js-framework/">JSのMVCフレームワーク</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-27T17:54:34+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>5:54 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>種類</h3>
+
+<ul>
+<li>React.js
+
+<ul>
+<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
+<li>JSX、Virtual DOMという、新しいアプローチ</li>
+<li>MVCとは違う、Fluxという設計パターン</li>
+<li>Isomorphicなアーキテクチャが可能</li>
+</ul>
+</li>
+<li>Angular.js
+
+<ul>
+<li>Googleが開発している人気MVCフレームワーク</li>
+<li>フルスタックで、できないことは殆ど無い</li>
+<li>Yeomanなどを使うとSPA(Single Page Application)が30分位で作れてしまう</li>
+<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
+</ul>
+</li>
+<li>Angular.js 2.0
+
+<ul>
+<li>ES6等の最新のJavaScript規格を取り入れ、TypeScriptをベースとし記述する</li>
+<li>Angular.jsとはかなり書き方が違う</li>
+<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
+</ul>
+</li>
+<li>Backbone.js
+
+<ul>
+<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
+<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
+<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>MVVMパターン</li>
+<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
+<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
+<li>理解しやすいフレームワークとして有名</li>
+</ul>
+</li>
+<li>Mithril.js
+
+<ul>
+<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
+</ul>
+</li>
+<li>Aurelia.js
+
+<ul>
+<li>ES6、ES7なシンタックス</li>
+<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
+</ul>
+</li>
+<li>Knockout.js
+
+<ul>
+<li>MVVM</li>
+<li>Bindingに特化したフレームワーク</li>
+<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
+</ul>
+</li>
+<li>Ember.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Riot.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Ractive.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>まとめ
+
+<ul>
+<li>現存するフレームワークは多すぎる。その中でReact,Vueは早い速度で成長している。Angularは最もシェアが多いのでライブラリとかもちゃんとよいされ、安定的に開発できる。Backboneは段々シェアが落ちていくけど、影響力はまだかなり大きい。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>タスクランナー</h3>
+
+<ul>
+<li>Gulp
+
+<ul>
+<li>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。
+
+<h3>モデュール化</h3></li>
+</ul>
+</li>
+<li>Webpack
+
+<ul>
+<li>Webコンテンツには、CSS、JavaScript、画像、webフォント等多くのファイル（アセット）が必要になる。こういったwebで必要なファイルを取り扱うためのWebpackというものが最近人気になっている。</li>
+<li>webpackとは、 webコンテンツを構成するファイルを「モジュール」単位で取り扱い、最適な形に作り変えるためのツールである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>参考</h2>
+
+<p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
+<a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
+<a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/24/vuejs/">RailsにおけるVue.jsの使い方</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-24T15:47:04+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:47 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>環境</h2>
+
+<ul>
+<li>Rails
+
+<ul>
+<li>Rails 5.1.0.rc2</li>
+</ul>
+</li>
+<li>Ruby
+
+<ul>
+<li>ruby 2.4.0p0</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>2.0</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>Vue.jsの使い方</h2>
+
+<h3>アプリケーション作成</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new vuejs -d postgresql --webpack=vue</span></code></pre></td></tr></table></div></figure>
+
+
+<p>rails newに <code>--webpack</code>をつけたらアプリケーションが生成した時点で<code>webpack</code>を使えるようになる。
+<code>app</code> フォルダーの下に <code>javascript</code> フォルダーが生成されていて、その下には <code>packs</code> フォルダーが生成されている。そこのjsファイルとvueファイルを通して <code>Vue.js</code> を使うことができる。</p>
+
+<h3>コントローラー作成</h3>
+
+<p>使うコントローラーとビューを作る。このアプリケーションにはtodoリストを作成してみるのでコントローラー名は <code>todos</code> にする。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g controller todos index</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>routesに追加</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">root</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;todos#index&#39;</span>
+</span><span class='line'><span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="ss">:index</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>js側</h3>
+
+<p><code>packs</code> フォルダーに <code>todo.js</code> ファイルを作る。そして <code>import Vue from 'vue/dist/vue.esm'</code> を記入してVueをimportする。</p>
+
+<h3>ビュー側</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>&lsquo;Hello Vue!'の出力</h3>
+
+<p>Vue.js公式サイトの最初の方に出ている最も基本的な <code>Hello Vue!</code> を出力してみる。まず、<code>todos/index.html.slim</code> に <code>object</code> を出力する <code>div</code> を入れる。それからこのビューにjsから <code>message</code> というデータをバインティングする。</p>
+
+<ul>
+<li>ビュー</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#app</span>
+</span><span class='line'>  | {{ message }}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>js</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#app&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Hello Vue!&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="http://qiita.com/jnchito/items/30ab14ebf29b945559f6">【動画付き】Rails 5.1で作るVue.jsアプリケーション ～Herokuデプロイからシステムテストまで～</a><br/>
+<a href="http://qiita.com/jacoyutorius/items/f39b7cd66092746d0664">Rails5.1.0 Beta1でVue.jsアプリケーションを作る</a><br/>
+<a href="https://kr.vuejs.org/v2/guide/">Vue.js_Guide</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2367,315 +2652,6 @@ podがなければプロジェクトDirectoryで<code>pod init</code>をしてpo
 
 <p><a href="https://firebase.google.com/docs/analytics/android/events">Firebase Document Analytics Event Android</a><br/>
 <a href="https://firebase.google.com/docs/analytics/ios/events">Firebase Document Analytics Event iOS</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/20/counter-cache-in-rails/">カウンターキャッシュについて</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-20T16:35:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:35 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>カウンターキャッシュとは</h2>
-
-<ul>
-<li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
-</ul>
-
-
-<h2>設定</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Survey</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:questions</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Question&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のような関係を持つモデルの子モデルに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>counter_cache: :カラム名</code>のように追加する<br/>
-それからmigrationを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_column_questions_count_to_qualitative_surveys</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そこに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddColumnInquiresCountToSurveys</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:surveys</span><span class="p">,</span> <span class="ss">:questions_count</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">reversible</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">dir</span><span class="o">.</span><span class="n">up</span> <span class="k">do</span>
-</span><span class='line'>      <span class="no">Survey</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">survey</span><span class="o">|</span>
-</span><span class='line'>        <span class="no">Survey</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">(</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">:questions</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>default: 0</code>を追加し、今持っている子モデルのカウントをセッティングする場合は上記のように<code>reset_counters</code>メソッドを使って更新する
-consoleで確認してみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span> <span class="o">=</span> <span class="no">Survey</span><span class="o">.</span><span class="n">last</span>
-</span><span class='line'><span class="no">Survey</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span>  <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;surveys&quot;</span> <span class="no">ORDER</span> <span class="no">BY</span> <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="s2">&quot;id&quot;</span> <span class="no">DESC</span> <span class="no">LIMIT</span> <span class="vg">$1</span>  <span class="o">[[</span><span class="s2">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">]]</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Survey id: 83, title: &quot;Survey_title_49&quot;, content: nil, created_at: &quot;2017-02-08 10:26:51&quot;, updated_at: &quot;2017-02-16 02:55:41&quot;, questions_count: 43&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span><span class="o">.</span><span class="n">questions_count</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">43</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように確認できる</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/08/using-cache-with-rails/">Railsにおけるキャッシュの使い方</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-08T18:19:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:19 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>キャッシュ</h2>
-
-<ul>
-<li>キャッシュとは、使用頻度の高いデータを高速な記憶装置に蓄えておくことにより、いちいち低速な装置から読み出す無駄を省いて高速化すること。また、その際に使われる高速な記憶装置や、複製されたデータそのもののこと。</li>
-</ul>
-
-
-<h2>Railsにおけるキャッシュ</h2>
-
-<h4>Rails3</h4>
-
-<ul>
-<li>ページキャッシュ（ページ全体をキャッシュ）</li>
-<li>アクションキャッシュ（アクション単位でキャッシュ）</li>
-<li>フラグメントキャッシュ（ページの一部をキャッシュ）</li>
-</ul>
-
-
-<h4>Rails4</h4>
-
-<p>Rails4ではページキャッシュとアクションキャシュは廃止され、フラグメントキャシュのみ使える。</p>
-
-<h2>フラグメントキャッシュとは</h2>
-
-<p>rails で利用できる view の一部分をキャッシュする機能。rails 3以上ならデフォルトで利用できる。railsは view のレンダリングが遅いので、アクセスの多いサイトはキャッシュの利用が必要になってくる。</p>
-
-<h4>書き方(Slim)</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="p">{</span><span class="n">some_key</span><span class="p">}</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">=</span> <span class="c1"># cache したい HTML</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>キーにStringを指定した場合</h4>
-
-<p>下記のような場合に、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>この<code>@some_db_data</code>の中身が変更されても、キャッシュには変更が反映されない。キャッシュのキーに含まれるdigestはあくまでHTMLを元に作られるため、データの変更があってもdigestは変更されないからである。<br>
-また、自動で付与されるdigestを利用しないようにするには</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="ss">skip_digest</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>とする。この場合、HTMLに変更があったとしても、キャッシュには反映されず変更前のものが表示される。</p>
-
-<h4>キーを省略した場合</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">=</span> <span class="vi">@some_db_data</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のように、キーを省略した場合は、ページのurlからキーが自動で作られる。url依存のキーなので、同じページでこの形を複数記述すると、どちらかのキャッシュが上書きされてめちゃくちゃになる。</p>
-
-<h4>キーにオブジェクトを指定した場合</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@object</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">=</span> <span class="vi">@object</span><span class="o">.</span><span class="n">text</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>オブジェクトを指定した場合は、<code>@object.cache_key</code>がキャッシュのキーとなる。<code>ActiveRecord</code>のオブジェクトの場合、<code>ID</code>や、<code>updated_at</code>を元にキーが作成されるので、オブジェクトの<code>updated_at</code>が変更されると自動でキャッシュも更新される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@objects</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">-</span> <span class="vi">@objects</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">object</span><span class="o">|</span>
-</span><span class='line'>    <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">text</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のように配列にした場合は、各オブジェクトに対して cache_key が呼ばれてそれを連結したものがキャッシュのキーになる。よって配列の順番や中身が変更されればキャッシュは更新される。</p>
-
-<h2>Russian Doll Caching（ロシアンドールキャッシング）とは</h2>
-
-<p>ネストされたフラグメントキャッシュの内側のキャッシュが更新されると、外側のキャッシュも更新してくれる機能。rails 4ならデフォルトで利用可能。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">h1</span>
-</span><span class='line'>    <span class="o">=</span> <span class="vi">@company</span><span class="o">.</span><span class="n">name</span>
-</span><span class='line'>  <span class="n">ul</span>
-</span><span class='line'>    <span class="o">-</span> <span class="n">cache</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span>
-</span><span class='line'>      <span class="o">-</span> <span class="vi">@company</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">member</span><span class="o">|</span>
-</span><span class='line'>        <span class="n">li</span>
-</span><span class='line'>          <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">name</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のようなネストされた構造のとき、membersに変更があったとしても、companyに変更がなければcompanyのキーが変更されず、キャッシュは更新されない。<br>
-しかし、memberのmodelに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Member</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:company</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>と書いておくと、ネストされた親のキーにも更新が伝搬してくれるようになる。</p>
-
-<h2>テスト</h2>
-
-<p>70個の親テーブルと1440個の子テーブルをViewに出すことでキャッシュのテストを実行してみたら、</p>
-
-<ul>
-<li>キャッシュしていない場合</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">791</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">685</span><span class="o">.</span><span class="mi">4</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">93</span><span class="o">.</span><span class="mi">5</span><span class="n">ms</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>キャッシュした場合</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Completed</span> <span class="mi">200</span> <span class="no">OK</span> <span class="k">in</span> <span class="mi">31</span><span class="n">ms</span> <span class="p">(</span><span class="ss">Views</span><span class="p">:</span> <span class="mi">28</span><span class="o">.</span><span class="mi">8</span><span class="n">ms</span> <span class="o">|</span> <span class="ss">ActiveRecord</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="n">ms</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>圧倒的な結果が出てきた。</p>
-
-<h2>参照</h2>
-
-<p><a href="http://qiita.com/jianghan0/items/44e558c49677062d120b">RailsにおけるCacheの概念と使い方</a><br/>
-<a href="http://qiita.com/moriteru/items/493a4d43bd7a77f38424">rails 4 の fragment cache（フラグメントキャッシュ）まとめ</a></p>
 </div>
   
   
