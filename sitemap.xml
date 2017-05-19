@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://jq-jo.github.io/blog/2017/05/19/vuejs-dnd/</loc>
+<lastmod>2017-05-19T10:02:39+09:00</lastmod>
+</url>
+<url>
 <loc>http://jq-jo.github.io/blog/2017/05/11/todo-list-with-vuejs/</loc>
 <lastmod>2017-05-11T10:30:58+09:00</lastmod>
 </url>
@@ -141,14 +145,5 @@
 </url>
 <url>
 <loc>http://jq-jo.github.io/</loc>
-</url>
-<url>
-<loc>http://jq-jo.github.io/posts/2/</loc>
-</url>
-<url>
-<loc>http://jq-jo.github.io/posts/3/</loc>
-</url>
-<url>
-<loc>http://jq-jo.github.io/posts/4/</loc>
 </url>
 </urlset>
