@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-05-19T10:18:38+09:00</updated>
+  <updated>2017-05-19T10:21:08+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[VuejsにおけるDrag&Drop]]></title>
     <link href="http://jq-jo.github.io/blog/2017/05/18/vuejs-dnd/"/>
-    <updated>2017-05-18T10:16:59+09:00</updated>
+    <updated>2017-05-18T10:20:28+09:00</updated>
     <id>http://jq-jo.github.io/blog/2017/05/18/vuejs-dnd</id>
     <content type="html"><![CDATA[<h2>Rails5.1.1でのVuejs</h2>
 
