@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-05-19T10:21:08+09:00</updated>
+  <updated>2017-05-25T18:28:24+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,198 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[JS] Bower, Npmについて]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/05/24/bower-and-npm/"/>
+    <updated>2017-05-24T18:16:33+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/05/24/bower-and-npm</id>
+    <content type="html"><![CDATA[<p>bowerとnpmは両方ともパッケージが管理できるツール。<br>
+npmはNode Package ModulesのことでNode.jsのライブラリやパッケージをインストールし、管理できる。<br>
+bowerはツイッターが作ったフロントエンドのパッケージを管理ツールである。</p>
+
+<h2>NPM(Node Package Modules)</h2>
+
+<h3>インストール</h3>
+
+<p>npmはNode.jsをインストールすると自動にインストールされる。</p>
+
+<h3>使い方</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># 構成設定ファイルである package.json を作成する
+</span><span class='line'>$ npm init
+</span><span class='line'>
+</span><span class='line'># プロジェクトのみインストール&アンインストール
+</span><span class='line'>$ npm install &lt;package&gt; --save
+</span><span class='line'>$ npm uninstall &lt;package&gt; --save
+</span><span class='line'>
+</span><span class='line'># グローバルインストール&アンインストール
+</span><span class='line'>$ npm install -g &lt;package&gt;
+</span><span class='line'>$ npm uninstall -g &lt;package&gt;
+</span><span class='line'>
+</span><span class='line'># package.jsonに記載されているパッケージをインストール
+</span><span class='line'>$ npm install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに<code>--save</code>をつけるとそのパッケージが依存している全てのパッケージも一気にインストールされる。</p>
+
+<h3>Railsでの使い方</h3>
+
+<ul>
+<li>Railsの設定ファイル変更<br/>
+<sub>config/initializers/assets.rb</sub></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.config.assets.paths &lt;&lt; Rails.root.join('node_modules')</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>assetsで参照する<br/>
+<code>require</code>や<code>import</code>を通して使うことができる</li>
+</ul>
+
+
+<h2>Bower</h2>
+
+<h3>インストール</h3>
+
+<p>bowerはNode.jsのパッケージなのでnpmでインストールする。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># node.jsのインストール
+</span><span class='line'>$ brew install node
+</span><span class='line'>
+</span><span class='line'># bowerのインストール
+</span><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使い方</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># 構成設定ファイルである bower.json を作成する
+</span><span class='line'>$ bower init
+</span><span class='line'>
+</span><span class='line'># ライブラリを検索する
+</span><span class='line'>$ bower search &lt;package&gt;
+</span><span class='line'>
+</span><span class='line'># パッケージを追加し、かつbower.jsonに記録する
+</span><span class='line'>$ bower install &lt;package&gt; --save
+</span><span class='line'>
+</span><span class='line'># '#'をつけるとバージョンを指定してパッケージを追加できる
+</span><span class='line'>$ bower install &lt;package&gt;#1.1.1 --save
+</span><span class='line'>
+</span><span class='line'># bower.jsonに記録されたパッケージをインストールする
+</span><span class='line'>$ bower install
+</span><span class='line'>
+</span><span class='line'># パッケージを削除する
+</span><span class='line'>$ bower uninstall &lt;package&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>構成設定ファイル</h3>
+
+<ul>
+<li>.bowerrc
+
+<ul>
+<li>directory属性設定でパッケージのインストールパス(bower_components)を指定する</li>
+<li>手動でbowerを使うなら<code>.bowerrc</code>を手動で作らなきゃいけない</li>
+</ul>
+</li>
+<li>bower.json
+
+<ul>
+<li>依存性及び開発バージョン情報などを表す</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>bower-rails</h2>
+
+<h3>インストール</h3>
+
+<ul>
+<li>gemfileに追加</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'bower-rails'</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>bundle install</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使い方</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># bowerを初期化
+</span><span class='line'>$ rails g bower_rails:initialize
+</span><span class='line'>
+</span><span class='line'># Bowerfileに欲しいアセットを任意に追加
+</span><span class='line'>asset '&lt;package name&gt;', '&lt;package version&gt;'
+</span><span class='line'>
+</span><span class='line'># bowerをインストール
+</span><span class='line'>$ rake bower:install</span></code></pre></td></tr></table></div></figure>
+
+
+<p>あとはインストールされたパッケージを<code>require</code>でロードして使う。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://qiita.com/tsuuuuu_san/items/f29836c78e3eaffc4d68">npmの使い方</a><br/>
+<a href="http://qiita.com/megane42/items/2ab6ffd866c3f2fda066#%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E7%94%A8js-%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E7%AE%A1%E7%90%86%E3%83%84%E3%83%BC%E3%83%ABbower">npm とか bower とか一体何なんだよ！Javascript 界隈の文脈を理解しよう</a><br/>
+<a href="http://qiita.com/morrr/items/c16ae12272484a849737">Bower/bower-rails チートシート</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[VuejsにおけるDrag&Drop]]></title>
@@ -6373,68 +6565,6 @@ consoleで確認してみたら</p>
 <a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829"><a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829">http://sakebook.hatenablog.com/entry/2015/11/20/015829</a></a>
 <a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B"><a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B">http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B</a></a>
 </small></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ビルド環境設定(XCode)]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/"/>
-    <updated>2016-11-30T12:23:41+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/11/30/make-environment-xcode</id>
-    <content type="html"><![CDATA[<h2>XCode</h2>
-
-<p>XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。<br><br>
-◎ Configurationsを分ける方法<br><br>
-まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。ReleaseとDebugがDefaultされてあるのでその中にStagingを入れてみる。<br>
-<img src="https://monosnap.com/file/Q3O8utFKCtm5zg1p0Z3GoWfu4rFUco.png" alt="Alt text" />
-<code>+</code>を押し、DebugかReleaseをduplicateして名前を変える。
-<img src="https://monosnap.com/file/aFsMeAhXPgkctvXCw03jPw61GpWSpg.png" alt="Alt text" />
-続いてTargetsのBuildSettingsの<code>+</code>を押し、User-DefinedにBUNDLE_DISPLAY_NAME_PREFIXとBUNDLE_IDENTIFIER_SUFFIXを追加する。そしてActiveConpilationConditionsも下のように変える。BUNDLE_DISPLAY_NAME_PREFIXはアプリ名を分けるために追加、BUNDLE_IDENTIFIER_SUFFIXはアプリのBundleIdをそれぞれ分けるために追加する。また、ActiveConpilationConditionsはそれぞれのビルドの機能を分岐させるために追加する。
-<img src="https://monosnap.com/file/JK5RqnvNu5iG0jEU35kC6anLKbHFow.png" alt="Alt text" />
-<img src="https://monosnap.com/file/8WwygchOcTeNfveXhUyVHMCJj9DMsH.png" alt="Alt text" />
-次はschemeを分けて管理する。左上のschemeのところで<code>New Scheme</code>を押してDebugとStagingのschemeを追加する。また、<code>Edit Scheme</code>でRelease,Debug,Stagingのそれぞれの設定をする。
-<img src="https://monosnap.com/file/DdgdmUzq2UVIa30kWZiptqU0KKSvy5.png" alt="Alt text" />
-<img src="https://monosnap.com/file/4eeSZVYzL1r3c852b7yzzeYBxSWOKS.png" alt="Alt text" />
-そこまでできたらTargetsのinfoでBundle identifierとBundle nameを変更する。Bundle identifierは$(PRODUCT_BUNDLE_IDENTIFIER)の後ろに$(BUNDLE_IDENTIFIER_SUFFIX)を、Bundle nameは$(PRODUCT_NAME)の前に$(BUNDLE_DISPLAY_NAME_PREFIX)を入れる。
-<img src="https://monosnap.com/file/hZBoQgZnVpl9OVgYINvjgOOubUTsoH.png" alt="Alt text" />
-そうすれば下のようにGeneralで変更されたのを確認できる。
-<img src="https://monosnap.com/file/vdIoWGmaDrrt8nGg5rI1uMkdodxCJa.png" alt="Alt text" />
-それぞれのビルドに機能を分岐させる場合は下のように<code>#if</code>を使う。#ifのところにさっきのActiveConpilationConditionsに設定したのを入れる。
-<img src="https://monosnap.com/file/lTp2TdWE3BsKrapycZtPep3lJoEEWl.png" alt="Alt text" />
-ビルド別にビルドしてみると、<br></p>
-
-<h5>Release</h5>
-
-<p><img src="https://monosnap.com/file/QkGImbr37gD8Y7JyAvxxpi52zoHuPV.png" alt="Alt text" /></p>
-
-<h5>Debug</h5>
-
-<p><img src="https://monosnap.com/file/KlSkLEKfDVMXsWl7MyN3XzsPIbrVvL.png" alt="Alt text" /></p>
-
-<h5>Staging</h5>
-
-<p><img src="https://monosnap.com/file/raVMMgsr3Gvy02ih0hUZy86pxPZIkC.png" alt="Alt text" />
-それぞれ違うソースコードが実行されたことをみることができる。<br>
-インストールされたデバイスをみたら、
-<img src="https://monosnap.com/file/MKAP87DCtdgFOg0kcTQo3IJqS7r4cM.png" alt="Alt text" />
-三つのアプリがインストールされる。<br><br>
-◎ Targetを分ける方法<br><br>
-今のTargetをduplicateしてもう一つのTargetを作る。もちろん<code>+</code>で追加しても良いが、同じソースコードを使うならばduplicateでも全然構わない。作ったら名前を変更し、また自動にinfo.plistファイルも生成されるのでそれのファイル名も変更。その後にGeneralでinfo.plistを選んで設定する。
-<img src="https://monosnap.com/file/lM4SmNEhPp2AIL61Z6rKJOmyEGGq3H.png" alt="Alt text" />
-そしてBuild SettingsでProduct Bundle Identifierを変更すればする。
-<img src="https://monosnap.com/file/hBfhNcDfOoPxGT2mrNAaLe5jCbBbwj.png" alt="Alt text" />
-さっきと同じようにschemeを追加する。
-<img src="https://monosnap.com/file/78PpR1UeYXfOGLrywsrJP0fr6b7E5M.png" alt="Alt text" />
-ActiveConpilationConditionsをカスタマイズするが、Targetを間違わないよう気をつける。
-<img src="https://monosnap.com/file/yq1WCEKKQIKD8NcEFOCkblOp1ypMjV.png" alt="Alt text" />
-さっきの分岐のうえにさらに分岐してみる。
-<img src="https://monosnap.com/file/Vqy7Sz343KYnnO1WokdGwBafGhTqUP.png" alt="Alt text" />
-すると、新たのプロジェクトのRelease,Debug,Stagingをそれぞれ使うことができる。
-<img src="https://monosnap.com/file/E7uYaDWIxb8G3meokqY7V0JffVggzP.png" alt="Alt text" />
-<img src="https://monosnap.com/file/ia7prDT8OLMrKf9jHhd637uHXBgoJ6.png" alt="Alt text" />
-<img src="https://monosnap.com/file/mHxnMnR7C8ikmFrdsY6GYEUHcvoczK.png" alt="Alt text" />
-そして、デバイスで確認してみるとまた三つが増えて六つもアプリがインストールされたのを確認できる。
-<img src="https://monosnap.com/file/3v0ZtxQX4GRtZmgy7DGF5EhmKlBjal.png" alt="Alt text" /></p>
 ]]></content>
   </entry>
   
