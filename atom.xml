@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-05-25T18:28:24+09:00</updated>
+  <updated>2017-06-15T16:11:35+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Webpacker]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/06/14/webpacker/"/>
+    <updated>2017-06-14T15:51:37+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/06/14/webpacker</id>
+    <content type="html"><![CDATA[<h2>Webpackとは</h2>
+
+<p>最近、フロントエンドの規模が段々大きくなり、Javascriptのコード量が多くなって、コードのメンテナンスのためにモジュール化して管理する場合が多い。また、いろんなJSのフレームワークやNodeのライブラリを使うようになる。でもJSは基本的にこういうモジュール間の<code>import/include</code>をサポートしてくれないのでモジュールを管理するツールが必要になる。それのために出てきたものがモジュールバンドリングだ。モジュール間の依存性を理解し、それを元にうまく動ける静的アセットを作ることがモジュールバンドリングであり、それを実行するものがモジュールバンドラーだ。もちろん<code>Webpack</code>は唯一のモジュールバンドラーではない。既に<code>RequireJS</code>,<code>Browserify</code>などのモジュールバンドラーがあるけど、最近のフロントエンドには<code>Webpack</code>が主流になっている。</p>
+
+<h2>RailsでのWebpack</h2>
+
+<p>Rails5.1では<code>Webpack</code>を通して<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>などのフレームワークがサポートされ、さらに簡単に使えるようになった。webpackerを使えばプロジェクトにJSのフレームワークやライブラリを簡単に入れることができるし、Webpackのconfigを設定してBabelを使ってトランスパイルすることももちろんできる。</p>
+
+<h2>webpackerの使い方</h2>
+
+<h3>インストール</h3>
+
+<p>Rails5.1には</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように後ろに<code>--webpack</code>をつけてプロジェクト作成の時インストールするか普通にgemfileに入れて<code>bundle install</code>をしてから<code>./bin/rails webpacker:install</code>をすることでwebpackerを入れることができる。<br/>
+Rails5.1でサポートする<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>を指定したい時は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack=react
+</span><span class='line'>$ rails new myapp --webpack=angular
+</span><span class='line'>$ rails new myapp --webpack=vue
+</span><span class='line'>$ rails new myapp --webpack=elm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように指定する。</p>
+
+<h3>webpack-dev-server</h3>
+
+<p>通常のwebpackコマンドも<code>--watch</code>または<code>-w</code>オプションつきで実行することによりファイルの変更を検知して自動でリビルドを行うことが可能だが、webpack-dev-serverはそれに加えて、ブラウザも自動的にリロードしてくれる（Automatic Refresh）。<br/>
+ブラウザ全体のリロードではなく、編集したモジュールのみを更新する<code>Hot Module Replacement</code>という仕組みが使える。<br/>
+といった機能を備えているため、ローカルで開発するには<code>webpack-dev-server</code>を使う方が便利。<br/>
+それに、rails serverも同時に動かしているならば<code>foreman</code>というgemを使ったら便利。<a href="https://github.com/rails/webpacker">webpackerのgithubページ</a>にもそれを書いてある。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install foreman</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Procfile
+</span><span class='line'>web: bundle exec rails s
+</span><span class='line'>webpacker: ./bin/webpack-dev-server</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ foreman start</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ブラウザに表示</h3>
+
+<p>ビューに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= javascript_pack_tag 'app' %&gt;
+</span><span class='line'>&lt;%= stylesheet_pack_tag 'app' %&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように入れて使う。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://qiita.com/necojackarc/items/afa674ab10aafa9784eb">WebPackを使ってRailsからJavaScriptを楽に良い感じに分離する</a><br/>
+<a href="https://github.com/rails/webpacker">webpacker</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[[JS] Bower, Npmについて]]></title>
@@ -6394,177 +6474,6 @@ consoleで確認してみたら</p>
 
 <p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
 <a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ビルド環境設定(Android Studio)2]]></title>
-    <link href="http://jq-jo.github.io/blog/2016/12/21/make-environment-androidstudio2/"/>
-    <updated>2016-12-21T18:05:11+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2016/12/21/make-environment-androidstudio2</id>
-    <content type="html"><![CDATA[<h2>はじめに</h2>
-
-<p>前回にAndroidStudio, XCodeのビルド環境設定の記事を書いたとき、環境変数とか環境によって違う機能を分けることについてもっといい方法があるんじゃないかなという疑問ができたので調べてみたのをまとめた。<br>
-その中で見つけたのが<code>buildConfigField</code>だった。
-<br><code>buildConfigField</code>は<code>build.gradle</code>の<code>buildTypes</code>、<code>productFlavors</code>に使える定義するものである。<br></p>
-
-<h3>gradle.properties</h3>
-
-<p>ちなみに、<code>build.gradle</code>はgitや他のバージョン管理ツールで公開されるので直接書くのではなくて、<code>gradle.properties</code>から読み込む方法をとる。<br>
-まずは<code>gradle.properties</code>に設定をする。<code>build.gradle</code>にはString、int、array、double、floatなどいろんなobjectを宣言可能だが今回はシンプルにwebviewのurlを使うためのStringを設定してみる。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
-</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>gradle.properties</code>に設定をしたら<code>build.gradle</code>にも設定をする。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>第一変数はobjectの種類、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。こういうふうにしたらすぐ使えるようになる。それではwebviewのところで<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">MAIN_URL</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こんなにstatic変数のように使う。すると、<br></p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/6vuaeg3dXBGYdX8KNGlshaopTD8pDU.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/h9z6kCp1JQEwOimWquoTEwezalKVu2.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p><br>
-これの上にアプリの名前も変えてみよう。
-<br><code>gradle.properties</code>にアプリの名前に使うStringを設定する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
-</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
-</span><span class='line'><span class="n">google_appName</span><span class="o">=</span><span class="n">Googleアプリ</span>
-</span><span class='line'><span class="n">yahoo_appName</span><span class="o">=</span><span class="n">Yahooアプリ</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>あと、<code>build.gradle</code>に追加します。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_appName}\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_appName}\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに<code>build.gradle</code>に<code>resValue</code>と設定したらリソースとして使用できる。<br>
-第一変数はリソースの種類（ここはStringではなく、stringにすることを注意）、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。そして<code>AndroidManifest</code>で<code>@string/appName</code>とすると、</p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/RN5ZOAe570jot528uC0udeGXTBu38m.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/MfFYzVlrySfsiFDZJpASY8rAZwyT7e.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p>日本語がちゃんと出てこない。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Googleアプリ\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Yahooアプリ\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>productFlavors</code>に直接書いたら、</p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/LCI9N7RqKUPYZ2YxA6347xXp6r8L5c.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/AK7E4N7OVOUyItSQqKGZje8JWgHLmT.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p><br>
-アプリ名も変えられる。でもなんで日本語がうまく出てこないのかの疑問ができたので今度また調べてまとめることにしよう。<br><br><br></p>
-
-<h2>参照</h2>
-
-<p><small>
-<a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829"><a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829">http://sakebook.hatenablog.com/entry/2015/11/20/015829</a></a>
-<a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B"><a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B">http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B</a></a>
-</small></p>
 ]]></content>
   </entry>
   

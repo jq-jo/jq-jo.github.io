@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Webpacker - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="Webpackとは 最近、フロントエンドの規模が段々大きくなり、Javascriptのコード量が多くなって、コードのメンテナンスのためにモジュール化して管理する場合が多い。また、いろんなJSのフレームワークやNodeのライブラリを使うようになる。でもJSは基本的にこういうモジュール間のimport &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/06/14/webpacker">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Webpacker</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-06-14T15:51:37+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:51 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Webpackとは</h2>
+
+<p>最近、フロントエンドの規模が段々大きくなり、Javascriptのコード量が多くなって、コードのメンテナンスのためにモジュール化して管理する場合が多い。また、いろんなJSのフレームワークやNodeのライブラリを使うようになる。でもJSは基本的にこういうモジュール間の<code>import/include</code>をサポートしてくれないのでモジュールを管理するツールが必要になる。それのために出てきたものがモジュールバンドリングだ。モジュール間の依存性を理解し、それを元にうまく動ける静的アセットを作ることがモジュールバンドリングであり、それを実行するものがモジュールバンドラーだ。もちろん<code>Webpack</code>は唯一のモジュールバンドラーではない。既に<code>RequireJS</code>,<code>Browserify</code>などのモジュールバンドラーがあるけど、最近のフロントエンドには<code>Webpack</code>が主流になっている。</p>
+
+<h2>RailsでのWebpack</h2>
+
+<p>Rails5.1では<code>Webpack</code>を通して<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>などのフレームワークがサポートされ、さらに簡単に使えるようになった。webpackerを使えばプロジェクトにJSのフレームワークやライブラリを簡単に入れることができるし、Webpackのconfigを設定してBabelを使ってトランスパイルすることももちろんできる。</p>
+
+<h2>webpackerの使い方</h2>
+
+<h3>インストール</h3>
+
+<p>Rails5.1には</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように後ろに<code>--webpack</code>をつけてプロジェクト作成の時インストールするか普通にgemfileに入れて<code>bundle install</code>をしてから<code>./bin/rails webpacker:install</code>をすることでwebpackerを入れることができる。<br/>
+Rails5.1でサポートする<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>を指定したい時は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack=react
+</span><span class='line'>$ rails new myapp --webpack=angular
+</span><span class='line'>$ rails new myapp --webpack=vue
+</span><span class='line'>$ rails new myapp --webpack=elm</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように指定する。</p>
+
+<h3>webpack-dev-server</h3>
+
+<p>通常のwebpackコマンドも<code>--watch</code>または<code>-w</code>オプションつきで実行することによりファイルの変更を検知して自動でリビルドを行うことが可能だが、webpack-dev-serverはそれに加えて、ブラウザも自動的にリロードしてくれる（Automatic Refresh）。<br/>
+ブラウザ全体のリロードではなく、編集したモジュールのみを更新する<code>Hot Module Replacement</code>という仕組みが使える。<br/>
+といった機能を備えているため、ローカルで開発するには<code>webpack-dev-server</code>を使う方が便利。<br/>
+それに、rails serverも同時に動かしているならば<code>foreman</code>というgemを使ったら便利。<a href="https://github.com/rails/webpacker">webpackerのgithubページ</a>にもそれを書いてある。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install foreman</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Procfile
+</span><span class='line'>web: bundle exec rails s
+</span><span class='line'>webpacker: ./bin/webpack-dev-server</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ foreman start</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ブラウザに表示</h3>
+
+<p>ビューに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= javascript_pack_tag 'app' %&gt;
+</span><span class='line'>&lt;%= stylesheet_pack_tag 'app' %&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように入れて使う。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://qiita.com/necojackarc/items/afa674ab10aafa9784eb">WebPackを使ってRailsからJavaScriptを楽に良い感じに分離する</a><br/>
+<a href="https://github.com/rails/webpacker">webpacker</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-06-14T15:51:37+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:51 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/06/14/webpacker/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/06/14/webpacker/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/05/24/bower-and-npm/" title="Previous Post: [JS] bower, npmについて">&laquo; [JS] bower, npmについて</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

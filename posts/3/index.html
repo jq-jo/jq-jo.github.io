@@ -9,9 +9,8 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="XCode XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。
-◎ Configurationsを分ける方法
-まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。 &hellip;">
+  <meta name="description" content="はじめに 前回にAndroidStudio, XCodeのビルド環境設定の記事を書いたとき、環境変数とか環境によって違う機能を分けることについてもっといい方法があるんじゃないかなという疑問ができたので調べてみたのをまとめた。
+その中で見つけたのがbuildConfigFieldだった。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,198 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-12-21T18:05:11+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>6:05 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>はじめに</h2>
+
+<p>前回にAndroidStudio, XCodeのビルド環境設定の記事を書いたとき、環境変数とか環境によって違う機能を分けることについてもっといい方法があるんじゃないかなという疑問ができたので調べてみたのをまとめた。<br>
+その中で見つけたのが<code>buildConfigField</code>だった。
+<br><code>buildConfigField</code>は<code>build.gradle</code>の<code>buildTypes</code>、<code>productFlavors</code>に使える定義するものである。<br></p>
+
+<h3>gradle.properties</h3>
+
+<p>ちなみに、<code>build.gradle</code>はgitや他のバージョン管理ツールで公開されるので直接書くのではなくて、<code>gradle.properties</code>から読み込む方法をとる。<br>
+まずは<code>gradle.properties</code>に設定をする。<code>build.gradle</code>にはString、int、array、double、floatなどいろんなobjectを宣言可能だが今回はシンプルにwebviewのurlを使うためのStringを設定してみる。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
+</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br><code>gradle.properties</code>に設定をしたら<code>build.gradle</code>にも設定をする。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一変数はobjectの種類、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。こういうふうにしたらすぐ使えるようになる。それではwebviewのところで<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">MAIN_URL</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんなにstatic変数のように使う。すると、<br></p>
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/6vuaeg3dXBGYdX8KNGlshaopTD8pDU.png">
+<p style="text-align: center;">yahooのFlavors</p>
+</div>
+
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/h9z6kCp1JQEwOimWquoTEwezalKVu2.png">
+<p style="text-align: center;">googleのFlavors</p>
+</div>
+
+
+<p><br>
+これの上にアプリの名前も変えてみよう。
+<br><code>gradle.properties</code>にアプリの名前に使うStringを設定する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
+</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
+</span><span class='line'><span class="n">google_appName</span><span class="o">=</span><span class="n">Googleアプリ</span>
+</span><span class='line'><span class="n">yahoo_appName</span><span class="o">=</span><span class="n">Yahooアプリ</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>あと、<code>build.gradle</code>に追加します。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_appName}\&quot;&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_appName}\&quot;&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに<code>build.gradle</code>に<code>resValue</code>と設定したらリソースとして使用できる。<br>
+第一変数はリソースの種類（ここはStringではなく、stringにすることを注意）、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。そして<code>AndroidManifest</code>で<code>@string/appName</code>とすると、</p>
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/RN5ZOAe570jot528uC0udeGXTBu38m.png">
+<p style="text-align: center;">yahooのFlavors</p>
+</div>
+
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/MfFYzVlrySfsiFDZJpASY8rAZwyT7e.png">
+<p style="text-align: center;">googleのFlavors</p>
+</div>
+
+
+<p>日本語がちゃんと出てこない。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Googleアプリ\&quot;&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Yahooアプリ\&quot;&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><br><code>productFlavors</code>に直接書いたら、</p>
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/LCI9N7RqKUPYZ2YxA6347xXp6r8L5c.png">
+<p style="text-align: center;">yahooのFlavors</p>
+</div>
+
+
+<div style="width: 49%; float: left;">
+<img src="https://monosnap.com/file/AK7E4N7OVOUyItSQqKGZje8JWgHLmT.png">
+<p style="text-align: center;">googleのFlavors</p>
+</div>
+
+
+<p><br>
+アプリ名も変えられる。でもなんで日本語がうまく出てこないのかの疑問ができたので今度また調べてまとめることにしよう。<br><br><br></p>
+
+<h2>参照</h2>
+
+<p><small>
+<a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829"><a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829">http://sakebook.hatenablog.com/entry/2015/11/20/015829</a></a>
+<a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B"><a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B">http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B</a></a>
+</small></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1561,7 +1752,7 @@ version.rbは単純にGemのバージョン管理に必要なファイルです�
 <div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
 moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
 後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#102;&#97;&#110;&#x74;&#97;&#x73;&#x74;&#105;&#99;&#x6a;&#x79;&#x63;&#64;&#x67;&#x6d;&#97;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;">&#102;&#97;&#x6e;&#x74;&#x61;&#x73;&#x74;&#x69;&#x63;&#x6a;&#x79;&#99;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#109;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#102;&#x61;&#110;&#116;&#97;&#x73;&#x74;&#105;&#99;&#106;&#121;&#99;&#x40;&#103;&#x6d;&#97;&#105;&#108;&#x2e;&#99;&#111;&#x6d;">&#x66;&#x61;&#x6e;&#x74;&#x61;&#115;&#x74;&#x69;&#x63;&#x6a;&#121;&#x63;&#64;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
 正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
 そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
 でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
@@ -1581,95 +1772,6 @@ moduleの中にこれを入れます。上記のメソッドは例えなので�
 <a href="http://qiita.com/takashi/items/672781ed1b6255303381">http://qiita.com/takashi/items/672781ed1b6255303381</a>
 </small>
 <br><br><br></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/07/ios-webview/">iOS Webviewのまとめ</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-07T15:21:16+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:21 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Project 作成</h3>
-
-<p>まずプロジェクトを作成します。<br>
-<img src="https://www.evernote.com/l/Aj-3dSPSUctGQKIqs055VX_XEZPnNlR0MMYB/image.png" /><br>
-<img src="https://www.evernote.com/l/Aj-pEsLUGBtG15Vjvd1lC9sQ7UFtz0Rsm7wB/image.png" /><br></p>
-
-<h3>Webviewを入れ込む</h3>
-
-<p><img src="https://www.evernote.com/l/Aj8g5xqFJHNBhofYe02KBDokRoUWEeh8qWwB/image.png" /><br>
-プロジェクトが作成できると上の写真のようにMain.storyboardが作られてます。右側の下のところにあるobject liblaryでWebviewを探してview controllerに入れ込みます。<br>
-<img src="https://www.evernote.com/l/Aj-NLrtHcw9J1quIgvhSvv-6XmlxEY26UD8B/image.png" /><br>
-右側の上の方にあるassistant editorをクリックすると下のように画面が分けられてWebviewをオブジェクト化しやすくなります。<br>
-<img src="https://www.evernote.com/l/Aj-wZ8hGHSNM9L6hJYnlLQr8Y6lEKvypu9AB/image.png" /><br>
-<img src="https://www.evernote.com/l/Aj86fjzYepJHYKLdbDXNojr9Rd9GwnJS1_4B/image.png" /><br>
-名前を作成したら、<br>
-<img src="https://www.evernote.com/l/Aj8EwHqIebpEmo8g3LWqX2R9P6Z1U6hMp5cB/image.png" /><br>
-その名前を持つオブジェクトが作れます。<br></p>
-
-<h3>Webviewの設定</h3>
-
-<p><img src="https://www.evernote.com/l/Aj-4IidQy9tM2akZ6EQXUrGZoT742mKP8OgB/image.png" /><br>
-上のようにWebviewを設定してURLをロードします。<br>
-delegateを指定しないとエラーになるので必ず入力します。そしてloadRequestメソッドを使ってURLを読み込みます。<br>
-<img src="https://www.evernote.com/l/Aj9oN5HjMUdAWb-eyGCUtNWD1EjNrdaL4JwB/image.png" /><br>
-Webviewのlayoutを指定して、<br>
-<img src="https://www.evernote.com/l/Aj946gcePApPK6zNRxbl2EDeIR7E_Su1ErwB/image.png" /><br>
-デバイスを選択し、runすると、<br>
-<img src="https://www.evernote.com/l/Aj_0gcm7p5BLapIRAH4RPkySEbI2IS741VYB/image.png" style="width: 50%;" /><br>
-こういうふうに起動します。<br>
-単純にview controllerだけではなくてTabbar ControllerやNavigation Controllerを使うことも可能です。<br>
-今回はTabbar Controllerを使ってみます。<br></p>
-
-<h3>Tabbar Controllerの使い方</h3>
-
-<p><img src="https://www.evernote.com/l/Aj80Vt-JCuVBh5asIYsDZM62ga5TQVsr3koB/image.png" /><br>
-まず、右下のObject LibraryでTabbar Controllerを探して中に入れ込みます。<br>
-<img src="https://www.evernote.com/l/Aj8jVthnKFtFMq4-8mimtjiLlRBlI0RBdKMB/image.png" /><br>
-View Controllerの隣にある'->&lsquo;をEntryPointと言います。簡単にいうとアプリのスタートになるところを指定するPointです。<br>
-<img src="https://www.evernote.com/l/Aj_uujrGbjVN3qZXCbEdPAugVo_mQyWOPZIB/image.png" /><br>
-View ControllerにあるEntryPointをTabbar Controllerに移動します。<br>
-<img src="https://www.evernote.com/l/Aj_0nHriQNZAjorF-C0aPmsAm8XXJatnaTEB/image.png" /><br>
-次は、Tabbar ControllerのSegueを該当View ControllerにつないでRelationshipを作ります。<br>
-<img src="https://monosnap.com/file/ZSHIOPqrBkqscUoRN89VfXV9sAT8d5.png"><br>
-そしたら上のようにView ControllerはTabbar Controllerの一つのItemとなります。<br>
-<img src="https://monosnap.com/file/CzoLNql2j34gJey0Mw70el1YcRFTXU.png"><br>
-Tabbar Itemを編集して名前やImageも変えることができます。右のところで編集すると、<br>
-<img src="https://monosnap.com/file/Wl81tRb4VgMMVZy0GhGKuYQcJuyivE.png"><br>
-簡単に変わります。<br>
-デバイスで確認すると、<br>
-<img src="https://monosnap.com/file/e3Ke7c7dk4nuBupiaI4PiixgTNucFg.png" style="width: 50%;"><br>
-こう変わりました。<br>
-<img src="https://monosnap.com/file/UWCF2Yn6KFh7IkyFxE387x6alyjU7Z.png"><br>
-次は、Tabbarの色を変えてみます。Tabbarを選択し、右のところを編集すると、<br>
-<img src="https://monosnap.com/file/FJfKiSGiz2UErNL9FRjSpa438b1Y8K.png"><br>
-色が変わります。<br>
-もう一度デバイスで確認すると、<br>
-<img src="https://monosnap.com/file/yiS5jc2v16Yds9vgTXF6cOrs66vx1d.png" style="width: 50%;"><br>
-こういうふうに変わるのを見ることができます。<br><br><br></p>
-
-<p>個人的な意見では、Tabbar Controllerはそれぞれの機能を持てる画面を使用するNativeアプリにもっと合う気がします。Webviewを使うHybridアプリにはNativeアプリに使うことよりは効率性が高くないんじゃないかなと思います。</p>
 </div>
   
   
