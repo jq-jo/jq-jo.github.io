@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-06-15T16:11:35+09:00</updated>
+  <updated>2017-06-22T14:23:05+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,293 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA['vue-resource'とES6を使ってTodoを作成]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/06/21/vue-resource-and-es6/"/>
+    <updated>2017-06-21T14:17:17+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/06/21/vue-resource-and-es6</id>
+    <content type="html"><![CDATA[<h2>環境</h2>
+
+<ul>
+<li>Rails
+
+<ul>
+<li>5.1.1</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>2.3.4</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>ES6について</h2>
+
+<p>Railsで<code>webpacker</code>を使って<code>Vue.js</code>を設置した場合、いろんなライブラリがdefaultでインストールされる。その中で<code>babel-loader</code>というライブラリがある。<br/>
+<code>Package.json</code>を確認してみると、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "todo_example",
+</span><span class='line'>  "private": true,
+</span><span class='line'>  "dependencies": {
+</span><span class='line'>    "autoprefixer": "^7.1.1",
+</span><span class='line'>    "babel-core": "^6.25.0",
+</span><span class='line'>    "babel-loader": "7.x",
+</span><span class='line'>    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+</span><span class='line'>    "babel-plugin-transform-class-properties": "^6.24.1",
+</span><span class='line'>    "babel-polyfill": "^6.23.0",
+</span><span class='line'>    "babel-preset-env": "^1.5.2",
+</span><span class='line'>    "coffee-loader": "^0.7.3",
+</span><span class='line'>    "coffee-script": "^1.12.6",
+</span><span class='line'>    "compression-webpack-plugin": "^0.4.0",
+</span><span class='line'>    "css-loader": "^0.28.4",
+</span><span class='line'>    "extract-text-webpack-plugin": "^2.1.2",
+</span><span class='line'>    "file-loader": "^0.11.2",
+</span><span class='line'>    "glob": "^7.1.2",
+</span><span class='line'>    "js-yaml": "^3.8.4",
+</span><span class='line'>    "node-sass": "^4.5.3",
+</span><span class='line'>    "path-complete-extname": "^0.1.0",
+</span><span class='line'>    "postcss-loader": "^2.0.6",
+</span><span class='line'>    "postcss-smart-import": "^0.7.4",
+</span><span class='line'>    "precss": "^1.4.0",
+</span><span class='line'>    "rails-erb-loader": "^5.0.2",
+</span><span class='line'>    "resolve-url-loader": "^2.0.3",
+</span><span class='line'>    "sass-loader": "^6.0.6",
+</span><span class='line'>    "style-loader": "^0.18.2",
+</span><span class='line'>    "vue": "^2.3.4",
+</span><span class='line'>    "vue-loader": "^12.2.1",
+</span><span class='line'>    "vue-template-compiler": "^2.3.4",
+</span><span class='line'>    "webpack": "^2.6.1",
+</span><span class='line'>    "webpack-manifest-plugin": "^1.1.0",
+</span><span class='line'>    "webpack-merge": "^4.1.0"
+</span><span class='line'>  },
+</span><span class='line'>  "devDependencies": {
+</span><span class='line'>    "webpack-dev-server": "^2.4.5"
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>babel-loader</code>が置いてることが確認できる。<br/>
+この<code>babel-loader</code>を<code>config/webpack/loaders</code>にある<code>babel.js</code>で読み込んでES6をトランスパイルしてくれる。<br/>
+safariはまだES6をサポートしてくれないのでsafariで試してみる。<br/>
+まず下記のように<code>babel.js</code>のloaderに<code>babel-loader</code>を指定したときは</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js(\.erb)?$/</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">loader</span><span class="o">:</span> <span class="s1">&#39;babel-loader&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://monosnap.com/file/5dFAfN76F8Gyw7IuTFQNfSrr6ZoDtT.png" alt="" /><br/>
+画像のように正しくリストが表示されてる。
+しかし、loaderのところを一回消してみると</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js(\.erb)?$/</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// loader: &#39;babel-loader&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://monosnap.com/file/9jb4l1lepTcOI5ptvKmhPNxPEp56j3.png" alt="" /><br/>
+JSをES6で書いたので何も表示されてないことを確認できる。</p>
+
+<p>もう一つ試してみる。<br/>
+ES6的な<code>class</code>を定義してVueコンポーネントでそのclassの関数を呼び出してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">TodoLog</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">log</span><span class="p">){</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="nx">log</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">printLog</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>シンプルにこういう<code>class</code>を定義してVueコンポーネントのmountedで呼び出すと</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="kr">const</span> <span class="nx">todoLog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TodoLog</span><span class="p">(</span><span class="s1">&#39;constructor is called.&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nx">todoLog</span><span class="p">.</span><span class="nx">printLog</span><span class="p">()</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://monosnap.com/file/4j9PEqb3y5bfDYqS5Lxb5lYz4BECYQ.png" alt="" />
+<code>TodoLog</code>の<code>prinLog</code>という関数が呼び出されてブラウザにlogが出力されたのが確認できる。</p>
+
+<h2>アロー関数</h2>
+
+<p>vueでアロー関数を使うときは注意しなきゃいけないことがある。<br/>
+アロー関数は既存のメソッドと違って<code>this</code>が変わる。関数自体が親コンテキストにバインディングされているためVueインスタンスにはならない。<br/>
+<code>this</code>でVueのコンポーネントを呼ぶ処理をしたいならアロー関数は使ってはならない。<br/>
+Vueのコンポーネントの<code>mounted</code>をアロー関数を例にして試してみると既存の<code>function()</code>だとちゃんとVueコンポーネントが出力されるが</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="err">#</span> <span class="k">this</span><span class="err">を出力してみる</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://monosnap.com/file/w5TNtJJyOD1df9QSW8GUKQrRfDjtFv.png" alt="" /><br/>
+アロー関数を使った場合はVueコンポーネントが出力されないし、$httpもエラーを出す。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="err">#</span> <span class="k">this</span><span class="err">を出力してみる</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="https://monosnap.com/file/BBMdNQEuwTaa79wuIoznthJdxSIVQD.png" alt="" /></p>
+
+<h2>vue-resource</h2>
+
+<h3>install</h3>
+
+<p>まずnpmで<code>vue-resource</code>をインストールする。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">resource</span> <span class="o">--</span><span class="nx">save</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>yarnを使ってもOK。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">yarn</span> <span class="nx">add</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">resource</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使い方</h3>
+
+<p>それから<code>js</code>で<code>import</code>して使う。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.min&#39;</span>
+</span><span class='line'><span class="kr">import</span> <span class="nx">VueResource</span> <span class="nx">from</span> <span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">VueResource</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
+</span><span class='line'><span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;何かのurl&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
+</span><span class='line'><span class="p">},</span> <span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// error callback</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="https://codingexplained.com/coding/front-end/vue-js/using-es6-arrow-functions-vue-js">Using ES6 arrow functions in Vue.js</a><br/>
+<a href="https://liginc.co.jp/266587">ES6の新機能「class構文」 – 基礎編 –</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Webpacker]]></title>
@@ -6092,388 +6379,6 @@ consoleで確認してみたら</p>
 <p><a href="http://ruby-rails.hatenadiary.com/entry/20141207/1417926599">Rails4でポリモフィックのリレーションを実装する</a><br/>
 <a href="http://ruby-rails.hatenadiary.com/entry/20141206/1417839458">Rails4でSTI(単一継承テーブル)を行う</a><br/>
 <a href="http://easyramble.com/rails-activerecord-single-table-inheritance.html">Rails ActiveRecordのSTI(Single Table Inheritance)の使い方</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ビルド環境設定(XCode)2]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/01/11/make-environment-xcode2/"/>
-    <updated>2017-01-11T10:04:36+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/01/11/make-environment-xcode2</id>
-    <content type="html"><![CDATA[<h2>問題</h2>
-
-<p>この前、<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">ここの記事</a>のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。</p>
-
-<h2>ソリューション</h2>
-
-<p>例えば、Railsにはymlファイルに環境別に変数を設定したり、environmentsフォルダーにconfigの設定をするようにXCodeにもPlistファイルに設定して使う。<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">前の記事</a>に続いてセッティングしたら良いと。</p>
-
-<h2>使い方</h2>
-
-<h3>1. info.plistを編集</h3>
-
-<p><img src="https://monosnap.com/file/m0cQfWs4DcRqy48GpdP8N7iXD7q476.png" alt="Alt text" /></p>
-
-<h3>2. Environment.plistを追加</h3>
-
-<p>plistの新規作成
-<img src="https://monosnap.com/file/0X16dE8UFtdkaPiXUQXUVciKRVWlp7.png" alt="Alt text" />
-項目追加
-<img src="https://monosnap.com/file/GNcdNK4Rw2X9hpdiFkIXmSrEpg88Xn.png" alt="Alt text" /></p>
-
-<h3>3. AppDelegateに設定</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  let bundle = NSBundle.bundle()
-</span><span class='line'>  // Configuration取得
-</span><span class='line'>  let configuration = bundle.infoDictionary!["Configuration"]
-</span><span class='line'>
-</span><span class='line'>  // Configurations.plist読み込み
-</span><span class='line'>  let path = bundle.pathForResource("Environments", ofType: "plist")
-</span><span class='line'>  let configurations = NSDictionary(contentsOfFile: path!)
-</span><span class='line'>
-</span><span class='line'>  // URL取得
-</span><span class='line'>  let variables = configurations?.objectForKey(configuration!) as! [String : AnyObject]
-</span><span class='line'>
-</span><span class='line'>  let urlStr = variables["URL"]
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. ViewController</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
-</span><span class='line'>
-</span><span class='line'>  @IBOutlet weak var webView: UIWebView!
-</span><span class='line'>  var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-</span><span class='line'>
-</span><span class='line'>  override func viewDidLoad() {
-</span><span class='line'>        super.viewDidLoad()
-</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
-</span><span class='line'>        self.webView.delegate = self
-</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
-</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
-</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
-</span><span class='line'>        webView.scrollView.isScrollEnabled = true
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 使いやすい方法</h3>
-
-<p>Configurationクラスを新規作成</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
-</span><span class='line'>
-</span><span class='line'>final class ConfigurationManager {
-</span><span class='line'>
-</span><span class='line'>    private static let sharedInstance = ConfigurationManager()
-</span><span class='line'>
-</span><span class='line'>    private var configuration: String
-</span><span class='line'>    private var variables: NSDictionary
-</span><span class='line'>
-</span><span class='line'>    private init() {
-</span><span class='line'>
-</span><span class='line'>        // Singletonの確認用
-</span><span class='line'>        print("Configuration initialization")
-</span><span class='line'>
-</span><span class='line'>        let bundle = Bundle.main
-</span><span class='line'>        // Fetch Current Configuration
-</span><span class='line'>        self.configuration = (bundle.infoDictionary?["Configuration"]) as! String
-</span><span class='line'>        // Load Configurations
-</span><span class='line'>        guard let path = bundle.path(forResource: "Environments", ofType: "plist") else {
-</span><span class='line'>            self.variables = [:]
-</span><span class='line'>            return
-</span><span class='line'>        }
-</span><span class='line'>        let configurations =  NSDictionary(contentsOfFile: path)
-</span><span class='line'>        // Load Variables for Current Configuration
-</span><span class='line'>        self.variables = configurations?.object(forKey: self.configuration) as! NSDictionary
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    class func Configuration() -&gt; String {
-</span><span class='line'>        return sharedInstance.configuration
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    class func URL() -&gt; String {
-</span><span class='line'>        guard let url = sharedInstance.variables["URL"] else {
-</span><span class='line'>            return ""
-</span><span class='line'>        }
-</span><span class='line'>        return url as! String
-</span><span class='line'>    }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Appdelegate編集</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  let urlStr = ConfigurationManager.URL()
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. 結果</h3>
-
-<div>
-<img src="https://monosnap.com/file/MWaisZvYficmUHFcvpSzpnfSYdQlrP.png" style="width: 32%;">
-<img src="https://monosnap.com/file/SaK6q623KKMxNVnA3S9ErtUghksOFD.png" style="width: 32%;">
-<img src="https://monosnap.com/file/kGcje9rS0P0UScxwBoq7bKX65ijm4m.png" style="width: 32%;">
-</div>
-
-
-<h2>適用</h2>
-
-<h3>1. Environment.plistに追加</h3>
-
-<p><img src="https://monosnap.com/file/bnSdtBjYdERQ8AV4u30YbvbC6VxJ60.png" alt="Alt text" /></p>
-
-<h3>2. ConfigurationManager.swiftにコード追加</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
-</span><span class='line'>
-</span><span class='line'>final class ConfigurationManager {
-</span><span class='line'>
-</span><span class='line'>  (略)
-</span><span class='line'>
-</span><span class='line'>  class func BarColor() -&gt; NSDictionary {
-</span><span class='line'>      guard let barColor = sharedInstance.variables["BarColor"] else {
-</span><span class='line'>          return "" as! NSDictionary
-</span><span class='line'>      }
-</span><span class='line'>      return barColor as! NSDictionary
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. AppDelegate</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  var window: UIWindow?
-</span><span class='line'>  let urlStr = ConfigurationManager.URL()
-</span><span class='line'>  let barColor = ConfigurationManager.BarColor()
-</span><span class='line'>  let appEnvironment = ConfigurationManager.Configuration()
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -&gt; Bool {
-</span><span class='line'>      // Override point for customization after application launch.
-</span><span class='line'>
-</span><span class='line'>      return true
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  (略)
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. ViewController</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
-</span><span class='line'>
-</span><span class='line'>    @IBOutlet weak var webView: UIWebView!
-</span><span class='line'>    var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-</span><span class='line'>    @IBOutlet weak var Environment: UILabel!
-</span><span class='line'>
-</span><span class='line'>    override func viewDidLoad() {
-</span><span class='line'>        super.viewDidLoad()
-</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
-</span><span class='line'>        self.webView.delegate = self
-</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
-</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
-</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
-</span><span class='line'>        webView.scrollView.isScrollEnabled = true
-</span><span class='line'>        Environment.text = appDelegate.appEnvironment
-</span><span class='line'>        Environment.backgroundColor = UIColor(red: self.appDelegate.barColor["Red"] as! CGFloat, green: self.appDelegate.barColor["Green"] as! CGFloat, blue: self.appDelegate.barColor["Blue"] as! CGFloat, alpha: 1.0)
-</span><span class='line'>        Environment.textColor = UIColor.white
-</span><span class='line'>        Environment.textAlignment = .center
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    override func didReceiveMemoryWarning() {
-</span><span class='line'>        super.didReceiveMemoryWarning()
-</span><span class='line'>        // Dispose of any resources that can be recreated.
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 結果</h3>
-
-<div>
-<img src="https://monosnap.com/file/ELhzOprPWibPz7EijtFXFE6PTbSGjt.png" style="width: 32%;">
-<img src="https://monosnap.com/file/77vXKNb9cyZiR1RAqi1MHzrzlyHUri.png" style="width: 32%;">
-<img src="https://monosnap.com/file/GyBMCa15r5EI6uNLBU069dBu1D2AZl.png" style="width: 32%;">
-</div>
-
-
-<p><br><br></p>
-
-<h2>参照</h2>
-
-<p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
-<a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
 ]]></content>
   </entry>
   
