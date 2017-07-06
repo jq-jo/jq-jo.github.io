@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-06-22T14:23:05+09:00</updated>
+  <updated>2017-07-06T19:10:04+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,255 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Capybara]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/07/05/capybara/"/>
+    <updated>2017-07-05T19:07:09+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/07/05/capybara</id>
+    <content type="html"><![CDATA[<p>capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。<br/>
+ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。</p>
+
+<h2>準備</h2>
+
+<p>今回のテストはrspecとcapybaraを使ってみる。</p>
+
+<h4>install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>group :test do
+</span><span class='line'>  gem 'rspec-rails'
+</span><span class='line'>  gem 'poltergeist'
+</span><span class='line'>  gem 'capybara-screenshot'
+</span><span class='line'>  gem 'database_rewinder'
+</span><span class='line'>  gem 'factory_girl_rails'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>gemの説明をしてみると、<br/>
+poltergeistはcapybara用ドライバーである。poltergeistを使えばphantomJSが提供するブラウザでテストすることができる。それとJSの実装やスクリーンショットも撮ることもできる。<br/>
+capybara-screenshotはスクリーンショットの便利性のために使う。<br/>
+database_rewinderはdatabaseのクリーナーであり、factory_girl_railsはモデルオブジェクトを作るために入れる。</p>
+
+<ul>
+<li>rspecのinstall</li>
+</ul>
+
+
+<p>rails generate rspec:install</p>
+
+<ul>
+<li>require</li>
+</ul>
+
+
+<p><code>spec/rails_helper.rb</code>に以下のように書き込む。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rspec/rails'
+</span><span class='line'>require 'capybara/rails'
+</span><span class='line'>require 'capybara/rspec'
+</span><span class='line'>require 'capybara/poltergeist'
+</span><span class='line'>require 'database_rewinder'
+</span><span class='line'>
+</span><span class='line'># capybara
+</span><span class='line'>Capybara.app_host = "http://example.com"
+</span><span class='line'>Capybara.always_include_port = true
+</span><span class='line'>Capybara.default_max_wait_time = 5
+</span><span class='line'>
+</span><span class='line'>Capybara::Screenshot.autosave_on_failure = false
+</span><span class='line'>
+</span><span class='line'>Capybara.javascript_driver = :poltergeist
+</span><span class='line'>
+</span><span class='line'>Capybara.register_driver :poltergeist do |app|
+</span><span class='line'>  Capybara::Poltergeist::Driver.new(app, {
+</span><span class='line'>    inspector: true,
+</span><span class='line'>    js_errors: false,
+</span><span class='line'>    timeout: 1000,
+</span><span class='line'>    phantomjs_options: [
+</span><span class='line'>      '--load-images=no',
+</span><span class='line'>      '--ignore-ssl-errors=yes',
+</span><span class='line'>      '--ssl-protocol=any'
+</span><span class='line'>    ]
+</span><span class='line'>  })
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># database_rewinder
+</span><span class='line'>RSpec.configure do |config|
+</span><span class='line'>  config.before :suite do
+</span><span class='line'>    DatabaseRewinder.clean_all
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each) do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each, js: true) do
+</span><span class='line'>    DatabaseRewinder.strategy = :truncation
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.after :all do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>PhantomJSのinstall</li>
+</ul>
+
+
+<p>poltergeistを使うためにphantomJsをインストールする。<br/>
+macだとPhantomJSは<code>brew install phantomjs</code>で簡単に入れられる。</p>
+
+<h2>簡単なテスト</h2>
+
+<p>まず、テストのため、scaffoldでmodel, controller, viewを作る。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g scaffold post title:string content:text</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そしたらこういうビューが作られる。<br/>
+<img src="https://monosnap.com/file/tj8ppXp1gaIKCLWfrTv8MtWOJX9hpK.png" alt="Alt text" /></p>
+
+<p>このページでPostを作成するテストをしてみる。<br/>
+specフォルダーにpostsのフォルダーを追加、その中に<code>index_spec.rb</code>というファイルを作成する。<br/>
+そして、そのファイルに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
+</span><span class='line'>
+</span><span class='line'>feature 'Post一覧画面の表示' do
+</span><span class='line'>
+</span><span class='line'>  scenario 'Postが作成できること', js: true do
+</span><span class='line'>    visit posts_url
+</span><span class='line'>    expect(page).to have_css('h1', text: 'Posts')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('New Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_title', with: 'Title01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_content', with: 'Content01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_button('Create Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    find('p#notice', text: 'Post was successfully created.').visible?
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('Back')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうコードを入れてみる。<br/>
+capybaraはいろんなDSLを提供している。<br/>
+みたらすぐわかるくらいsimpleでわかりやすく使えるようになっている。<br/>
+ちなみに、<code>fill_in('post_title', with: 'Title01')</code>は<code>find('input[name="post[title]"]').set('Title01')</code>に変えることもできる。同じように<code>click_link</code>も<code>find('hogehoge).click</code>に変えられる。<br/>
+このテストの結果は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Post一覧画面の表示
+</span><span class='line'>  Postが作成できること
+</span><span class='line'>
+</span><span class='line'>Finished in 4.42 seconds (files took 3.02 seconds to load)
+</span><span class='line'>1 example, 0 failures</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こうなっていて、下はスクリーンショット。<br/>
+<img src="https://monosnap.com/file/rHx38I8b2uTMxt0FRiko6tV0s79vK5.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/3b4PuPHi5P0GoxmUGeQH9YeAMhtCmg.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/D0HHkb249O7InIbj6uYGtRhpCL3WbD.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/AFoXqrbQVrCst6o5eU4YXp6EAfkdsF.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/pU9kmqZqSxEbmTOnA14Itg8YswivcT.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/dh0IlY7zrAWj3uqgdXnkMsF1cYzYSg.png" alt="Alt text" /></p>
+
+<h2>参考</h2>
+
+<p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
+<a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA['vue-resource'とES6を使ってTodoを作成]]></title>
@@ -6172,213 +6421,6 @@ consoleで確認してみたら</p>
 <a href="http://ruby-rails.hatenadiary.com/entry/20141211/1418301640">Rails4でモデルのコールバックの一覧と順番</a><br/>
 <a href="http://qiita.com/rtoya/items/29cef3e328299781a328">Railsのcallbackについて調べた</a><br/>
 <a href="http://blog.toshimaru.net/active-record-callbacks/">ActiveRecordのコールバックの順序・コールバック内のロールバック処理について</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RailsのモデルのSTI(Single Table Inheritance)とポリモーフィックの実装]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/01/18/rails-model-polymorphic/"/>
-    <updated>2017-01-18T14:02:52+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/01/18/rails-model-polymorphic</id>
-    <content type="html"><![CDATA[<p>RailsのActiveRecordには単一テーブル継承(STI)とポリモーフィック関係という二つの便利な関係性設定がある。同じような機能を持っているモデルが多数存在してそのモデルたちをまとめたいときとか、多数のモデルが一つのモデルを持ちたいときなどの複雑な関係性をもっと簡単にしてくれるのでその二つの関係性をまとめる。</p>
-
-<h1>STI</h1>
-
-<h3>状況設定</h3>
-
-<p>例えば、本とコンピューターを同時に管理するproductsというモデルを作る。もちろんbooks、computersの二つのモデルを作ってもできなくはないけどSTIを通して実装すればテーブルを作らなくてもproductsの一つのテーブルで管理できる。</p>
-
-<h3>Productモデル作成</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g model product name:string price:integer type:string author:string category:string maker:string inch:integer
-</span><span class='line'>$ rake db:migrate</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ここでtypeは必須になる。author, categoryはbookのために、maker, inchはcomputerのためのcolumnになる。</p>
-
-<h3>class作成</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Product</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうclassが作られたら実際に使いたいbook、computerのclassを作成。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Book</span> <span class="o">&lt;</span> <span class="no">Product</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Computer</span> <span class="o">&lt;</span> <span class="no">Product</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>気をつけないとならないのはProductのclassを継承すること。<br>
-これで設定は完了。<br>
-すると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Computer</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;お得パソコン&#39;</span><span class="p">,</span> <span class="ss">price</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span> <span class="ss">maker</span><span class="p">:</span> <span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="ss">inch</span><span class="p">:</span> <span class="mi">15</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうにデータを作成したら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">INSERT</span> <span class="no">INTO</span> <span class="s2">&quot;products&quot;</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;maker&quot;</span><span class="p">,</span> <span class="s2">&quot;inch&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">)</span> <span class="no">VALUES</span> <span class="p">(</span><span class="vg">$1</span><span class="p">,</span> <span class="vg">$2</span><span class="p">,</span> <span class="vg">$3</span><span class="p">,</span> <span class="vg">$4</span><span class="p">,</span> <span class="vg">$5</span><span class="p">,</span> <span class="vg">$6</span><span class="p">,</span> <span class="vg">$7</span><span class="p">)</span> <span class="no">RETURNING</span> <span class="s2">&quot;id&quot;</span>  <span class="o">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;お得パソコン&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">100000</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;Computer&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;maker&quot;</span><span class="p">,</span> <span class="s2">&quot;apple&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;inch&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mo">01</span><span class="o">-</span><span class="mi">18</span> <span class="mi">08</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">39</span> <span class="no">UTC</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mo">01</span><span class="o">-</span><span class="mi">18</span> <span class="mi">08</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">39</span> <span class="no">UTC</span><span class="o">]]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こんな結果になり、Productテーブルに保存される。typeはclass名になる。<br>
-呼び出すのも簡単に<code>Computer.find(Product.id)</code>や<code>Computer.all</code>でできる。
-<br><code>Computer.find(Product.id)</code>を実行したら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="no">Computer</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;お得パソコン&quot;</span><span class="p">,</span> <span class="ss">price</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;Computer&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">category</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">maker</span><span class="p">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="ss">inch</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="ss">created_at</span><span class="p">:</span> <span class="s2">&quot;2017-01-25 06:44:17&quot;</span><span class="p">,</span> <span class="ss">updated_at</span><span class="p">:</span> <span class="s2">&quot;2017-01-25 06:44:17&quot;</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>bookのために作ったcolumnは全部nilになる。つまり、一つのテーブルで三つのテーブルを使うようにはなるけど無駄なcolumnが多くなるデメリットもある。</p>
-
-<h1>Polymorphic</h1>
-
-<h3>状況設定</h3>
-
-<p>プロジェクトの中で一つのモデルを多数のモデルに関係をつける時がある。<br>
-例えば、掲示板の投稿をユーザーが作成した場合と管理者が作成した場合があるとするとPolymorphicで管理できる。<br></p>
-
-<h3>ポリモフィックなテーブルの作成</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">admin</span> <span class="nb">name</span><span class="ss">:string</span> <span class="ss">email</span><span class="p">:</span><span class="n">string</span>
-</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">user</span> <span class="nb">name</span><span class="ss">:string</span> <span class="ss">email</span><span class="p">:</span><span class="n">string</span>
-</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">post</span> <span class="ss">owner</span><span class="p">:</span><span class="n">references</span><span class="p">{</span><span class="n">polymorphic</span><span class="p">}</span><span class="ss">:index</span> <span class="ss">title</span><span class="p">:</span><span class="n">string</span> <span class="ss">content</span><span class="p">:</span><span class="n">text</span>
-</span><span class='line'><span class="err">$</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>するとpostのmigrationは下記のようになる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CreatePosts</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">create_table</span> <span class="ss">:posts</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:title</span>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:content</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>モデルにbelongs_toとhas_many追加</h3>
-
-<p>上記のように実行したらpostのクラスはさらにこういうふうになってます。そしてpostのテーブルにはowner_type, owner_idが生成されます。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そこでadminとuser側だけhas_manyを追加したら良いです。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>実行</h3>
-
-<p>そうした上にconsoleに下記のように実行してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">admin</span> <span class="o">=</span> <span class="no">Admin</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;admin1&#39;</span><span class="p">,</span> <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;admin@example.com&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Admin id: 1, name: &quot;admin1&quot;, email: &quot;admin@example.com&quot;, created_at: &quot;2017-01-25 07:46:25&quot;, updated_at: &quot;2017-01-25 07:46:25&quot;&gt;</span>
-</span><span class='line'><span class="n">post1</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;post1&#39;</span><span class="p">,</span> <span class="ss">content</span><span class="p">:</span> <span class="s1">&#39;content1&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 1, owner_type: &quot;Admin&quot;, owner_id: 1, title: &quot;post1&quot;, content: &quot;content1&quot;, created_at: &quot;2017-01-25 07:47:21&quot;, updated_at: &quot;2017-01-25 07:47:21&quot;&gt;</span>
-</span><span class='line'><span class="n">post1</span><span class="o">.</span><span class="n">owner</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Admin id: 1, name: &quot;admin1&quot;, email: &quot;admin@example.com&quot;, created_at: &quot;2017-01-25 07:46:25&quot;, updated_at: &quot;2017-01-25 07:46:25&quot;&gt;</span>
-</span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;User id: 1, name: &quot;user1&quot;, email: &quot;user@example.com&quot;, created_at: &quot;2017-01-25 07:48:00&quot;, updated_at: &quot;2017-01-25 07:48:00&quot;&gt;</span>
-</span><span class='line'><span class="n">post2</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;post2&#39;</span><span class="p">,</span> <span class="ss">content</span><span class="p">:</span> <span class="s1">&#39;content2&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 2, owner_type: &quot;User&quot;, owner_id: 1, title: &quot;post2&quot;, content: &quot;content2&quot;, created_at: &quot;2017-01-25 07:49:04&quot;, updated_at: &quot;2017-01-25 07:49:04&quot;&gt;</span>
-</span><span class='line'><span class="n">post2</span><span class="o">.</span><span class="n">owner</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;User id: 1, name: &quot;user1&quot;, email: &quot;user@example.com&quot;, created_at: &quot;2017-01-25 07:48:00&quot;, updated_at: &quot;2017-01-25 07:48:00&quot;&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">owner</span><span class="p">:</span> <span class="n">admin</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 1, owner_type: &quot;Admin&quot;, owner_id: 1, title: &quot;post1&quot;, content: &quot;content1&quot;, created_at: &quot;2017-01-25 07:47:21&quot;, updated_at: &quot;2017-01-25 07:47:21&quot;&gt;</span>
-</span><span class='line'><span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">owner</span><span class="p">:</span> <span class="n">user</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 2, owner_type: &quot;User&quot;, owner_id: 1, title: &quot;post2&quot;, content: &quot;content2&quot;, created_at: &quot;2017-01-25 07:49:04&quot;, updated_at: &quot;2017-01-25 07:49:04&quot;&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに活用できる。<br><br><br></p>
-
-<h2>参照</h2>
-
-<p><a href="http://ruby-rails.hatenadiary.com/entry/20141207/1417926599">Rails4でポリモフィックのリレーションを実装する</a><br/>
-<a href="http://ruby-rails.hatenadiary.com/entry/20141206/1417839458">Rails4でSTI(単一継承テーブル)を行う</a><br/>
-<a href="http://easyramble.com/rails-activerecord-single-table-inheritance.html">Rails ActiveRecordのSTI(Single Table Inheritance)の使い方</a></p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Capybara - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。
+ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。 準備 今回のテストはrspecとcapybaraを使ってみる。 install 1
+2
+3
+4
+5
+6
+7
+group : &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/07/05/capybara">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Capybara</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-07-05T19:07:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>7:07 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。<br/>
+ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。</p>
+
+<h2>準備</h2>
+
+<p>今回のテストはrspecとcapybaraを使ってみる。</p>
+
+<h4>install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>group :test do
+</span><span class='line'>  gem 'rspec-rails'
+</span><span class='line'>  gem 'poltergeist'
+</span><span class='line'>  gem 'capybara-screenshot'
+</span><span class='line'>  gem 'database_rewinder'
+</span><span class='line'>  gem 'factory_girl_rails'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>gemの説明をしてみると、<br/>
+poltergeistはcapybara用ドライバーである。poltergeistを使えばphantomJSが提供するブラウザでテストすることができる。それとJSの実装やスクリーンショットも撮ることもできる。<br/>
+capybara-screenshotはスクリーンショットの便利性のために使う。<br/>
+database_rewinderはdatabaseのクリーナーであり、factory_girl_railsはモデルオブジェクトを作るために入れる。</p>
+
+<ul>
+<li>rspecのinstall</li>
+</ul>
+
+
+<p>rails generate rspec:install</p>
+
+<ul>
+<li>require</li>
+</ul>
+
+
+<p><code>spec/rails_helper.rb</code>に以下のように書き込む。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rspec/rails'
+</span><span class='line'>require 'capybara/rails'
+</span><span class='line'>require 'capybara/rspec'
+</span><span class='line'>require 'capybara/poltergeist'
+</span><span class='line'>require 'database_rewinder'
+</span><span class='line'>
+</span><span class='line'># capybara
+</span><span class='line'>Capybara.app_host = "http://example.com"
+</span><span class='line'>Capybara.always_include_port = true
+</span><span class='line'>Capybara.default_max_wait_time = 5
+</span><span class='line'>
+</span><span class='line'>Capybara::Screenshot.autosave_on_failure = false
+</span><span class='line'>
+</span><span class='line'>Capybara.javascript_driver = :poltergeist
+</span><span class='line'>
+</span><span class='line'>Capybara.register_driver :poltergeist do |app|
+</span><span class='line'>  Capybara::Poltergeist::Driver.new(app, {
+</span><span class='line'>    inspector: true,
+</span><span class='line'>    js_errors: false,
+</span><span class='line'>    timeout: 1000,
+</span><span class='line'>    phantomjs_options: [
+</span><span class='line'>      '--load-images=no',
+</span><span class='line'>      '--ignore-ssl-errors=yes',
+</span><span class='line'>      '--ssl-protocol=any'
+</span><span class='line'>    ]
+</span><span class='line'>  })
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># database_rewinder
+</span><span class='line'>RSpec.configure do |config|
+</span><span class='line'>  config.before :suite do
+</span><span class='line'>    DatabaseRewinder.clean_all
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each) do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each, js: true) do
+</span><span class='line'>    DatabaseRewinder.strategy = :truncation
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.after :all do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>PhantomJSのinstall</li>
+</ul>
+
+
+<p>poltergeistを使うためにphantomJsをインストールする。<br/>
+macだとPhantomJSは<code>brew install phantomjs</code>で簡単に入れられる。</p>
+
+<h2>簡単なテスト</h2>
+
+<p>まず、テストのため、scaffoldでmodel, controller, viewを作る。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g scaffold post title:string content:text</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そしたらこういうビューが作られる。<br/>
+<img src="https://monosnap.com/file/tj8ppXp1gaIKCLWfrTv8MtWOJX9hpK.png" alt="Alt text" /></p>
+
+<p>このページでPostを作成するテストをしてみる。<br/>
+specフォルダーにpostsのフォルダーを追加、その中に<code>index_spec.rb</code>というファイルを作成する。<br/>
+そして、そのファイルに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
+</span><span class='line'>
+</span><span class='line'>feature 'Post一覧画面の表示' do
+</span><span class='line'>
+</span><span class='line'>  scenario 'Postが作成できること', js: true do
+</span><span class='line'>    visit posts_url
+</span><span class='line'>    expect(page).to have_css('h1', text: 'Posts')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('New Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_title', with: 'Title01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_content', with: 'Content01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_button('Create Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    find('p#notice', text: 'Post was successfully created.').visible?
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('Back')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうコードを入れてみる。<br/>
+capybaraはいろんなDSLを提供している。<br/>
+みたらすぐわかるくらいsimpleでわかりやすく使えるようになっている。<br/>
+ちなみに、<code>fill_in('post_title', with: 'Title01')</code>は<code>find('input[name="post[title]"]').set('Title01')</code>に変えることもできる。同じように<code>click_link</code>も<code>find('hogehoge).click</code>に変えられる。<br/>
+このテストの結果は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Post一覧画面の表示
+</span><span class='line'>  Postが作成できること
+</span><span class='line'>
+</span><span class='line'>Finished in 4.42 seconds (files took 3.02 seconds to load)
+</span><span class='line'>1 example, 0 failures</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こうなっていて、下はスクリーンショット。<br/>
+<img src="https://monosnap.com/file/rHx38I8b2uTMxt0FRiko6tV0s79vK5.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/3b4PuPHi5P0GoxmUGeQH9YeAMhtCmg.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/D0HHkb249O7InIbj6uYGtRhpCL3WbD.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/AFoXqrbQVrCst6o5eU4YXp6EAfkdsF.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/pU9kmqZqSxEbmTOnA14Itg8YswivcT.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/dh0IlY7zrAWj3uqgdXnkMsF1cYzYSg.png" alt="Alt text" /></p>
+
+<h2>参考</h2>
+
+<p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
+<a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-07-05T19:07:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>7:07 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/07/05/capybara/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/07/05/capybara/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/06/21/vue-resource-and-es6/" title="Previous Post: 'vue-resource'とES6を使ってTodoを作成">&laquo; 'vue-resource'とES6を使ってTodoを作成</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
