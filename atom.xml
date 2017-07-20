@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-07-06T19:10:04+09:00</updated>
+  <updated>2017-07-20T20:36:44+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,166 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rubyの値渡しと参照渡し]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/07/19/call-by-value-call-by-variable/"/>
+    <updated>2017-07-19T20:33:53+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/07/19/call-by-value-call-by-variable</id>
+    <content type="html"><![CDATA[<p>一般的に、引数は二つの方法がある。一つが値渡しで、もう一つが参照渡しである。<br/>
+値渡しの概念はとても簡単。</p>
+
+<ol>
+<li>受け取るデータを格納する変数 (仮引数) を用意する。</li>
+<li>データを引数に代入する。</li>
+<li>関数の実行終了後、引数を廃棄する。</li>
+</ol>
+
+
+<p>値渡しのポイントは2番目。データを引数に代入するとき、データのコピーが行われる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; def foo(a)
+</span><span class='line'>irb&gt; a = 100
+</span><span class='line'>irb&gt; print a
+</span><span class='line'>irb&gt; end
+</span><span class='line'>=&gt; :foo
+</span><span class='line'>irb&gt; x = 10
+</span><span class='line'>=&gt; 10
+</span><span class='line'>irb&gt; foo x
+</span><span class='line'>100=&gt; nil
+</span><span class='line'>irb&gt; x
+</span><span class='line'>=&gt; 10</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>foo</code>が参照渡しであれば、仮引数<code>a</code>の値を100に書き換えると、実引数である<code>x</code>の値も100になるはず。<code>foo(x)</code>を呼び出したあと、<code>x</code>の値は10のままなので、Rubyは「値渡し」であることがわかる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; def print_obj_id arg
+</span><span class='line'>irb&gt; p "before change : #{int.object_id}"
+</span><span class='line'>irb&gt; arg = 10
+</span><span class='line'>irb&gt; p "after changed : #{int.object_id}"
+</span><span class='line'>irb&gt; arg
+</span><span class='line'>irb&gt; end
+</span><span class='line'>
+</span><span class='line'>irb&gt; int = 1
+</span><span class='line'>
+</span><span class='line'>irb&gt; p "int before func : #{int}"
+</span><span class='line'>irb&gt; p "obj_id outside func : #{int.object_id}"
+</span><span class='line'>irb&gt; p "excute func : #{print_obj_id int}"
+</span><span class='line'>irb&gt; p "int after excuted func : #{int.object_id}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードに対する結果は下記のようになる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"int before func : 1"
+</span><span class='line'>"obj_id outside func : 3"
+</span><span class='line'>"before change : 3"
+</span><span class='line'>"after changed : 21"
+</span><span class='line'>"excute func : 10"
+</span><span class='line'>"int after excuted func : 3"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これは渡された仮引数の<code>arg</code>が変わっても実引数の変数<code>int</code>は変わらないことを証明する。<br/>
+しかし、配列、hashなどは<code>mutable(書き換え可)</code>なオブジェクトなので、関数の引数に配列やhashを渡してそれを修正すると、呼び出し元の変数の値も書き換えられるようになる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># arrayの場合
+</span><span class='line'>irb&gt; def bar(x, y)
+</span><span class='line'>irb&gt; x.push y
+</span><span class='line'>irb&gt; x[0] = 10
+</span><span class='line'>irb&gt; end
+</span><span class='line'>=&gt; :bar
+</span><span class='line'>irb&gt; a = [1, 2, 3]
+</span><span class='line'>=&gt; [1, 2, 3]
+</span><span class='line'>irb&gt; a.object_id
+</span><span class='line'>=&gt; 70284299180520
+</span><span class='line'>irb&gt; bar a, 4
+</span><span class='line'>=&gt; 10
+</span><span class='line'>irb&gt; a
+</span><span class='line'>=&gt; [10, 2, 3, 4]
+</span><span class='line'>irb&gt; a.object_id
+</span><span class='line'>=&gt; 70284299180520
+</span><span class='line'>
+</span><span class='line'># hashの場合
+</span><span class='line'>irb&gt; def baz x, y
+</span><span class='line'>irb&gt; x.store "fourth", y
+</span><span class='line'>irb&gt; x[:first] = 10
+</span><span class='line'>irb&gt; end
+</span><span class='line'>=&gt; :baz
+</span><span class='line'>irb&gt; hash = {first: 1, second: 2, third: 3}
+</span><span class='line'>=&gt; {:first=&gt;1, :second=&gt;2, :third=&gt;3}
+</span><span class='line'>irb&gt; baz hash, 4
+</span><span class='line'>=&gt; 10
+</span><span class='line'>irb&gt; hash
+</span><span class='line'>=&gt; {:first=&gt;10, :second=&gt;2, :third=&gt;3, "fourth"=&gt;4}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードを見てみるとarrayの場合はarray変数の0番目indexの値が変わり、端っこにデータが追加されたのが確認できる。hashの場合も<code>first</code>のオブジェクトが変わり、端っこにデータが追加されたのが確認できる。</p>
+
+<h2>参照</h2>
+
+<p><a href="http://www.geocities.jp/m_hiroi/light/abcruby03.html">お気楽 Ruby プログラミング入門</a><br/>
+<a href="http://blog.takanabe.tokyo/2015/08/25/1323/">Rubyの関数の引数は値渡しであることの証明をする</a><br/>
+<a href="http://blog.cototoco.net/work/201406/%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E5%BC%95%E6%95%B0%EF%BC%88%E5%80%A4%E6%B8%A1%E3%81%97%E3%80%81%E5%8F%82%E7%85%A7%E6%B8%A1%E3%81%97%EF%BC%89/">メソッドの引数（値渡し、参照渡し）</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Capybara]]></title>
@@ -6299,128 +6459,6 @@ consoleで確認してみたら</p>
 
 <p><a href="http://south37.hatenablog.com/entry/2014/08/10/Activerecord%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8Bincludes%E3%81%A8joins%E3%81%AE%E6%8C%AF%E3%82%8B%E8%88%9E%E3%81%84%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">Activerecordにおけるincludesとjoinsの振る舞いについて</a><br/>
 <a href="http://qiita.com/south37/items/b2c81932756d2cd84d7d">似ているようで全然違う!?Activerecordにおけるincludesとjoinsの振る舞いまとめ</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RailsのModelのコールバック]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/01/25/railsmodelcallback/"/>
-    <updated>2017-01-25T14:30:52+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/01/25/railsmodelcallback</id>
-    <content type="html"><![CDATA[<h1>Active Recordのコールバック</h1>
-
-<p>Rails側では、内部でオブジェクトが作成されたり、更新されたり削除されたりする。コールバックとは、オブジェクトのライフサイクル期間における特定の瞬間に呼び出されるメソッドである。<br>
-コールバックを利用することで、Active Recordオブジェクトが作成、保存、更新、削除などのイベント発生の時に常に実行されるコードを書くことができる。</p>
-
-<h3>種類と順番</h3>
-
-<ul>
-<li><p>オブジェクトの生成</p>
-
-<ul>
-<li>before_validation</li>
-<li>after_validation</li>
-<li>before_save</li>
-<li>around_save</li>
-<li>before_create</li>
-<li>around_create</li>
-<li>after_create</li>
-<li>after_save</li>
-</ul>
-</li>
-<li><p>オブジェクトの更新</p>
-
-<ul>
-<li>before_validation</li>
-<li>after_validation</li>
-<li>before_save</li>
-<li>around_save</li>
-<li>before_update</li>
-<li>around_update</li>
-<li>after_update</li>
-<li>after_save</li>
-</ul>
-</li>
-<li><p>オブジェクトの削除</p>
-
-<ul>
-<li>before_destroy</li>
-<li>around_destroy</li>
-<li>after_destroy</li>
-</ul>
-</li>
-<li><p>オブジェクトのinstance化</p>
-
-<ul>
-<li>after_initialize</li>
-</ul>
-</li>
-<li><p>find</p>
-
-<ul>
-<li>after_find</li>
-</ul>
-</li>
-<li><p>touch</p>
-
-<ul>
-<li>after_touch</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>使い方</h3>
-
-<p>普通にモデルクラスの中に書いたら良い。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="ss">:hoge</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hoge</span>
-</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="k">do</span>
-</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">before_validation</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="s2">&quot;何かのコード&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上の三つの書き方で自分が実行したい瞬間に実行されるコードを書くことができる。<br><br><br></p>
-
-<h2>参照</h2>
-
-<p><a href="https://railsguides.jp/active_record_callbacks.html">Active Record コールバック</a><br/>
-<a href="http://ruby-rails.hatenadiary.com/entry/20141211/1418301640">Rails4でモデルのコールバックの一覧と順番</a><br/>
-<a href="http://qiita.com/rtoya/items/29cef3e328299781a328">Railsのcallbackについて調べた</a><br/>
-<a href="http://blog.toshimaru.net/active-record-callbacks/">ActiveRecordのコールバックの順序・コールバック内のロールバック処理について</a></p>
 ]]></content>
   </entry>
   
