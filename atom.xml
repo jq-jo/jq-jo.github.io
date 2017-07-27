@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-07-27T16:02:00+09:00</updated>
+  <updated>2017-07-27T16:12:27+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -276,6 +276,71 @@
 
 
 <p><code>create_name.full_name</code>を叩いた時に値が変わることが確認できる。<br/>
+では、<code>create_name</code>と<code>Change</code>クラスの<code>@name_obj</code>の変数が同じものなのかな。確認してみよう。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Change
+</span><span class='line'>  def initialize(obj)
+</span><span class='line'>    @name_obj = obj
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def name_obj
+</span><span class='line'>    @name_obj
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def change_name
+</span><span class='line'>    @name_obj.first_name("hogehoge")
+</span><span class='line'>    @name_obj.last_name("foo")
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Change</code>クラスに<code>@name_obj</code>をリターンするメソッドを追加して実装して見る。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
+</span><span class='line'>=&gt; #&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;
+</span><span class='line'>irb&gt; change = Change.new(create_name)
+</span><span class='line'>=&gt; #&lt;Change:0x007f8483ae06c8 @name_obj=#&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;&gt;
+</span><span class='line'>irb&gt; change_name = change.name_obj
+</span><span class='line'>=&gt; #&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;
+</span><span class='line'>irb&gt; create_name === change_name
+</span><span class='line'>=&gt; true
+</span><span class='line'>irb&gt; create_name.equal? change_name
+</span><span class='line'>=&gt; true
+</span><span class='line'>irb&gt; create_name.object_id
+</span><span class='line'>=&gt; 70103560887200
+</span><span class='line'>irb&gt; change_name.object_id
+</span><span class='line'>=&gt; 70103560887200</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>create_name</code>と<code>@name_obj</code>は同じものだったそうだ。<br/>
 ということで、オブジェクトも参照の値渡しということが分かってきた。</p>
 
 <h2>参照</h2>
