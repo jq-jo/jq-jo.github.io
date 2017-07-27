@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-07-27T16:12:27+09:00</updated>
+  <updated>2017-07-27T16:25:19+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -170,7 +170,7 @@
 <p>オブジェクトはどうなるかについても試してみたので追記。<br/>
 下記のようなクラスを作成する。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -190,44 +190,46 @@
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Name
-</span><span class='line'>  def initialize(first_name, last_name)
-</span><span class='line'>    @first_name = first_name
-</span><span class='line'>    @last_name = last_name
-</span><span class='line'>  end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Name</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@first_name</span> <span class="o">=</span> <span class="n">first_name</span>
+</span><span class='line'>    <span class="vi">@last_name</span> <span class="o">=</span> <span class="n">last_name</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def first_name(name)
-</span><span class='line'>    @first_name = name
-</span><span class='line'>    @first_name
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">first_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@first_name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="vi">@first_name</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def last_name(name)
-</span><span class='line'>    @last_name = name
-</span><span class='line'>    @last_name
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">last_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@last_name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="vi">@last_name</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def full_name
-</span><span class='line'>    full_name = "#{@last_name} #{@first_name}"
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">full_name</span>
+</span><span class='line'>    <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@last_name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@first_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><code>Name</code>のオブジェクトを作って<code>full_name</code>のメソッドを実行すると</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
-</span><span class='line'>=&gt; #&lt;Name:0x007f8483c1f8b8 @first_name="Nobunaga", @last_name="Oda"&gt;
-</span><span class='line'>irb&gt; create_name.full_name
-</span><span class='line'>=&gt; "Oda Nobunaga"</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483c1f8b8 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Oda Nobunaga&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>普通に入力した通り<code>Oda Nobunaga</code>というフルネームが取得される。<br/>
 ここで下記のようなクラスを作成して試してみる。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -238,22 +240,23 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Change
-</span><span class='line'>  def initialize(obj)
-</span><span class='line'>    @name_obj = obj
-</span><span class='line'>  end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Change</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name_obj</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def change_str
-</span><span class='line'>    @name_obj.first_name("hogehoge")
-</span><span class='line'>    @name_obj.last_name("foo")
-</span><span class='line'>    return "#{@last_name} #{@first_name}"
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change_str</span>
+</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="s2">&quot;hogehoge&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@last_name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@first_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>この<code>Change</code>クラスに<code>create_name</code>オブジェクトを渡して実装してみると</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -263,22 +266,23 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
-</span><span class='line'>=&gt; #&lt;Name:0x007f8483c1f8b8 @first_name="Nobunaga", @last_name="Oda"&gt;
-</span><span class='line'>irb&gt; create_name.full_name
-</span><span class='line'>=&gt; "Oda Nobunaga"
-</span><span class='line'>irb&gt; change = Change.new create_name
-</span><span class='line'>=&gt; #&lt;Change:0x007f84838aae58 @name_obj=#&lt;Name:0x007f84838c0898 @first_name="Nobunaga", @last_name="Oda"&gt;&gt;
-</span><span class='line'>irb&gt; change.change_name
-</span><span class='line'>=&gt; "foo"
-</span><span class='line'>irb&gt; create_name.full_name
-</span><span class='line'>=&gt; "foo hogehoge"</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483c1f8b8 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Oda Nobunaga&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span> <span class="o">=</span> <span class="no">Change</span><span class="o">.</span><span class="n">new</span> <span class="n">create_name</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Change:0x007f84838aae58 @name_obj=#&lt;Name:0x007f84838c0898 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span><span class="o">.</span><span class="n">change_name</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;foo&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;foo hogehoge&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><code>create_name.full_name</code>を叩いた時に値が変わることが確認できる。<br/>
 では、<code>create_name</code>と<code>Change</code>クラスの<code>@name_obj</code>の変数が同じものなのかな。確認してみよう。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -290,27 +294,24 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Change
-</span><span class='line'>  def initialize(obj)
-</span><span class='line'>    @name_obj = obj
-</span><span class='line'>  end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Change</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:name_obj</span>
 </span><span class='line'>
-</span><span class='line'>  def name_obj
-</span><span class='line'>    @name_obj
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name_obj</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def change_name
-</span><span class='line'>    @name_obj.first_name("hogehoge")
-</span><span class='line'>    @name_obj.last_name("foo")
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change_name</span>
+</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="s2">&quot;hogehoge&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>Change</code>クラスに<code>@name_obj</code>をリターンするメソッドを追加して実装して見る。</p>
+<p><code>Change</code>クラスに<code>attr_accessor</code>を追加して<code>@name_obj</code>を使えるようにする。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -322,22 +323,19 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
-</span><span class='line'>=&gt; #&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;
-</span><span class='line'>irb&gt; change = Change.new(create_name)
-</span><span class='line'>=&gt; #&lt;Change:0x007f8483ae06c8 @name_obj=#&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;&gt;
-</span><span class='line'>irb&gt; change_name = change.name_obj
-</span><span class='line'>=&gt; #&lt;Name:0x007f8483b03740 @first_name="Nobunaga", @last_name="Oda"&gt;
-</span><span class='line'>irb&gt; create_name === change_name
-</span><span class='line'>=&gt; true
-</span><span class='line'>irb&gt; create_name.equal? change_name
-</span><span class='line'>=&gt; true
-</span><span class='line'>irb&gt; create_name.object_id
-</span><span class='line'>=&gt; 70103560887200
-</span><span class='line'>irb&gt; change_name.object_id
-</span><span class='line'>=&gt; 70103560887200</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483b03740 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span> <span class="o">=</span> <span class="no">Change</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">create_name</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Change:0x007f8483ae06c8 @name_obj=#&lt;Name:0x007f8483b03740 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">===</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">equal?</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">object_id</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">70103560887200</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span><span class="o">.</span><span class="n">object_id</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">70103560887200</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p><code>create_name</code>と<code>@name_obj</code>は同じものだったそうだ。<br/>
