@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-07-20T20:36:44+09:00</updated>
+  <updated>2017-07-27T16:02:00+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -164,6 +164,119 @@
 
 
 <p>上記のコードを見てみるとarrayの場合はarray変数の0番目indexの値が変わり、端っこにデータが追加されたのが確認できる。hashの場合も<code>first</code>のオブジェクトが変わり、端っこにデータが追加されたのが確認できる。</p>
+
+<h2>追記</h2>
+
+<p>オブジェクトはどうなるかについても試してみたので追記。<br/>
+下記のようなクラスを作成する。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Name
+</span><span class='line'>  def initialize(first_name, last_name)
+</span><span class='line'>    @first_name = first_name
+</span><span class='line'>    @last_name = last_name
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def first_name(name)
+</span><span class='line'>    @first_name = name
+</span><span class='line'>    @first_name
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def last_name(name)
+</span><span class='line'>    @last_name = name
+</span><span class='line'>    @last_name
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def full_name
+</span><span class='line'>    full_name = "#{@last_name} #{@first_name}"
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Name</code>のオブジェクトを作って<code>full_name</code>のメソッドを実行すると</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
+</span><span class='line'>=&gt; #&lt;Name:0x007f8483c1f8b8 @first_name="Nobunaga", @last_name="Oda"&gt;
+</span><span class='line'>irb&gt; create_name.full_name
+</span><span class='line'>=&gt; "Oda Nobunaga"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>普通に入力した通り<code>Oda Nobunaga</code>というフルネームが取得される。<br/>
+ここで下記のようなクラスを作成して試してみる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Change
+</span><span class='line'>  def initialize(obj)
+</span><span class='line'>    @name_obj = obj
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def change_str
+</span><span class='line'>    @name_obj.first_name("hogehoge")
+</span><span class='line'>    @name_obj.last_name("foo")
+</span><span class='line'>    return "#{@last_name} #{@first_name}"
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この<code>Change</code>クラスに<code>create_name</code>オブジェクトを渡して実装してみると</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; create_name = Name.new "Nobunaga", "Oda"
+</span><span class='line'>=&gt; #&lt;Name:0x007f8483c1f8b8 @first_name="Nobunaga", @last_name="Oda"&gt;
+</span><span class='line'>irb&gt; create_name.full_name
+</span><span class='line'>=&gt; "Oda Nobunaga"
+</span><span class='line'>irb&gt; change = Change.new create_name
+</span><span class='line'>=&gt; #&lt;Change:0x007f84838aae58 @name_obj=#&lt;Name:0x007f84838c0898 @first_name="Nobunaga", @last_name="Oda"&gt;&gt;
+</span><span class='line'>irb&gt; change.change_name
+</span><span class='line'>=&gt; "foo"
+</span><span class='line'>irb&gt; create_name.full_name
+</span><span class='line'>=&gt; "foo hogehoge"</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>create_name.full_name</code>を叩いた時に値が変わることが確認できる。<br/>
+ということで、オブジェクトも参照の値渡しということが分かってきた。</p>
 
 <h2>参照</h2>
 
