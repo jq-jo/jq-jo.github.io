@@ -18,8 +18,9 @@
 7
 8
 9
-class ParentVariable @@var = "Hello!"
-end class Variable &lt &hellip;">
+10
+11
+class ParentVariable @@var = &quot;Hello!&quot; def &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -112,7 +113,7 @@ end class Variable &lt &hellip;">
 
 <p>クラスに変数を持ちたい時にはクラス変数を定義すれば良い。<code>@@</code>というプレフィックスをつけるとクラス変数の定義して使うことができる。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -121,32 +122,38 @@ end class Variable &lt &hellip;">
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ParentVariable
-</span><span class='line'>  @@var = "Hello!"
-</span><span class='line'>end
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>class Variable &lt; ParentVariable
-</span><span class='line'>  def class_var
-</span><span class='line'>    @@var
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
+</span><span class='line'>    <span class="vc">@@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>クラス変数はサブクラスや通常のインスタンスメソッドからアクセスすることもできる。上記の<code>Variable</code>クラスの<code>class_var</code>を実行してみると</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483c8f730&gt;
-</span><span class='line'>irb&gt; var.class_var
-</span><span class='line'>=&gt; "Hello!"</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c8f730&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>普通にクラス変数の<code>@@var</code>を取得できる。しかし、クラス変数には少し使いにくいところがある。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -168,28 +175,29 @@ end class Variable &lt &hellip;">
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ParentVariable
-</span><span class='line'>  @@var = "Hello!"
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  def class_var
-</span><span class='line'>    @@var
-</span><span class='line'>  end
-</span><span class='line'>end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
+</span><span class='line'>    <span class="vc">@@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>class Variable &lt; ParentVariable
-</span><span class='line'>  @@var = "Good morning!"
-</span><span class='line'>end
+</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; parent_var = ParentVariable.new
-</span><span class='line'>=&gt; #&lt;ParentVariable:0x007f8480e4dd90&gt;
-</span><span class='line'>irb&gt; prent_var.class_var
-</span><span class='line'>=&gt; "Hello!"
-</span><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8480de7388&gt;
-</span><span class='line'>irb&gt; var.class_var
-</span><span class='line'>=&gt; "Good morning!"
-</span><span class='line'>irb&gt; pvar.class_var
-</span><span class='line'>=&gt; "Good morning!"</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">parent_var</span> <span class="o">=</span> <span class="no">ParentVariable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;ParentVariable:0x007f8480e4dd90&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">prent_var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8480de7388&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">pvar</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>こういうふうにクラス変数を変更する場合、このクラス変数にかかっている全てのオブジェクトに影響を与えるので実際の変数の値が変更されてしまう。ということで多くのRubyistはクラス変数は使ってない（らしい）。</p>
@@ -198,7 +206,7 @@ end class Variable &lt &hellip;">
 
 <p>インスタンス変数は<code>@</code>というプレフィックスをつけて使う。これはオブジェクトに所属していて、クラスとは何もつながりがない。なので、同じクラスのオブジェクトでもインスタンス変数の値はそれぞれ違う。インスタンス変数は値を代入した時に初めて出現する。だから明示的に定義しなくても良い。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -214,29 +222,30 @@ end class Variable &lt &hellip;">
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Variable
-</span><span class='line'>  def instance_var var
-</span><span class='line'>    @var = "variable : '#{var}'."
-</span><span class='line'>  end
-</span><span class='line'>end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span> <span class="n">var</span>
+</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;variable : &#39;</span><span class="si">#{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483923e98&gt;
-</span><span class='line'>irb&gt; var1 = var.instance_var "Hello"
-</span><span class='line'>=&gt; "variable : 'Hello'."
-</span><span class='line'>irb&gt; var2 = var.instance_var "Bye"
-</span><span class='line'>=&gt; "variable : 'Bye'."
-</span><span class='line'>irb&gt; var1
-</span><span class='line'>=&gt; "variable : 'Hello'."
-</span><span class='line'>irb&gt; var2
-</span><span class='line'>=&gt; "variable : 'Bye'."</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483923e98&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Hello&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Bye&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h3>クラスインスタンス変数</h3>
 
 <p>Rubyでは、全てのインスタンス変数はカレントオブジェクト<code>self</code>に属している。クラスの定義の中では<code>self</code>はクラスのことになるから、下記にクラスに定義された<code>@var</code>はクラスに属していることになる。同じインスタンス変数<code>@var</code>だけどどこに定義されているかによって違い、それぞれ異なるスコープに定義されており、別々のオブジェクトに属している。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -258,28 +267,29 @@ end class Variable &lt &hellip;">
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Variable
-</span><span class='line'>  @var = "Class Instance Hello!"
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
+</span><span class='line'>  <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  def initialize(str)
-</span><span class='line'>    @var = str
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="n">str</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def instance_var
-</span><span class='line'>    @var
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span>
+</span><span class='line'>    <span class="vi">@var</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def self.class_instance_var
-</span><span class='line'>    @var
-</span><span class='line'>  end
-</span><span class='line'>end
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_instance_var</span>
+</span><span class='line'>    <span class="vi">@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; var = Variable.new "Instance Hello!"
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483c56bd8 @var="Instance Hello!"&gt;
-</span><span class='line'>irb&gt; var.instance_var
-</span><span class='line'>=&gt; "Instance Hello!"
-</span><span class='line'>irb&gt; Variable.class_instance_var
-</span><span class='line'>=&gt; "Class Instance Hello!"</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Instance Hello!&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c56bd8 @var=&quot;Instance Hello!&quot;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Instance Hello!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Variable</span><span class="o">.</span><span class="n">class_instance_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>１つ目<code>instance_var</code>メソッドで呼ばれた<code>@var</code>は<code>var</code>オブジェクトが<code>self</code>になる。つまり、<code>var</code>オブジェクトのインスタンス変数だ。２つ目の<code>class_instance_var</code>のクラス変数で呼ばれた<code>@var</code>は<code>Variable</code>が<code>self</code>になる。つまり、これは<code>Variable</code>オブジェクトのインスタンス変数だ。これは<code>Class</code>クラスのオブジェクトである<code>Variable</code>に属しているので通常のインスタンス変数だ。これをクラスインスタンス変数と呼ぶ。<br/>
@@ -331,6 +341,8 @@ end class Variable &lt &hellip;">
       
         <a class="basic-alignment left" href="/blog/2017/07/19/call-by-value-call-by-variable/" title="Previous Post: Rubyの値渡しと参照渡し">&laquo; Rubyの値渡しと参照渡し</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2017/08/02/mastodon/" title="Next Post: Mastodonについて">Mastodonについて &raquo;</a>
       
     </p>
   </footer>

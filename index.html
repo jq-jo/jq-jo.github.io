@@ -9,17 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="クラス変数 クラスに変数を持ちたい時にはクラス変数を定義すれば良い。@@というプレフィックスをつけるとクラス変数の定義して使うことができる。 1
-2
-3
-4
-5
-6
-7
-8
-9
-class ParentVariable @@var = "Hello!"
-end class Variable &lt &hellip;">
+  <meta name="description" content="Mastodonとは (ウィキペディア「マストドン (ミニブログ)」))に詳しく説明されているがMastodonというものはTwitterによく似ている短文投稿型のSNSである。最近流行っているそうだ。Mastodonはオープンソースで公開されているので自由に活用できる。 使い方 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +82,259 @@ end class Variable &lt &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2017/08/02/mastodon/">Mastodonについて</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-02T19:26:59+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2017</span></span> <span class='time'>7:26 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Mastodonとは</h3>
+
+<p><a href="https://ja.wikipedia.org/wiki/%E3%83%9E%E3%82%B9%E3%83%88%E3%83%89%E3%83%B3_(%E3%83%9F%E3%83%8B%E3%83%96%E3%83%AD%E3%82%B0">(ウィキペディア「マストドン (ミニブログ)」)</a>)に詳しく説明されているが<code>Mastodon</code>というものは<code>Twitter</code>によく似ている短文投稿型のSNSである。最近流行っているそうだ。Mastodonはオープンソースで公開されているので自由に活用できる。</p>
+
+<h3>使い方</h3>
+
+<p>使い方としてはいろいろあるけど、今回はgithubに乗せている<code>Deploy to Heroku</code>ボタンを利用する方法と<code>git clone</code>して自ら<code>Heroku</code>にpushする方法、２つを試してみる。</p>
+
+<h4><code>Deploy to Heroku</code>ボタンを利用する方法</h4>
+
+<p>以外とすごく簡単。<a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md">https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md</a> のHeroku Buttonを押し、</p>
+
+<ul>
+<li>App Nameを希望のアプリ名に</li>
+<li>S3_ENABLEDをtrueに</li>
+<li>LOCAL_DOMAINを&lt;アプリ名>.herokuapp.comに</li>
+<li>SMTP_FROM_ADDRESSをnotifications@localhostに</li>
+</ul>
+
+
+<p>変更して、Deployボタンを押す。Mastodonはデフォルトではdynoのファイルシステムにアイコンやメディアなどのファイルを格納する。これらのファイルは1日に1度のdynoの再起動の際に消えてしまう。なのでS3を使ってファイルを保存する方が良い。S3を使う場合は</p>
+
+<ul>
+<li>S3_BUCKET</li>
+<li>S3_REGION</li>
+<li>AWS_ACCESS_KEY_ID</li>
+<li>AWS_SECRET_ACCESS_KEY</li>
+</ul>
+
+
+<p>これらを記入する。<br/>
+メールの機能のためにSMTP設定もしなきゃいけないが今回は一旦<code>gmail</code>で設定しておいた。<br/>
+Manage appボタンからダッシュボードを開き、Dyno formationからConfigure Dynosをたどり、worker dynoをONにする。<br/>
+これでセッティングは終わり。<br/>
+今までの設定をした<code>Application</code>は<a href="https://mastojon.herokuapp.com">ここ</a>で確認できる。</p>
+
+<h4>git clone</h4>
+
+<p><code>git clone</code>するのもすぐできる。<br/>
+適当なDirectoryに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:tootsuite/mastodon.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>を入力する。それから<br/>
+- Xcode Command Line ツール</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ xcode-select --install</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>HomeBrewで下記のものをインストール</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install imagemagick ffmpeg yarn postgresql redis rbenv nodejs protobuf</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>rbenv 2.4.1をインストール</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rbenv install 2.4.1</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>bundlerインストール</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install bundler</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全部インストールできたら、実際のapplicationのためのインストールをする。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install libidn
+</span><span class='line'>$ bundle install --with development
+</span><span class='line'>$ yarn install --pure-lockfile
+</span><span class='line'>$ gem install foreman --no-ri --no-rdoc
+</span><span class='line'>$ bundle exec rails db:setup
+</span><span class='line'>$ bin/rails assets:precompile</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここまでしたらセッティングは終わり。こうしたらローカルで動くようになる。<br/>
+そこで</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
+</span><span class='line'>$ heroku create &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>を実行してheroku appを作って、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "first commit"
+</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>を実行してpushする。そしたら</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>remote:        To see why this extension failed to compile, please check the mkmf.log which can
+</span><span class='line'>remote:        be found here:
+</span><span class='line'>remote:        
+</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/extensions/x86_64-linux/2.4.0/cld3-3.1.3/mkmf.log
+</span><span class='line'>remote:        
+</span><span class='line'>remote:        extconf failed, exit code 1
+</span><span class='line'>remote:        
+</span><span class='line'>remote:        Gem files will remain installed in
+</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/gems/cld3-3.1.3
+</span><span class='line'>remote:        for inspection.
+</span><span class='line'>remote:        Results logged to
+</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/extensions/x86_64-linux/2.4.0/cld3-3.1.3/gem_make.out
+</span><span class='line'>remote:        
+</span><span class='line'>remote:        An error occurred while installing cld3 (3.1.3), and Bundler cannot continue.
+</span><span class='line'>remote:        Make sure that `gem install cld3 -v '3.1.3'` succeeds before bundling.
+</span><span class='line'>remote:        
+</span><span class='line'>remote:        In Gemfile:
+</span><span class='line'>remote:        cld3
+</span><span class='line'>remote:  !
+</span><span class='line'>remote:  !     Failed to install gems via Bundler.
+</span><span class='line'>remote:  !
+</span><span class='line'>remote:  !     Push rejected, failed to compile Ruby app.
+</span><span class='line'>remote:
+</span><span class='line'>remote:  !     Push failed</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と怒られる。調べてみると<code>buildpacks</code>を設置しなきゃいけない。それで</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-apt # v1.3.3かそれ以前ではこの行は不要
+</span><span class='line'>$ heroku buildpacks:add heroku/nodejs -a &lt;App名&gt;
+</span><span class='line'>$ heroku buildpacks:add heroku/ruby -a &lt;App名&gt;
+</span><span class='line'>$ heroku addons:create heroku-postgresql -a &lt;App名&gt;
+</span><span class='line'>$ heroku addons:create heroku-redis -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちゃんと設置をしてから</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>をしてみたら、無事に通る。次は</p>
+
+<ul>
+<li>データベースのマイグレーション</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku run rails db:migrate -a &lt;App名&gt;
+</span><span class='line'>$ heroku run rails db:seed -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>アプリケーションの設定</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku config:set HEROKU=true -a &lt;App名&gt;
+</span><span class='line'>$ heroku config:set LOCAL_DOMAIN=$APP_NAME.herokuapp.com -a &lt;App名&gt;
+</span><span class='line'>$ heroku config:set PAPERCLIP_SECRET=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;
+</span><span class='line'>$ heroku config:set SECRET_KEY_BASE=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;
+</span><span class='line'>$ heroku config:set OTP_SECRET=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そしてHerokuのAppのDashboardでworkerをONにする。<br/>
+ここまでするとセットアップは全て終わり、Heroku上で動かすことができる。その結果は<a href="https://jastodon.herokuapp.com">ここ</a>で確認できる。</p>
+
+<h2>参照</h2>
+
+<p><a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Development-guide.md">tootsuite/documentation(Development guide)</a><br/>
+<a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md">tootsuite/documentation(Heroku guide)</a><br/>
+<a href="https://github.com/zunda/mastodon/wiki/CreateInstanceOnHeroku#heroku-cli%E3%82%92%E4%BD%BF%E3%81%86">zunda/mastodon(CreateInstanceOnHeroku)</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2017/07/26/class-instance-variable/">クラス変数、インスタンス変数、クラスインスタス変数</a></h1>
     
     
@@ -113,7 +356,7 @@ end class Variable &lt &hellip;">
 
 <p>クラスに変数を持ちたい時にはクラス変数を定義すれば良い。<code>@@</code>というプレフィックスをつけるとクラス変数の定義して使うことができる。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -122,32 +365,38 @@ end class Variable &lt &hellip;">
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ParentVariable
-</span><span class='line'>  @@var = "Hello!"
-</span><span class='line'>end
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>class Variable &lt; ParentVariable
-</span><span class='line'>  def class_var
-</span><span class='line'>    @@var
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
+</span><span class='line'>    <span class="vc">@@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>クラス変数はサブクラスや通常のインスタンスメソッドからアクセスすることもできる。上記の<code>Variable</code>クラスの<code>class_var</code>を実行してみると</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483c8f730&gt;
-</span><span class='line'>irb&gt; var.class_var
-</span><span class='line'>=&gt; "Hello!"</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c8f730&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>普通にクラス変数の<code>@@var</code>を取得できる。しかし、クラス変数には少し使いにくいところがある。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -169,28 +418,29 @@ end class Variable &lt &hellip;">
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ParentVariable
-</span><span class='line'>  @@var = "Hello!"
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  def class_var
-</span><span class='line'>    @@var
-</span><span class='line'>  end
-</span><span class='line'>end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
+</span><span class='line'>    <span class="vc">@@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>class Variable &lt; ParentVariable
-</span><span class='line'>  @@var = "Good morning!"
-</span><span class='line'>end
+</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
+</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; parent_var = ParentVariable.new
-</span><span class='line'>=&gt; #&lt;ParentVariable:0x007f8480e4dd90&gt;
-</span><span class='line'>irb&gt; prent_var.class_var
-</span><span class='line'>=&gt; "Hello!"
-</span><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8480de7388&gt;
-</span><span class='line'>irb&gt; var.class_var
-</span><span class='line'>=&gt; "Good morning!"
-</span><span class='line'>irb&gt; pvar.class_var
-</span><span class='line'>=&gt; "Good morning!"</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">parent_var</span> <span class="o">=</span> <span class="no">ParentVariable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;ParentVariable:0x007f8480e4dd90&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">prent_var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8480de7388&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">pvar</span><span class="o">.</span><span class="n">class_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>こういうふうにクラス変数を変更する場合、このクラス変数にかかっている全てのオブジェクトに影響を与えるので実際の変数の値が変更されてしまう。ということで多くのRubyistはクラス変数は使ってない（らしい）。</p>
@@ -199,7 +449,7 @@ end class Variable &lt &hellip;">
 
 <p>インスタンス変数は<code>@</code>というプレフィックスをつけて使う。これはオブジェクトに所属していて、クラスとは何もつながりがない。なので、同じクラスのオブジェクトでもインスタンス変数の値はそれぞれ違う。インスタンス変数は値を代入した時に初めて出現する。だから明示的に定義しなくても良い。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -215,29 +465,30 @@ end class Variable &lt &hellip;">
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Variable
-</span><span class='line'>  def instance_var var
-</span><span class='line'>    @var = "variable : '#{var}'."
-</span><span class='line'>  end
-</span><span class='line'>end
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span> <span class="n">var</span>
+</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;variable : &#39;</span><span class="si">#{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; var = Variable.new
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483923e98&gt;
-</span><span class='line'>irb&gt; var1 = var.instance_var "Hello"
-</span><span class='line'>=&gt; "variable : 'Hello'."
-</span><span class='line'>irb&gt; var2 = var.instance_var "Bye"
-</span><span class='line'>=&gt; "variable : 'Bye'."
-</span><span class='line'>irb&gt; var1
-</span><span class='line'>=&gt; "variable : 'Hello'."
-</span><span class='line'>irb&gt; var2
-</span><span class='line'>=&gt; "variable : 'Bye'."</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483923e98&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Hello&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Bye&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h3>クラスインスタンス変数</h3>
 
 <p>Rubyでは、全てのインスタンス変数はカレントオブジェクト<code>self</code>に属している。クラスの定義の中では<code>self</code>はクラスのことになるから、下記にクラスに定義された<code>@var</code>はクラスに属していることになる。同じインスタンス変数<code>@var</code>だけどどこに定義されているかによって違い、それぞれ異なるスコープに定義されており、別々のオブジェクトに属している。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -259,28 +510,29 @@ end class Variable &lt &hellip;">
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Variable
-</span><span class='line'>  @var = "Class Instance Hello!"
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
+</span><span class='line'>  <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  def initialize(str)
-</span><span class='line'>    @var = str
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="n">str</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def instance_var
-</span><span class='line'>    @var
-</span><span class='line'>  end
+</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span>
+</span><span class='line'>    <span class="vi">@var</span>
+</span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>  def self.class_instance_var
-</span><span class='line'>    @var
-</span><span class='line'>  end
-</span><span class='line'>end
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_instance_var</span>
+</span><span class='line'>    <span class="vi">@var</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
 </span><span class='line'>
-</span><span class='line'>irb&gt; var = Variable.new "Instance Hello!"
-</span><span class='line'>=&gt; #&lt;Variable:0x007f8483c56bd8 @var="Instance Hello!"&gt;
-</span><span class='line'>irb&gt; var.instance_var
-</span><span class='line'>=&gt; "Instance Hello!"
-</span><span class='line'>irb&gt; Variable.class_instance_var
-</span><span class='line'>=&gt; "Class Instance Hello!"</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Instance Hello!&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c56bd8 @var=&quot;Instance Hello!&quot;&gt;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Instance Hello!&quot;</span>
+</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Variable</span><span class="o">.</span><span class="n">class_instance_var</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>１つ目<code>instance_var</code>メソッドで呼ばれた<code>@var</code>は<code>var</code>オブジェクトが<code>self</code>になる。つまり、<code>var</code>オブジェクトのインスタンス変数だ。２つ目の<code>class_instance_var</code>のクラス変数で呼ばれた<code>@var</code>は<code>Variable</code>が<code>self</code>になる。つまり、これは<code>Variable</code>オブジェクトのインスタンス変数だ。これは<code>Class</code>クラスのオブジェクトである<code>Variable</code>に属しているので通常のインスタンス変数だ。これをクラスインスタンス変数と呼ぶ。<br/>
@@ -540,7 +792,6 @@ end class Variable &lt &hellip;">
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-<span class='line-number'>11</span>
 </pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Change</span>
 </span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 </span><span class='line'>    <span class="vi">@name_obj</span> <span class="o">=</span> <span class="n">obj</span>
@@ -549,7 +800,6 @@ end class Variable &lt &hellip;">
 </span><span class='line'>  <span class="k">def</span> <span class="nf">change_str</span>
 </span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="s2">&quot;hogehoge&quot;</span><span class="p">)</span>
 </span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@last_name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@first_name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -2673,139 +2923,6 @@ VueDraggableを使うためには二つの方法がある。</p>
 <p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
 <a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
 <a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/04/24/vuejs/">RailsにおけるVue.jsの使い方</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-04-24T15:47:04+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:47 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>環境</h2>
-
-<ul>
-<li>Rails
-
-<ul>
-<li>Rails 5.1.0.rc2</li>
-</ul>
-</li>
-<li>Ruby
-
-<ul>
-<li>ruby 2.4.0p0</li>
-</ul>
-</li>
-<li>Vue.js
-
-<ul>
-<li>2.0</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>Vue.jsの使い方</h2>
-
-<h3>アプリケーション作成</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new vuejs -d postgresql --webpack=vue</span></code></pre></td></tr></table></div></figure>
-
-
-<p>rails newに <code>--webpack</code>をつけたらアプリケーションが生成した時点で<code>webpack</code>を使えるようになる。
-<code>app</code> フォルダーの下に <code>javascript</code> フォルダーが生成されていて、その下には <code>packs</code> フォルダーが生成されている。そこのjsファイルとvueファイルを通して <code>Vue.js</code> を使うことができる。</p>
-
-<h3>コントローラー作成</h3>
-
-<p>使うコントローラーとビューを作る。このアプリケーションにはtodoリストを作成してみるのでコントローラー名は <code>todos</code> にする。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g controller todos index</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>routesに追加</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">root</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;todos#index&#39;</span>
-</span><span class='line'><span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="ss">:index</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>js側</h3>
-
-<p><code>packs</code> フォルダーに <code>todo.js</code> ファイルを作る。そして <code>import Vue from 'vue/dist/vue.esm'</code> を記入してVueをimportする。</p>
-
-<h3>ビュー側</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>&lsquo;Hello Vue!'の出力</h3>
-
-<p>Vue.js公式サイトの最初の方に出ている最も基本的な <code>Hello Vue!</code> を出力してみる。まず、<code>todos/index.html.slim</code> に <code>object</code> を出力する <code>div</code> を入れる。それからこのビューにjsから <code>message</code> というデータをバインティングする。</p>
-
-<ul>
-<li>ビュー</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#app</span>
-</span><span class='line'>  | {{ message }}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>js</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#app&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Hello Vue!&#39;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="http://qiita.com/jnchito/items/30ab14ebf29b945559f6">【動画付き】Rails 5.1で作るVue.jsアプリケーション ～Herokuデプロイからシステムテストまで～</a><br/>
-<a href="http://qiita.com/jacoyutorius/items/f39b7cd66092746d0664">Rails5.1.0 Beta1でVue.jsアプリケーションを作る</a><br/>
-<a href="https://kr.vuejs.org/v2/guide/">Vue.js_Guide</a></p>
 </div>
   
   
