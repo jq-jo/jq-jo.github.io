@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-08-03T19:34:39+09:00</updated>
+  <updated>2017-08-04T10:20:26+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Mastodonについて]]></title>
+    <title type="html"><![CDATA[MastodonをHerokuで動かしてみる]]></title>
     <link href="http://jq-jo.github.io/blog/2017/08/02/mastodon/"/>
     <updated>2017-08-02T19:26:59+09:00</updated>
     <id>http://jq-jo.github.io/blog/2017/08/02/mastodon</id>
