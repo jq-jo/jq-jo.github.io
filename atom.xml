@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-08-04T10:20:26+09:00</updated>
+  <updated>2017-08-18T10:46:00+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,86 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveModelSerializersについて]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/08/17/active-model-serializers/"/>
+    <updated>2017-08-17T10:43:55+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/08/17/active-model-serializers</id>
+    <content type="html"><![CDATA[<p>Mastodonのソースコードを最近のRailsの記述を学ぼうとしたのでMastodonのソースコードを読み始めた。<br/>
+Mastodonのrootページになる<code>/about</code>からみたのだが、最初からわからないことばかり！（泣）<br/>
+Mastodonには<code>ActiveModelSerializers</code>を使ってjsonの処理を行っていたので<code>ActiveModelSerializers</code>を調べてみた。</p>
+
+<h3>ActiveModelSerializersとは</h3>
+
+<p><a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">ActiveModelSerializers</a>によると</p>
+
+<blockquote><p>ActiveModelSerializers brings convention over configuration to your JSON generation.</p></blockquote>
+
+<p>と書いてある。
+つまりActiveModelSerializersとはRailsで簡単で素早くjsonを作れるgemである。
+JSON形式でレスポンスを返す場合、表示するパラメータを制御したいときに細かなJSONの制御を行うことができるので便利。</p>
+
+<h3>使い方</h3>
+
+<p><code>rails generate serializer Hoge</code>を実行すると<br/>
+<code>app/serializers/hoge_serializer.rb</code>ファイルが作成される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HogeSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Serializer</span>
+</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">:name_size</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">name_size</span>
+</span><span class='line'>    <span class="n">object</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">size</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードをみてみると<br/>
+- <code>attributes</code>にレスポンスで表示したいパラメータを記述する。
+- 関連オブジェクトで同時に表示したいオブジェクトがある場合は<code>has_many</code>や<code>has_one</code>などが使える。
+- 関数を定義することで、独自のパラメータを追加することもできる。</p>
+
+<p>Controllerで次のように書くと、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@hoge</span> <span class="o">=</span> <span class="no">Hoge</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@hoge</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>結果のjsonが以下のようになっている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;hoge&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;hoge@example.com&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">name_size</span><span class="p">:</span> <span class="mi">4</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このように、Serializerクラスで整形処理を行うことで、Controllerがより綺麗になると思う。</p>
+
+<h2>参照</h2>
+
+<p><a href="http://qiita.com/m_nakamura145/items/75fd7c0934daf9bcc21d">active_model_serializersが便利</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MastodonをHerokuで動かしてみる]]></title>
@@ -4894,107 +4974,6 @@ podがなければプロジェクトDirectoryで<code>pod init</code>をしてpo
 
 <p><a href="https://firebase.google.com/docs/analytics/android/events">Firebase Document Analytics Event Android</a><br/>
 <a href="https://firebase.google.com/docs/analytics/ios/events">Firebase Document Analytics Event iOS</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[カウンターキャッシュについて]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/02/20/counter-cache-in-rails/"/>
-    <updated>2017-02-20T16:35:39+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/02/20/counter-cache-in-rails</id>
-    <content type="html"><![CDATA[<h2>カウンターキャッシュとは</h2>
-
-<ul>
-<li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
-</ul>
-
-
-<h2>設定</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Survey</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:questions</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Question&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のような関係を持つモデルの子モデルに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>counter_cache: :カラム名</code>のように追加する<br/>
-それからmigrationを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_column_questions_count_to_qualitative_surveys</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そこに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddColumnInquiresCountToSurveys</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:surveys</span><span class="p">,</span> <span class="ss">:questions_count</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">reversible</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">dir</span><span class="o">.</span><span class="n">up</span> <span class="k">do</span>
-</span><span class='line'>      <span class="no">Survey</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">survey</span><span class="o">|</span>
-</span><span class='line'>        <span class="no">Survey</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">(</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">:questions</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>default: 0</code>を追加し、今持っている子モデルのカウントをセッティングする場合は上記のように<code>reset_counters</code>メソッドを使って更新する
-consoleで確認してみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span> <span class="o">=</span> <span class="no">Survey</span><span class="o">.</span><span class="n">last</span>
-</span><span class='line'><span class="no">Survey</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span>  <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;surveys&quot;</span> <span class="no">ORDER</span> <span class="no">BY</span> <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="s2">&quot;id&quot;</span> <span class="no">DESC</span> <span class="no">LIMIT</span> <span class="vg">$1</span>  <span class="o">[[</span><span class="s2">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">]]</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Survey id: 83, title: &quot;Survey_title_49&quot;, content: nil, created_at: &quot;2017-02-08 10:26:51&quot;, updated_at: &quot;2017-02-16 02:55:41&quot;, questions_count: 43&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span><span class="o">.</span><span class="n">questions_count</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">43</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように確認できる</p>
 ]]></content>
   </entry>
   
