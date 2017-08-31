@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-08-31T14:53:56+09:00</updated>
+  <updated>2017-08-31T15:02:32+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -31,6 +31,14 @@
 
 <ul>
 <li>使い方
+
+<ul>
+<li>gemのインストール</li>
+</ul>
+
+
+<pre><code class="``ruby">  gem 'shrine'
+</code></pre>
 
 <ul>
 <li>初期設定</li>
