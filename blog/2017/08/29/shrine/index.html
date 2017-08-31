@@ -1,0 +1,428 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Shrine Gemについて - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="shrineとは 公式サイトには Shrine is a toolkit for file attachments in Ruby applications. と書いてある。つまり、ShrineはRubyアプリケーションにおいてファイルをアタッチするために使えるツールキットである。 使い方 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/08/29/shrine">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Shrine Gemについて</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-29T14:34:13+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:34 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>shrineとは</li>
+</ul>
+
+
+<p>公式サイトには</p>
+
+<blockquote><p>Shrine is a toolkit for file attachments in Ruby applications.</p></blockquote>
+
+<p>と書いてある。つまり、ShrineはRubyアプリケーションにおいてファイルをアタッチするために使えるツールキットである。</p>
+
+<ul>
+<li>使い方
+
+<ul>
+<li>初期設定</li>
+</ul>
+
+
+<pre><code class="``ruby">  # config/initializers/shrine.rb
+  require "shrine"
+  require "shrine/storage/file_system"
+
+  Shrine.storages = {
+    cache: Shrine::Storage::FileSystem.new("public", prefix: "uploads/cache"), # temporary
+    store: Shrine::Storage::FileSystem.new("public", prefix: "uploads/store"), # permanent
+  }
+
+  Shrine.plugin :activerecord
+  Shrine.plugin :cached_attachment_data # for forms
+</code></pre>
+
+<ul>
+<li>Model</li>
+</ul>
+
+
+<pre><code class="``ruby">  class Photo &lt; ApplicationRecord
+    include ImageUploader[:image]
+  end
+</code></pre>
+
+<ul>
+<li>Uploader</li>
+</ul>
+
+
+<pre><code class="``ruby">  class ImageUploader &lt; Shrine
+  end
+</code></pre>
+
+<ul>
+<li>Controller<br/>
+Controllerのparamは<code>image_data</code>ではなく、<code>image</code>にする。</li>
+</ul>
+
+
+<pre><code class="``ruby">  def photo_params
+    params.require(:photo).permit(:name, :image)
+  end
+</code></pre></li>
+</ul>
+
+
+<p>ビューを作ってブラウザーで確認してみると、</p>
+
+<p><img src="https://monosnap.com/file/0qOCToywihGzpmIutHR2OjDjG2Q03w.png" alt="" /><br/>
+大きすぎる。。！！</p>
+
+<ul>
+<li><p>リサイズ<br/>
+リサイズのためには他のgemをインストールする必要がある。</p>
+
+<ul>
+<li>gemのインストール</li>
+</ul>
+
+
+<pre><code class="``ruby">  gem 'image_processing'
+  gem 'mini_magick', '&gt;= 4.3.5'
+</code></pre>
+
+<ul>
+<li>Uploader編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require 'image_processing/mini_magick'
+  class ImageUploader &lt; Shrine
+    include ImageProcessing::MiniMagick
+    plugin :processing
+    plugin :versions   # enable Shrine to handle a hash of files
+    plugin :delete_raw # delete processed files after uploading
+
+    process(:store) do |io, context|
+      original = io.download
+
+      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
+      size_500 = resize_to_limit(size_800,  500, 500)
+      size_300 = resize_to_limit(size_500,  300, 300)
+
+      {original: io, large: size_800, medium: size_500, small: size_300}
+    end
+  end
+</code></pre>
+
+<ul>
+<li>ビューで表示する
+ビューでサイズ別の画像を取得できる。</li>
+</ul>
+
+
+<pre><code class="``">  = image_tag, @photo.image[:original].url
+  = image_tag, @photo.image[:large].url}
+  = image_tag, @photo.image[:medium].url}"
+  = image_tag, @photo.image[:small].url}"
+</code></pre>
+
+<p>  ビューで確認すると、</p>
+
+<p>  <img src="https://monosnap.com/file/HdW4JQ8J5DJTn3vCV8QvvKQQR0HiIF.png" alt="" /></p></li>
+<li><p>バリデーションの追加<br/>
+Uploadにバリデーションをかけるのももちろんできる。<br/>
+<code>validation_helpers</code>のプラグインを追加し、バリデーションを追加する。<br/>
+バリデーションの処理は<code>Attacher.validate</code>の中に記述する。</p>
+
+<ul>
+<li>Uploaderの編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require 'image_processing/mini_magick'
+  class ImageUploader &lt; Shrine
+    include ImageProcessing::MiniMagick
+    plugin :processing
+    plugin :versions   # enable Shrine to handle a hash of files
+    plugin :delete_raw # delete processed files after uploading
+    plugin :validation_helpers
+
+    process(:store) do |io, context|
+      original = io.download
+
+      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
+      size_500 = resize_to_limit(size_800,  500, 500)
+      size_300 = resize_to_limit(size_500,  300, 300)
+
+      {original: io, large: size_800, medium: size_500, small: size_300}
+    end
+
+    Attacher.validate do
+      validate_max_size 5 * 1024 * 1024, message: 'Image is too large (max is 5 MB)'
+      validate_mime_type_inclusion %w(image/jpeg image/jpg image/png)
+    end
+  end
+</code></pre>
+
+<p>  バリデーションにかかったら</p>
+
+<pre><code class="``">  photo = Photo.new
+  photo.image = File.open("img.png")
+  photo.valid? #=&gt; false
+  photo.errors.to_hash #=&gt; {image: ["Image is too large (max is 5 MB)"]}
+</code></pre></li>
+<li>Direct uploads
+
+<ul>
+<li>gemのインストール</li>
+</ul>
+
+
+<pre><code class="``">  gem 'aws-sdk', '~&gt; 2.1'
+  gem 'roda'
+</code></pre>
+
+<ul>
+<li>config/initializers/shrine.rbファイルの編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require "shrine/storage/s3"
+
+  s3_options = {
+    access_key_id:     "abc",
+    secret_access_key: "123",
+    region:            "my-region",
+    bucket:            "my-bucket",
+  }
+
+  Shrine.storages = {
+    cache: Shrine::Storage::S3.new(prefix: "cache", **s3_options),
+    store: Shrine::Storage::S3.new(prefix: "store", **s3_options),
+  }
+</code></pre>
+
+<ul>
+<li>Uploaderにpluginの追加</li>
+</ul>
+
+
+<pre><code class="``ruby">  plugin :direct_upload
+</code></pre>
+
+<ul>
+<li>routes.rbに<code>mount</code>追加</li>
+</ul>
+
+
+<pre><code class="``ruby">  Rails.application.routes.draw do
+    mount ImageUploader::UploadEndpoint =&gt; "/images"
+  end
+</code></pre>
+
+<ul>
+<li>jsonの取得</li>
+</ul>
+
+
+<p>  <code>GET /images/cache/presign</code>のrouteでjsonを取得できる。</p>
+
+<pre><code class="``">  # GET /images/cache/presign
+  {
+    "url" =&gt; "https://my-bucket.s3-eu-west-1.amazonaws.com",
+    "fields" =&gt; {
+      "key" =&gt; "cache/b7d575850ba61b44c8a9ff889dfdb14d88cdc25f8dd121004c8",
+      "policy" =&gt; "eyJleHBpcmF0aW9uIjoiMjAxNS0QwMToxMToyOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJzaHJpbmUtdGVzdGluZyJ9LHsia2V5IjoiYjdkNTc1ODUwYmE2MWI0NGU3Y2M4YTliZmY4OGU5ZGZkYjE2NTQ0ZDk4OGNkYzI1ZjhkZDEyMTAwNGM4In0seyJ4LWFtei1jcmVkZW50aWFsIjoiQUtJQUlKRjU1VE1aWlk0NVVUNlEvMjAxNTEwMjQvZXUtd2VzdC0xL3MzL2F3czRfcmVxdWVzdCJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotZGF0ZSI6IjIwMTUxMDI0VDAwMTEyOVoifV19",
+      "x-amz-credential" =&gt; "AKIAIJF55TMZYT6Q/20151024/eu-west-1/s3/aws4_request",
+      "x-amz-algorithm" =&gt; "AWS4-HMAC-SHA256",
+      "x-amz-date" =&gt; "20151024T001129Z",
+      "x-amz-signature" =&gt; "c1eb634f83f96b69bd675f535b3ff15ae184b102fcba51e4db5f4959b4ae26f4"
+    }
+  }
+</code></pre></li>
+</ul>
+
+
+<p>こう設定すると、ひとまずs3にdirect_uploadはできる。<br/>
+公式documentには<code>jQuery-File-Upload</code>, <code>Dropzone</code>, <code>FineUploader</code>などのJavaScriptファイルアップロードライブラリとも連携もできると書いてあるので、次は今のプロジェクトで使用している<code>Dropzone</code>との連携を調べてみる。</p>
+
+<h2>参照</h2>
+
+<p><a href="https://github.com/janko-m/shrine">Shrine githubページ</a><br/>
+<a href="http://qiita.com/okuramasafumi/items/488b535ad8889ef22b72">RailsでShrineを使ってファイルをS3にダイレクトアップロードするときの注意点</a><br/>
+<a href="https://re-engines.com/2017/04/21/shrine%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/">Shrineを使って画像をアップロードする</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-08-29T14:34:13+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:34 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/08/29/shrine/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/08/29/shrine/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/17/active-model-serializers/" title="Previous Post: ActiveModelSerializersについて">&laquo; ActiveModelSerializersについて</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

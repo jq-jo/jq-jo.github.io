@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-08-18T10:46:00+09:00</updated>
+  <updated>2017-08-31T14:53:56+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,257 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Shrine Gemについて]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/08/29/shrine/"/>
+    <updated>2017-08-29T14:34:13+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/08/29/shrine</id>
+    <content type="html"><![CDATA[<ul>
+<li>shrineとは</li>
+</ul>
+
+
+<p>公式サイトには</p>
+
+<blockquote><p>Shrine is a toolkit for file attachments in Ruby applications.</p></blockquote>
+
+<p>と書いてある。つまり、ShrineはRubyアプリケーションにおいてファイルをアタッチするために使えるツールキットである。</p>
+
+<ul>
+<li>使い方
+
+<ul>
+<li>初期設定</li>
+</ul>
+
+
+<pre><code class="``ruby">  # config/initializers/shrine.rb
+  require "shrine"
+  require "shrine/storage/file_system"
+
+  Shrine.storages = {
+    cache: Shrine::Storage::FileSystem.new("public", prefix: "uploads/cache"), # temporary
+    store: Shrine::Storage::FileSystem.new("public", prefix: "uploads/store"), # permanent
+  }
+
+  Shrine.plugin :activerecord
+  Shrine.plugin :cached_attachment_data # for forms
+</code></pre>
+
+<ul>
+<li>Model</li>
+</ul>
+
+
+<pre><code class="``ruby">  class Photo &lt; ApplicationRecord
+    include ImageUploader[:image]
+  end
+</code></pre>
+
+<ul>
+<li>Uploader</li>
+</ul>
+
+
+<pre><code class="``ruby">  class ImageUploader &lt; Shrine
+  end
+</code></pre>
+
+<ul>
+<li>Controller<br/>
+Controllerのparamは<code>image_data</code>ではなく、<code>image</code>にする。</li>
+</ul>
+
+
+<pre><code class="``ruby">  def photo_params
+    params.require(:photo).permit(:name, :image)
+  end
+</code></pre></li>
+</ul>
+
+
+<p>ビューを作ってブラウザーで確認してみると、</p>
+
+<p><img src="https://monosnap.com/file/0qOCToywihGzpmIutHR2OjDjG2Q03w.png" alt="" /><br/>
+大きすぎる。。！！</p>
+
+<ul>
+<li><p>リサイズ<br/>
+リサイズのためには他のgemをインストールする必要がある。</p>
+
+<ul>
+<li>gemのインストール</li>
+</ul>
+
+
+<pre><code class="``ruby">  gem 'image_processing'
+  gem 'mini_magick', '&gt;= 4.3.5'
+</code></pre>
+
+<ul>
+<li>Uploader編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require 'image_processing/mini_magick'
+  class ImageUploader &lt; Shrine
+    include ImageProcessing::MiniMagick
+    plugin :processing
+    plugin :versions   # enable Shrine to handle a hash of files
+    plugin :delete_raw # delete processed files after uploading
+
+    process(:store) do |io, context|
+      original = io.download
+
+      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
+      size_500 = resize_to_limit(size_800,  500, 500)
+      size_300 = resize_to_limit(size_500,  300, 300)
+
+      {original: io, large: size_800, medium: size_500, small: size_300}
+    end
+  end
+</code></pre>
+
+<ul>
+<li>ビューで表示する
+ビューでサイズ別の画像を取得できる。</li>
+</ul>
+
+
+<pre><code class="``">  = image_tag, @photo.image[:original].url
+  = image_tag, @photo.image[:large].url}
+  = image_tag, @photo.image[:medium].url}"
+  = image_tag, @photo.image[:small].url}"
+</code></pre>
+
+<p>  ビューで確認すると、</p>
+
+<p>  <img src="https://monosnap.com/file/HdW4JQ8J5DJTn3vCV8QvvKQQR0HiIF.png" alt="" /></p></li>
+<li><p>バリデーションの追加<br/>
+Uploadにバリデーションをかけるのももちろんできる。<br/>
+<code>validation_helpers</code>のプラグインを追加し、バリデーションを追加する。<br/>
+バリデーションの処理は<code>Attacher.validate</code>の中に記述する。</p>
+
+<ul>
+<li>Uploaderの編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require 'image_processing/mini_magick'
+  class ImageUploader &lt; Shrine
+    include ImageProcessing::MiniMagick
+    plugin :processing
+    plugin :versions   # enable Shrine to handle a hash of files
+    plugin :delete_raw # delete processed files after uploading
+    plugin :validation_helpers
+
+    process(:store) do |io, context|
+      original = io.download
+
+      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
+      size_500 = resize_to_limit(size_800,  500, 500)
+      size_300 = resize_to_limit(size_500,  300, 300)
+
+      {original: io, large: size_800, medium: size_500, small: size_300}
+    end
+
+    Attacher.validate do
+      validate_max_size 5 * 1024 * 1024, message: 'Image is too large (max is 5 MB)'
+      validate_mime_type_inclusion %w(image/jpeg image/jpg image/png)
+    end
+  end
+</code></pre>
+
+<p>  バリデーションにかかったら</p>
+
+<pre><code class="``">  photo = Photo.new
+  photo.image = File.open("img.png")
+  photo.valid? #=&gt; false
+  photo.errors.to_hash #=&gt; {image: ["Image is too large (max is 5 MB)"]}
+</code></pre></li>
+<li>Direct uploads
+
+<ul>
+<li>gemのインストール</li>
+</ul>
+
+
+<pre><code class="``">  gem 'aws-sdk', '~&gt; 2.1'
+  gem 'roda'
+</code></pre>
+
+<ul>
+<li>config/initializers/shrine.rbファイルの編集</li>
+</ul>
+
+
+<pre><code class="``ruby">  require "shrine/storage/s3"
+
+  s3_options = {
+    access_key_id:     "abc",
+    secret_access_key: "123",
+    region:            "my-region",
+    bucket:            "my-bucket",
+  }
+
+  Shrine.storages = {
+    cache: Shrine::Storage::S3.new(prefix: "cache", **s3_options),
+    store: Shrine::Storage::S3.new(prefix: "store", **s3_options),
+  }
+</code></pre>
+
+<ul>
+<li>Uploaderにpluginの追加</li>
+</ul>
+
+
+<pre><code class="``ruby">  plugin :direct_upload
+</code></pre>
+
+<ul>
+<li>routes.rbに<code>mount</code>追加</li>
+</ul>
+
+
+<pre><code class="``ruby">  Rails.application.routes.draw do
+    mount ImageUploader::UploadEndpoint =&gt; "/images"
+  end
+</code></pre>
+
+<ul>
+<li>jsonの取得</li>
+</ul>
+
+
+<p>  <code>GET /images/cache/presign</code>のrouteでjsonを取得できる。</p>
+
+<pre><code class="``">  # GET /images/cache/presign
+  {
+    "url" =&gt; "https://my-bucket.s3-eu-west-1.amazonaws.com",
+    "fields" =&gt; {
+      "key" =&gt; "cache/b7d575850ba61b44c8a9ff889dfdb14d88cdc25f8dd121004c8",
+      "policy" =&gt; "eyJleHBpcmF0aW9uIjoiMjAxNS0QwMToxMToyOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJzaHJpbmUtdGVzdGluZyJ9LHsia2V5IjoiYjdkNTc1ODUwYmE2MWI0NGU3Y2M4YTliZmY4OGU5ZGZkYjE2NTQ0ZDk4OGNkYzI1ZjhkZDEyMTAwNGM4In0seyJ4LWFtei1jcmVkZW50aWFsIjoiQUtJQUlKRjU1VE1aWlk0NVVUNlEvMjAxNTEwMjQvZXUtd2VzdC0xL3MzL2F3czRfcmVxdWVzdCJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotZGF0ZSI6IjIwMTUxMDI0VDAwMTEyOVoifV19",
+      "x-amz-credential" =&gt; "AKIAIJF55TMZYT6Q/20151024/eu-west-1/s3/aws4_request",
+      "x-amz-algorithm" =&gt; "AWS4-HMAC-SHA256",
+      "x-amz-date" =&gt; "20151024T001129Z",
+      "x-amz-signature" =&gt; "c1eb634f83f96b69bd675f535b3ff15ae184b102fcba51e4db5f4959b4ae26f4"
+    }
+  }
+</code></pre></li>
+</ul>
+
+
+<p>こう設定すると、ひとまずs3にdirect_uploadはできる。<br/>
+公式documentには<code>jQuery-File-Upload</code>, <code>Dropzone</code>, <code>FineUploader</code>などのJavaScriptファイルアップロードライブラリとも連携もできると書いてあるので、次は今のプロジェクトで使用している<code>Dropzone</code>との連携を調べてみる。</p>
+
+<h2>参照</h2>
+
+<p><a href="https://github.com/janko-m/shrine">Shrine githubページ</a><br/>
+<a href="http://qiita.com/okuramasafumi/items/488b535ad8889ef22b72">RailsでShrineを使ってファイルをS3にダイレクトアップロードするときの注意点</a><br/>
+<a href="https://re-engines.com/2017/04/21/shrine%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/">Shrineを使って画像をアップロードする</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ActiveModelSerializersについて]]></title>
@@ -4751,229 +5002,6 @@ renderはどんな形でも構わないがここには簡単にメッセージ�
 <h4>参考</h4>
 
 <p><a href="http://qiita.com/jnchito/items/aec75fab42804287d71b">Rails 5 + ActionCableで作る！シンプルなチャットアプリ（DHH氏のデモ動画より）</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Firebase Analyticsを利用してEventを発生させる方法]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/02/28/firebase-analytics-event/"/>
-    <updated>2017-02-28T10:55:13+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/02/28/firebase-analytics-event</id>
-    <content type="html"><![CDATA[<h2>Android</h2>
-
-<h4>アプリにFirebase追加</h4>
-
-<p>Rootのbuild.gradleファイルにgoogle-servicesプラグインを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">buildscript</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">// ...</span>
-</span><span class='line'>    <span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// ...</span>
-</span><span class='line'>        <span class="n">classpath</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">:</span><span class="n">google</span><span class="o">-</span><span class="nl">services:</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">0</span><span class="err">&#39;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次にモジュールのbuild.gradleファイルにapply pluginを追加して使用設定をする</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">application</span><span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">android</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// ...</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// ...</span>
-</span><span class='line'>  <span class="n">compile</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">firebase</span><span class="o">:</span><span class="n">firebase</span><span class="o">-</span><span class="nl">core:</span><span class="mf">10.0</span><span class="o">.</span><span class="mi">1</span><span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Getting a &quot;Could not find&quot; error? Make sure you have</span>
-</span><span class='line'>  <span class="c1">// the latest Google Repository in the Android SDK manager</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// ADD THIS AT THE BOTTOM</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">.</span><span class="na">google</span><span class="o">-</span><span class="n">services</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最後にgoogle-services.jsonファイルをプロジェクトに追加する</p>
-
-<h4>Android Manifestファイルの設定</h4>
-
-<p>まず、Android Manifestファイルに下記の設定をする</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.ACCESS_NETWORK_STATE&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.INTERNET&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.WAKE_LOCK&quot;</span> <span class="o">/&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Firebase Analyticsの設定</h4>
-
-<p>上記のコードのように</p>
-
-<blockquote><p>compile &lsquo;com.google.firebase:firebase-core:10.0.1&rsquo;</p></blockquote>
-
-<p>を追加するとFirebaseのAnalyticsを使用できるようになる
-それからプロジェクトのActivityに変数を作る</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">FirebaseAnalytics</span> <span class="n">mFirebaseAnalytics</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>onCreate()</code>メソッドに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Obtain the FirebaseAnalytics instance.</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span> <span class="o">=</span> <span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を追加する</p>
-
-<h4>Eventの設定</h4>
-
-<p>Eventをかけたいところ(たとえば、リンクとかタブなど)に</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_ID</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_NAME</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">CONTENT_TYPE</span><span class="o">,</span> <span class="s">&quot;image&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Event</span><span class="o">.</span><span class="na">SELECT_CONTENT</span><span class="o">,</span> <span class="n">bundle</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように追加するとFirebaseで事前定義されたEventに記録することができる
-上記の例には<code>SELECT_CONTENT</code>というEventに<code>ITEM_ID</code>,<code>ITEM_NAME</code>というValueを記録するようになる</p>
-
-<h4>Eventのカスタマイズ</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
-</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;image_name&quot;</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
-</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;full_text&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="s">&quot;share_image&quot;</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記の例には<code>share_image</code>というEventに<code>image_name</code>,<code>full_text</code>というValue記録するようになる</p>
-
-<h4>Eventの確認</h4>
-
-<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
-
-<h2>iOS - Swift</h2>
-
-<h4>アプリにFirebase追加</h4>
-
-<p>プロジェクトにpodを追加する
-podがなければプロジェクトDirectoryで<code>pod init</code>をしてpodfileを生成する
-それからpodfileに次のようにpodを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">pod</span> <span class="err">&#39;</span><span class="n">Firebase</span><span class="o">/</span><span class="n">Core</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>コンソールで</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">pod</span> <span class="n">install</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Firebaseの呼び出し</h4>
-
-<p>プロジェクトのDelegateに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">import</span> <span class="n">Firebase</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして<code>application:didFinishLaunchingWithOptions:</code>メソッドに下記のようにFirebaseを呼び出す</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRApp</span><span class="p">.</span><span class="n">configure</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Eventの設定</h4>
-
-<p>下記はkFIRSelectContentの基本Eventを記録する方法である</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="n">kFIREventSelectContent</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>  <span class="nl">kFIRParameterItemID</span><span class="p">:</span> <span class="s">&quot;id-\(title!)&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="nl">kFIRParameterItemName</span><span class="p">:</span> <span class="n">title</span><span class="o">!</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="nl">kFIRParameterContentType</span><span class="p">:</span> <span class="s">&quot;cont&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Eventのカスタマイズ</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="s">&quot;share_image&quot;</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>  <span class="s">&quot;name&quot;</span><span class="o">:</span> <span class="n">name</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&quot;full_text&quot;</span><span class="o">:</span> <span class="n">text</span> <span class="kt">as</span> <span class="bp">NSObject</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに<code>share_image</code>というEventに<code>name</code>,<code>full_text</code>というValueを記録することができる</p>
-
-<h4>Eventの確認</h4>
-
-<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
-
-<h2>参考</h2>
-
-<p><a href="https://firebase.google.com/docs/analytics/android/events">Firebase Document Analytics Event Android</a><br/>
-<a href="https://firebase.google.com/docs/analytics/ios/events">Firebase Document Analytics Event iOS</a></p>
 ]]></content>
   </entry>
   
