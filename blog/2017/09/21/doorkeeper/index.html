@@ -9,13 +9,12 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="インストール Gem 1
+  <meta name="description" content="Doorkeeperとは OAuth2による認証機能をアプリに追加するGemです。 インストール Gem 1
 gem &#39;doorkeeper&#39; db migration 1
 2
 3
 rails generate doorkeeper:install
-rails generate doorkeeper:migration
-bundle exec rake db: &hellip;">
+rails generate &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -104,7 +103,11 @@ bundle exec rake db: &hellip;">
   </header>
 
 
-<div class="entry-content"><h3>インストール</h3>
+<div class="entry-content"><h3>Doorkeeperとは</h3>
+
+<p>OAuth2による認証機能をアプリに追加するGemです。</p>
+
+<h3>インストール</h3>
 
 <ul>
 <li>Gem</li>
@@ -247,8 +250,117 @@ bundle exec rake db: &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>こういうふうにアクセストークンが取得できる。<br/>
-<code>curl</code>を使ったけど場合によって<code>restclient</code>,<code>oauth2</code>などを使った方が良いと思う。</p>
+<p>こういうふうにアクセストークンが取得できる。</p>
+
+<h4>その他</h4>
+
+<p>場合によって<code>curl</code>じゃなくて他のライブラリを使うこともできる。</p>
+
+<ul>
+<li>Oauth2</li>
+</ul>
+
+
+<p>Oauth2 gemをインストールする。それから</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">CLIENT_ID</span><span class="p">,</span> <span class="no">CLIENT_SECRET</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="no">SITE_URL</span><span class="p">)</span>
+</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="no">CODE</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="no">REDIRECT_URL</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とすると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;OAuth2::AccessToken:0x007fe8cfa51f58</span>
+</span><span class='line'> <span class="vi">@client</span><span class="o">=</span>
+</span><span class='line'>  <span class="c1">#&lt;OAuth2::Client:0x007fe8cea45330</span>
+</span><span class='line'>   <span class="vi">@auth_code</span><span class="o">=</span><span class="c1">#&lt;OAuth2::Strategy::AuthCode:0x007fe8cc25b3d8 @client=#&lt;OAuth2::Client:0x007fe8cea45330 ...&gt;&gt;,</span>
+</span><span class='line'>   <span class="vi">@connection</span><span class="o">=</span>
+</span><span class='line'>    <span class="c1">#&lt;Faraday::Connection:0x007fe8cc25a5c8</span>
+</span><span class='line'>     <span class="vi">@builder</span><span class="o">=</span>
+</span><span class='line'>      <span class="c1">#&lt;Faraday::RackBuilder:0x007fe8cc2593a8</span>
+</span><span class='line'>       <span class="vi">@app</span><span class="o">=</span>
+</span><span class='line'>        <span class="c1">#&lt;Faraday::Request::UrlEncoded:0x007fe8cecb7140</span>
+</span><span class='line'>         <span class="vi">@app</span><span class="o">=</span><span class="c1">#&lt;Faraday::Adapter::NetHttp:0x007fe8cecb7208 @app=#&lt;Proc:0x007fe8cecb73e8@/Users/jo/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/faraday-0.12.2/lib/faraday/rack_builder.rb:154 (lambda)&gt;, @config_block=nil, @connection_options={}&gt;&gt;,</span>
+</span><span class='line'>       <span class="vi">@handlers</span><span class="o">=[</span><span class="no">Faraday</span><span class="o">::</span><span class="no">Request</span><span class="o">::</span><span class="no">UrlEncoded</span><span class="p">,</span> <span class="no">Faraday</span><span class="o">::</span><span class="no">Adapter</span><span class="o">::</span><span class="no">NetHttp</span><span class="o">]&gt;</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@default_parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;Faraday v0.12.2&quot;</span><span class="p">},</span>
+</span><span class='line'>     <span class="vi">@options</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::RequestOptions params_encoder=nil, proxy=nil, bind=nil, timeout=nil, open_timeout=nil, boundary=nil, oauth=nil, context=nil&gt;,</span>
+</span><span class='line'>     <span class="vi">@parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@params</span><span class="o">=</span><span class="p">{},</span>
+</span><span class='line'>     <span class="vi">@proxy</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@ssl</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::SSLOptions verify=nil, ca_file=nil, ca_path=nil, verify_mode=nil, cert_store=nil, client_cert=nil, client_key=nil, certificate=nil, private_key=nil, verify_depth=nil, version=nil&gt;,</span>
+</span><span class='line'>     <span class="vi">@url_prefix</span><span class="o">=</span><span class="c1">#&lt;URI::HTTP http://localhost:3000/home/access_token&gt;&gt;,</span>
+</span><span class='line'>   <span class="vi">@id</span><span class="o">=</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:authorize_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/authorize&quot;</span><span class="p">,</span> <span class="ss">:token_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/token&quot;</span><span class="p">,</span> <span class="ss">:token_method</span><span class="o">=&gt;</span><span class="ss">:post</span><span class="p">,</span> <span class="ss">:auth_scheme</span><span class="o">=&gt;</span><span class="ss">:request_body</span><span class="p">,</span> <span class="ss">:connection_opts</span><span class="o">=&gt;</span><span class="p">{},</span> <span class="ss">:connection_build</span><span class="o">=&gt;</span><span class="kp">nil</span><span class="p">,</span> <span class="ss">:max_redirects</span><span class="o">=&gt;</span><span class="mi">5</span><span class="p">,</span> <span class="ss">:raise_errors</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">},</span>
+</span><span class='line'>   <span class="vi">@secret</span><span class="o">=</span><span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="vi">@site</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@expires_at</span><span class="o">=</span><span class="mi">1506062175</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@expires_in</span><span class="o">=</span><span class="mi">7200</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:mode</span><span class="o">=&gt;</span><span class="ss">:header</span><span class="p">,</span> <span class="ss">:header_format</span><span class="o">=&gt;</span><span class="s2">&quot;Bearer %s&quot;</span><span class="p">,</span> <span class="ss">:param_name</span><span class="o">=&gt;</span><span class="s2">&quot;access_token&quot;</span><span class="p">},</span>
+</span><span class='line'> <span class="vi">@params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;token_type&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="o">=&gt;</span><span class="mi">1506054975</span><span class="p">},</span>
+</span><span class='line'> <span class="vi">@refresh_token</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@token</span><span class="o">=</span><span class="s2">&quot;c7f79becd53a4f4e571b95dc9e075d39034f9e613505fdb844bd8e778eb8933c&quot;</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうresponseを取得できる。</p>
+
+<ul>
+<li>RestClient</li>
+</ul>
+
+
+<p>RestClient gemをインストールし、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">RestClient</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;http://localhost:3000/oauth/token&#39;</span><span class="p">,</span> <span class="p">{</span><span class="ss">grant_type</span><span class="p">:</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">,</span> <span class="ss">client_id</span><span class="p">:</span> <span class="no">CLIENT_ID</span><span class="p">,</span> <span class="ss">client_secret</span><span class="p">:</span> <span class="no">CLIENT_SECRET</span><span class="p">}</span>
+</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="n">body</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>すると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">access_token</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">7328d931953ce2a4db130d02575a95a80b47683c2b2f9619492285465bce4b9d</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">token_type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">bearer</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">expires_in</span><span class="se">\&quot;</span><span class="s2">:7200,</span><span class="se">\&quot;</span><span class="s2">created_at</span><span class="se">\&quot;</span><span class="s2">:1506055209}&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>というresponseを取得できる。</p>
+
+<p>Doorkeeper gemはすごく簡単にOAuth2による認証機能を実装できる。Doorkeeperと連携してさらにApiを作ったり、ログイン機能に認証機能をつけるなどの実装も可能になる。</p>
 
 <h2>参考</h2>
 
