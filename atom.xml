@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-08-31T15:02:32+09:00</updated>
+  <updated>2017-09-22T10:36:03+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,165 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Doorkeeper Gemについて]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/09/21/doorkeeper/"/>
+    <updated>2017-09-21T10:33:42+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/09/21/doorkeeper</id>
+    <content type="html"><![CDATA[<h3>インストール</h3>
+
+<ul>
+<li>Gem</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;doorkeeper&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>db migration</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">install</span>
+</span><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">migration</span>
+</span><span class='line'><span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>すると、自動に<code>routes.rb</code>に<code>use_doorkeeper</code>が追加される。それから以下のルートが生成される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">GET</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="o">/</span><span class="ss">:code</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">token</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">revoke</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="kp">new</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="o">/</span><span class="n">edit</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">PATCH</span> <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">PUT</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">token</span><span class="o">/</span><span class="n">info</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このルートを利用してアプリケーション毎認証を作ってアクセストークンなどを出したりするのもできる。</p>
+
+<h3>使い方</h3>
+
+<p><code>POST   /oauth/authorize</code>で取得できる<code>code</code>を利用して<code>POST   /oauth/token</code>でアクセストークンを取得。</p>
+
+<h4>例</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">curl</span> <span class="o">-</span><span class="n">F</span> <span class="n">response_type</span><span class="o">=</span><span class="n">code</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">grant_type</span><span class="o">=</span><span class="n">authorization_code</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_id</span><span class="o">=</span><span class="mi">9</span><span class="n">b36d8c0db59eff5038aea7a417d73e69aea75b41aac771816d2ef1b3109cc2f</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">d6ea27703957b69939b8104ed4524595e210cd2e79af587744a7eb6e58f5b3d2</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">code</span><span class="o">=</span><span class="mi">456</span><span class="n">b683f8c1e5ccde47bdfac47ee3ec96e0f1bec2546734b92980dcb806df207</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">resource_owner_id</span><span class="o">=</span><span class="mi">1</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">X</span> <span class="no">POST</span> <span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="n">oauth</span><span class="o">/</span><span class="n">token</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>parameter
+
+<ul>
+<li>grant_type
+
+<ul>
+<li><code>initializers/doorkeeper.rb</code>に設定した<code>grant_flows</code></li>
+</ul>
+</li>
+<li>client_id
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Application Id</code></li>
+</ul>
+</li>
+<li>client_secret
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Secret</code></li>
+</ul>
+</li>
+<li>code
+
+<ul>
+<li>取得したコード</li>
+</ul>
+</li>
+<li>redirect_uri
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Callback urls</code></li>
+</ul>
+</li>
+<li>resource_owner_id
+
+<ul>
+<li><code>initializers/doorkeeper.rb</code>に設定した<code>resource_owner_authenticator</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>結果</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="s2">&quot;access_token&quot;</span><span class="ss">:&quot;51ebde838061a87f4b2ea318386387f6d265a7328b3edfacb4b7deee7c3bfa73&quot;</span><span class="p">,</span><span class="s2">&quot;token_type&quot;</span><span class="ss">:&quot;bearer&quot;</span><span class="p">,</span><span class="s2">&quot;created_at&quot;</span><span class="p">:</span><span class="mi">1481614521</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにアクセストークンが取得できる。<br/>
+<code>curl</code>を使ったけど場合によって<code>restclient</code>,<code>oauth2</code>などを使った方が良いと思う。</p>
+
+<h2>参考</h2>
+
+<p><a href="https://github.com/doorkeeper-gem/doorkeeper">doorkeeper</a><br/>
+<a href="http://qiita.com/cyborg__ninja/items/a5e0a12590a1b921a31b">Doorkeeper gem でOauth認証できるアプリケーションを作った後の事</a><br/>
+<a href="http://kansiho.hatenablog.com/entry/2017/09/02/%E3%80%90Rails5%E3%80%91Doorkeeper_gem%E3%81%A7OAuth2.0%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AEAPI%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%80%81%E3%83%86%E3%82%B9%E3%83%88%E3%81%99%E3%82%8B%E6%B5%81%E3%82%8C">【Rails5】Doorkeeper gemでOAuth2.0のためのAPIを作って、rubyクライアントで呼び出す</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Shrine Gemについて]]></title>
@@ -4560,456 +4719,6 @@ NoMethodErrorが出てくる</p>
 <p><a href="http://d.hatena.ne.jp/kasei_san/20091021/p1">継承, mix-in, include, extend について覚え書き</a><br/>
 <a href="http://qiita.com/metheglin/items/ff877fdfe5dd1fd965e2">superを使って継承/Include/Extendしたメソッドをオーバーライド</a><br/>
 <a href="http://jonny.hatenablog.com/entry/2014/03/07/145731">rubyのrequire/include/extend/継承/クラス拡張ミックスインまとめ</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rails5のActionCable]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/03/02/rails5-action-cable/"/>
-    <updated>2017-03-02T17:35:53+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/03/02/rails5-action-cable</id>
-    <content type="html"><![CDATA[<h2>はじめに</h2>
-
-<h3>Action Cableとは</h3>
-
-<p>RailsにWebSocketを組み込む機能で、クライアントサイドからサーバサイドまでフルスタックな機能が提供されるということ。</p>
-
-<h2>大きな流れ</h2>
-
-<p>ビューのEvent発生(ex: onclick) -> coffeescriptのfunction呼び出し -> channelのメソッド呼び出し -> 必要な処理をする(ex: モデルのcreate,update,deployなど)</p>
-
-<h2>チャットサンプルを作ってみる</h2>
-
-<p>簡単に説明をすると、<code>Rooms_controller</code>を通してチャットルームを作り、<code>Message</code>モデルを通してチャットルームの中のメッセージを管理する。
-その中でチャットルームでリアルタイムの通信を行ってみる。</p>
-
-<h3>Roomsコントローラの作成</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">controller</span> <span class="n">rooms</span> <span class="n">index</span> <span class="n">show</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Messageモデルの作成</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">message</span> <span class="ss">content</span><span class="p">:</span><span class="n">text</span>
-</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Viewの作成</h3>
-
-<p>Roomsコントローラを編集し、Messageの配列をインスタンス変数に設定する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">RoomsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@rooms</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
-</span><span class='line'>    <span class="vi">@room</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@messages</span> <span class="o">=</span> <span class="vi">@room</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></><code>app/views/messages/_message.html.slim</code>を作成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nc">.message</span><span class="na"> class</span><span class="p">=</span><span class="s2">&quot;message_</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="p">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="nt">i</span><span class="nc">.fa.fa-times.remove-icon</span><span class="na"> data-message-id</span><span class="p">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></><code>app/views/rooms/show.html.slim</code>を編集して、Messageの一覧を表示できるようにする。
-renderはどんな形でも構わないがここには簡単にメッセージのrenderだけでしてみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">h1</span> Chat Room
-</span><span class='line'><span class="nf">#myRoom</span><span class="na"> data-room-id</span><span class="p">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@room</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">render</span> <span class="vi">@messages</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">div</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;text-align: center; margin-top: 50px;&quot;</span>
-</span><span class='line'>  <span class="nt">form</span>
-</span><span class='line'>    <span class="nt">label</span>
-</span><span class='line'>      |say something:
-</span><span class='line'>      <span class="nt">input</span><span class="na"> type</span><span class="p">=</span><span class="s2">&quot;text&quot;</span><span class="na"> data-behavior</span><span class="p">=</span><span class="s2">&quot;room_input&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>チャンネルの作成</h3>
-
-<p>speakというアクションを持つ、Roomチャンネルを作成する。
-</><code>rails g channel room speak</code>というコマンドを実行すると、以下の通り2つのファイルが作成される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'>$ rails g channel room speak
-</span><span class='line'>    <span class="nt">create</span>  app/channels/room_channel.rb
-</span><span class='line'>    <span class="nt">create</span>  app/assets/javascripts/channels/room.coffee
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></><code>app/channels/room_channel.rb</code>はサーバーサイドの処理を受け持つチャンネルである。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Be sure to restart your server when you modify this file. Action Cable runs in an EventMachine loop that does not support auto reloading.</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">RoomChannel</span> <span class="o">&lt;</span> <span class="no">ApplicationCable</span><span class="o">::</span><span class="no">Channel</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">subscribed</span>
-</span><span class='line'>    <span class="c1"># stream_from &quot;some_channel&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">unsubscribed</span>
-</span><span class='line'>    <span class="c1"># Any cleanup needed when channel is unsubscribed</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">speak</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></><code>app/assets/javascripts/channels/room.coffee</code>はクライアントサイドの処理を受け持つチャンネルである。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">App.room = </span><span class="nx">App</span><span class="p">.</span><span class="nx">cable</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">create</span> <span class="s">&quot;RoomChannel&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nv">connected: </span><span class="nf">-&gt;</span>
-</span><span class='line'>    <span class="c1"># Called when the subscription is ready for use on the server</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">disconnected: </span><span class="nf">-&gt;</span>
-</span><span class='line'>    <span class="c1"># Called when the subscription has been terminated by the server</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">received: </span><span class="nf">(data) -&gt;</span>
-</span><span class='line'>    <span class="c1"># Called when there&#39;s incoming data on the websocket for this channel</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">speak: </span><span class="nf">-&gt;</span>
-</span><span class='line'>    <span class="nx">@perform</span> <span class="s">&#39;speak&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>routesにmountする</h3>
-
-<p>Action Cableを有効にするため、<code>mount ActionCable.server =&gt; '/cable'</code>をroutesに追加。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
-</span><span class='line'>  <span class="c1"># (省略)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># Serve websocket cable requests in-process</span>
-</span><span class='line'>  <span class="n">mount</span> <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span> <span class="o">=&gt;</span> <span class="s1">&#39;/cable&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>アクションの設定</h3>
-
-<p></><code>app/assets/javascripts/channels/room.coffee</code>で、クライアントサイドのspeakアクションを定義する。
-ここではサーバーサイドのspeakアクションを呼びだし、messageをパラメータとして渡す。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nv">App.room = </span><span class="nx">App</span><span class="p">.</span><span class="nx">cable</span><span class="p">.</span><span class="nx">subscriptions</span><span class="p">.</span><span class="nx">create</span> <span class="s">&quot;RoomChannel&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="c1"># (省略)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">speak: </span><span class="nf">(message) -&gt;</span>
-</span><span class='line'>    <span class="nx">@perform</span> <span class="s">&#39;speak&#39;</span><span class="p">,</span> <span class="nv">message: </span><span class="nx">message</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次に、<code>app/channels/room_channel.rb</code>を編集して、サーバーサイドのspeakアクションを定義する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">RoomChannel</span> <span class="o">&lt;</span> <span class="no">ApplicationCable</span><span class="o">::</span><span class="no">Channel</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">subscribed</span>
-</span><span class='line'>    <span class="c1"># stream_from &quot;some_channel&quot;</span>
-</span><span class='line'>    <span class="n">stream_from</span> <span class="s2">&quot;room_channel&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># (省略)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">room</span> <span class="o">=</span> <span class="no">Room</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">room</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create!</span> <span class="ss">body</span><span class="p">:</span> <span class="n">data</span><span class="o">[</span><span class="s1">&#39;message&#39;</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>speakのメソッドが呼ばれるとモデルを生成する。モデルが生成されたらjobを通して画面を更新するようにする。</p>
-
-<h3>フォームを使ったデータの送信</h3>
-
-<p>さっき<code>app/views/rooms/show.html.slim</code>のところに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">div</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;text-align: center; margin-top: 50px;&quot;</span>
-</span><span class='line'>  <span class="nt">form</span>
-</span><span class='line'>    <span class="nt">label</span>
-</span><span class='line'>      |say something:
-</span><span class='line'>      <span class="nt">input</span><span class="na"> type</span><span class="p">=</span><span class="s2">&quot;text&quot;</span><span class="na"> data-behavior</span><span class="p">=</span><span class="s2">&quot;room_input&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を書いておいたからこのフォームを使ってデータを送信する。
-</><code>app/assets/javascripts/channels/room.coffee</code>に</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'>$(document).on &#39;keypress&#39;, &#39;[data-behavior~=room_input]&#39;, (event) -&gt;
-</span><span class='line'>　　if event.keyCode is 13 # return = send
-</span><span class='line'>　　　　if !(event.target.value == &#39;&#39;)
-</span><span class='line'>       <span class="nt">App</span><span class="nc">.room.speak</span> event.target.value
-</span><span class='line'>       <span class="nt">event</span><span class="nc">.target.value</span><span class="p"> =</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'>       <span class="nt">event</span><span class="nc">.preventDefault</span>()
-</span><span class='line'>　　else
-</span><span class='line'>　　　　event.preventDefault()
-</span><span class='line'>$(document).on &#39;click&#39;, &#39;.remove-icon&#39;, (event) -&gt;
-</span><span class='line'>　　id = $(event.target).data(&#39;message-id&#39;)
-</span><span class='line'>　　App.room.remove id
-</span><span class='line'>　　event.target.value = &#39;&#39;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>データの保存の後、ブロードキャスト処理</h3>
-
-<p>次に、Messageモデルのコールバックを定義し、データが作成されたら非同期でブロードキャスト処理を実行するようにします。トランザクションをコミットしたあとでブロードキャストしないと、他のクライアントからデータが見えない恐れがあるので<code>after_create</code>ではなく<code>after_create_commit</code>を使う。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Message</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:room</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Room&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:room_id</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">after_create_commit</span> <span class="p">{</span> <span class="no">MessageBroadcastJob</span><span class="o">.</span><span class="n">perform_later</span> <span class="nb">self</span> <span class="p">}</span>
-</span><span class='line'>  <span class="n">after_destroy_commit</span> <span class="p">{</span> <span class="no">MessageBroadcastJob</span><span class="o">.</span><span class="n">perform_later</span> <span class="nb">self</span><span class="o">.</span><span class="n">id</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>続いて、非同期でブロードキャストするためのMessageBroadcastジョブを作成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">job</span> <span class="n">message_broadcast</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></><code>ApplicationController.renderer.render</code>メソッドを使うと、コントローラ以外の場所でビューをレンダリングできます。なのでこのジョブにはパーシャルビューのHTMLを返す。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MessageBroadcastJob</span> <span class="o">&lt;</span> <span class="no">ApplicationJob</span>
-</span><span class='line'>  <span class="n">queue_as</span> <span class="ss">:default</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">)</span>
-</span><span class='line'>      <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">broadcast</span> <span class="s1">&#39;room_channel&#39;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="n">render_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">else</span>
-</span><span class='line'>      <span class="no">ActionCable</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">broadcast</span> <span class="s1">&#39;room_channel&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">message</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">render_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-</span><span class='line'>    <span class="no">ApplicationController</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="ss">partial</span><span class="p">:</span> <span class="s1">&#39;messages/message&#39;</span><span class="p">,</span> <span class="ss">locals</span><span class="p">:</span> <span class="p">{</span><span class="ss">message</span><span class="p">:</span> <span class="n">message</span><span class="p">})</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>サーバーからデータを受け取ったらブラウザ内の表示を書き換える</h3>
-
-<p>ジョブから返されたパーシャルビューは<code>app/assets/javascripts/channels/room.coffee</code>の<code>received</code>メソッドに渡されるので<code>received</code>メソッドを編集する。
-今回はメッセージの削除も行うのでメッセージを受け取った場合と削除ボタンを押した場合を分岐して処理する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="c1"># (省略)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">received: </span><span class="nf">(data) -&gt;</span>
-</span><span class='line'>  <span class="c1"># Called when there&#39;s incoming data on the websocket for this channel</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">undefined</span>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s">&#39;#myRoom&#39;</span><span class="p">).</span><span class="nx">append</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s">&#39;.message_&#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]).</span><span class="nx">remove</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># (省略)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>ログの内容</h3>
-
-<p>ビューで<code>hello, rails!</code>とメッセージを入力すると下記のログが出る。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nx">RoomChannel</span><span class="c1">#speak({&quot;message&quot;=&gt;&quot;hello, rails!&quot;})</span>
-</span><span class='line'>  <span class="nx">Room</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.4</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'>  <span class="nx">User</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;users&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'>   <span class="p">(</span><span class="mf">0.1</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">BEGIN</span>
-</span><span class='line'>  <span class="nx">CACHE</span> <span class="p">(</span><span class="mf">0.0</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'>  <span class="nx">SQL</span> <span class="p">(</span><span class="mf">0.9</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">INSERT</span> <span class="nx">INTO</span> <span class="s">&quot;messages&quot;</span> <span class="p">(</span><span class="s">&quot;body&quot;</span><span class="p">,</span> <span class="s">&quot;created_at&quot;</span><span class="p">,</span> <span class="s">&quot;updated_at&quot;</span><span class="p">,</span> <span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="s">&quot;commenter_type&quot;</span><span class="p">,</span> <span class="s">&quot;commenter_id&quot;</span><span class="p">)</span> <span class="nx">VALUES</span> <span class="p">(</span><span class="nx">$1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">,</span> <span class="nx">$3</span><span class="p">,</span> <span class="nx">$4</span><span class="p">,</span> <span class="nx">$5</span><span class="p">,</span> <span class="nx">$6</span><span class="p">)</span> <span class="nx">RETURNING</span> <span class="s">&quot;id&quot;</span>  <span class="p">[[</span><span class="s">&quot;body&quot;</span><span class="p">,</span> <span class="s">&quot;hello, rails!&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;created_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">02</span> <span class="mi">10</span><span class="o">:</span><span class="mi">04</span><span class="o">:</span><span class="mi">50</span> <span class="nx">UTC</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;updated_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">02</span> <span class="mi">10</span><span class="o">:</span><span class="mi">04</span><span class="o">:</span><span class="mi">50</span> <span class="nx">UTC</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;commenter_type&quot;</span><span class="p">,</span> <span class="s">&quot;User&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;commenter_id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
-</span><span class='line'>   <span class="p">(</span><span class="mf">1.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">COMMIT</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="nx">Enqueued</span> <span class="nx">MessageBroadcastJob</span> <span class="p">(</span><span class="nx">Job</span> <span class="nv">ID: </span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">)</span> <span class="nx">to</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="c1">#&lt;GlobalID:0x007feee520cf20 @uri=#&lt;URI::GID gid://practice/Message/335&gt;&gt;</span>
-</span><span class='line'>  <span class="nx">Message</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="nx">Performing</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="c1">#&lt;GlobalID:0x007feee5214ae0 @uri=#&lt;URI::GID gid://practice/Message/335&gt;&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span>   <span class="nx">User</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;users&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;users&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span>   <span class="nx">Rendered</span> <span class="nx">u</span><span class="o">/</span><span class="nx">messages</span><span class="o">/</span><span class="nx">_message</span><span class="p">.</span><span class="nx">html</span><span class="p">.</span><span class="nx">slim</span> <span class="p">(</span><span class="mf">4.7</span><span class="nx">ms</span><span class="p">)</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="p">[</span><span class="nx">ActionCable</span><span class="p">]</span> <span class="nx">Broadcasting</span> <span class="nx">to</span> <span class="nv">room_channel: </span><span class="p">{</span><span class="o">:</span><span class="nx">message</span><span class="nf">=&gt;</span><span class="s">&quot;&lt;div class=\&quot;message message_335\&quot;&gt;&lt;div class=\&quot;message-p\&quot;&gt;user4@example.com : hello, rails!&lt;i class=\&quot;fa fa-times remove-icon\&quot; data-message-id=\&quot;335\&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">}</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">f1d4d926</span><span class="o">-</span><span class="nx">add7</span><span class="o">-</span><span class="mi">40</span><span class="nx">d9</span><span class="o">-</span><span class="nx">a0c7</span><span class="o">-</span><span class="mi">08</span><span class="nx">d96e413680</span><span class="p">]</span> <span class="nx">Performed</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="k">in</span> <span class="mf">15.06</span><span class="nx">ms</span>
-</span><span class='line'><span class="nx">RoomChannel</span> <span class="nx">transmitting</span> <span class="p">{</span><span class="s">&quot;message&quot;</span><span class="nf">=&gt;</span><span class="s">&quot;&lt;div class=\&quot;message message_335\&quot;&gt;&lt;div class=\&quot;message-p\&quot;&gt;user4@example.com : hello, rails!&lt;i class=\&quot;fa fa-times remove-icon\&quot; data-message-id=\&quot;335\&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&quot;</span><span class="p">}</span> <span class="p">(</span><span class="nx">via</span> <span class="nx">streamed</span> <span class="nx">from</span> <span class="nx">room_channel</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして、削除ボタンを押したら下記のログが出る。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='coffeescript'><span class='line'><span class="nx">RoomChannel</span><span class="c1">#remove({&quot;id&quot;=&gt;335})</span>
-</span><span class='line'>  <span class="nx">Room</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;rooms&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;rooms&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">LIMIT</span> <span class="nx">$2</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'>  <span class="nx">Message</span> <span class="nx">Load</span> <span class="p">(</span><span class="mf">0.4</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">SELECT</span>  <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="o">*</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;room_id&quot;</span> <span class="o">=</span> <span class="nx">$1</span> <span class="nx">AND</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$2</span> <span class="nx">LIMIT</span> <span class="nx">$3</span>  <span class="p">[[</span><span class="s">&quot;room_id&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
-</span><span class='line'>   <span class="p">(</span><span class="mf">0.1</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">BEGIN</span>
-</span><span class='line'>  <span class="nx">SQL</span> <span class="p">(</span><span class="mf">0.3</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">DELETE</span> <span class="nx">FROM</span> <span class="s">&quot;messages&quot;</span> <span class="nx">WHERE</span> <span class="s">&quot;messages&quot;</span><span class="p">.</span><span class="s">&quot;id&quot;</span> <span class="o">=</span> <span class="nx">$1</span>  <span class="p">[[</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="mi">335</span><span class="p">]]</span>
-</span><span class='line'>   <span class="p">(</span><span class="mf">1.2</span><span class="nx">ms</span><span class="p">)</span>  <span class="nx">COMMIT</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="nx">Performing</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="mi">335</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="nx">Enqueued</span> <span class="nx">MessageBroadcastJob</span> <span class="p">(</span><span class="nx">Job</span> <span class="nv">ID: </span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">)</span> <span class="nx">to</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="nx">with</span> <span class="nv">arguments: </span><span class="mi">335</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="p">[</span><span class="nx">ActionCable</span><span class="p">]</span> <span class="nx">Broadcasting</span> <span class="nx">to</span> <span class="nv">room_channel: </span><span class="p">{</span><span class="o">:</span><span class="nx">id</span><span class="nf">=&gt;</span><span class="mi">335</span><span class="p">}</span>
-</span><span class='line'><span class="p">[</span><span class="nx">ActiveJob</span><span class="p">]</span> <span class="p">[</span><span class="nx">MessageBroadcastJob</span><span class="p">]</span> <span class="p">[</span><span class="mi">694</span><span class="nx">e3186</span><span class="o">-</span><span class="nx">c328</span><span class="o">-</span><span class="mi">4327</span><span class="o">-</span><span class="mi">8</span><span class="nx">c2c</span><span class="o">-</span><span class="mi">686</span><span class="nx">de737f7ee</span><span class="p">]</span> <span class="nx">Performed</span> <span class="nx">MessageBroadcastJob</span> <span class="nx">from</span> <span class="nx">Async</span><span class="p">(</span><span class="nx">default</span><span class="p">)</span> <span class="k">in</span> <span class="mf">0.6</span><span class="nx">ms</span>
-</span><span class='line'><span class="nx">RoomChannel</span> <span class="nx">transmitting</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="nf">=&gt;</span><span class="mi">335</span><span class="p">}</span> <span class="p">(</span><span class="nx">via</span> <span class="nx">streamed</span> <span class="nx">from</span> <span class="nx">room_channel</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>参考</h4>
-
-<p><a href="http://qiita.com/jnchito/items/aec75fab42804287d71b">Rails 5 + ActionCableで作る！シンプルなチャットアプリ（DHH氏のデモ動画より）</a></p>
 ]]></content>
   </entry>
   
