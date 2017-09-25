@@ -360,6 +360,73 @@ rails generate &hellip;">
 
 <p>というresponseを取得できる。</p>
 
+<h3>Api連携</h3>
+
+<p><code>before_action :doorkeeper_authorize!</code>を使って有効TokenのみアクセスできるようにApiと連携ができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">BaseController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:doorkeeper_authorize!</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに設定をしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">UsersController</span> <span class="o">&lt;</span> <span class="no">Api</span><span class="o">::</span><span class="no">BaseController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="n">user</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="s2">&quot;cannot found this user&quot;</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ユーザー情報を取得するapiを試してみると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span> <span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="s2">&quot;http://localhost:3000&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="s2">&quot;536b065b6ae6ca9acdc71d33387b4e5e6dbdd5bcc6950f7fcb2e96fd307bc295&quot;</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">user_info</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users/1&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">body</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">JSON</span><span class="o">.</span><span class="n">decode</span> <span class="n">user_info</span><span class="o">.</span><span class="n">body</span>
+</span><span class='line'><span class="n">user_email</span> <span class="o">=</span> <span class="n">body</span><span class="o">[</span><span class="s2">&quot;user&quot;</span><span class="o">][</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;user@example.com&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>簡単にデータが取れる。<br/>
+トークン無しでアクセスしようとしたら、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">RestClient</span><span class="o">.</span><span class="n">get</span> <span class="s1">&#39;http://localhost:3000/api/users/1&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">RestClient</span><span class="o">::</span><span class="ss">Unauthorized</span><span class="p">:</span> <span class="mi">401</span> <span class="no">Unauthorized</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに接続できない。</p>
+
 <p>Doorkeeper gemはすごく簡単にOAuth2による認証機能を実装できる。Doorkeeperと連携してさらにApiを作ったり、ログイン機能に認証機能をつけるなどの実装も可能になる。</p>
 
 <h2>参考</h2>
