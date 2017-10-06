@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-09-25T18:34:25+09:00</updated>
+  <updated>2017-10-06T10:26:42+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,289 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OJ Gem]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/10/04/oj-gem/"/>
+    <updated>2017-10-04T10:24:30+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/10/04/oj-gem</id>
+    <content type="html"><![CDATA[<h3>はじめ</h3>
+
+<p>ウェブサービスをやっていく中にはAPIを取得することが多い。今みている<code>mastodon</code>では<code>OJ</code>という<code>Json parser</code>を使っていたので調べてみた。</p>
+
+<h3>インストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem install oj</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># in Gemfile
+</span><span class='line'>gem 'oj'</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使い方</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'oj'
+</span><span class='line'>
+</span><span class='line'>h = { 'one' =&gt; 1, 'array' =&gt; [ true, false ] }
+</span><span class='line'>json = Oj.dump(h)
+</span><span class='line'>
+</span><span class='line'># json =
+</span><span class='line'># {
+</span><span class='line'>#   "one":1,
+</span><span class='line'>#   "array":[
+</span><span class='line'>#     true,
+</span><span class='line'>#     false
+</span><span class='line'>#   ]
+</span><span class='line'># }
+</span><span class='line'>
+</span><span class='line'>h2 = Oj.load(json)
+</span><span class='line'>puts "Same? #{h == h2}"
+</span><span class='line'># true</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>他のParserとの比較</h3>
+
+<ul>
+<li><a href="https://github.com/evanphx/benchmark-ips">benchmark-ips</a>でベンチマークを取る</li>
+<li>比較対象
+
+<ul>
+<li>JSON</li>
+<li>yajl</li>
+<li>oj</li>
+</ul>
+</li>
+</ul>
+
+
+<p>まずロカールにapiのコントローラーをよいする。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">json</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="ss">test1</span><span class="p">:</span> <span class="s1">&#39;test1&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test2</span><span class="p">:</span> <span class="s1">&#39;test2&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test3</span><span class="p">:</span> <span class="s1">&#39;test3&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test4</span><span class="p">:</span> <span class="s1">&#39;test4&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test5</span><span class="p">:</span> <span class="s1">&#39;test5&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test6</span><span class="p">:</span> <span class="s1">&#39;test6&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test7</span><span class="p">:</span> <span class="s1">&#39;test7&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test8</span><span class="p">:</span> <span class="s1">&#39;test8&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test9</span><span class="p">:</span> <span class="s1">&#39;test9&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">test10</span><span class="p">:</span> <span class="s1">&#39;test10&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="n">json</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>それから比較するコードを書く。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">JsonCompare</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;yajl&#39;</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;oj&#39;</span>
+</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;benchmark/ips&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">compare</span>
+</span><span class='line'>    <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span> <span class="s2">&quot;http://localhost:3000/api/json_compare&quot;</span>
+</span><span class='line'>    <span class="n">response</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">get</span> <span class="n">uri</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">Benchmark</span><span class="o">.</span><span class="n">ips</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;JSON.parse&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Yajl&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Yajl</span><span class="o">::</span><span class="no">Parser</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Oj&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">compare!</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>結果</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">9</span><span class="o">.</span><span class="mi">786</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'>                <span class="no">Yajl</span>    <span class="mi">10</span><span class="o">.</span><span class="mi">364</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">17</span><span class="o">.</span><span class="mo">00</span><span class="mi">9</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">99</span><span class="o">.</span><span class="mo">053</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">2</span><span class="sx">%) i/s -    499.086k in   5.043910s</span>
+</span><span class='line'><span class="sx">                Yajl    107.150k (± 3.4%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">538</span><span class="o">.</span><span class="mi">928</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">036016</span><span class="n">s</span>
+</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">183</span><span class="o">.</span><span class="mi">400</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">918</span><span class="o">.</span><span class="mi">486</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">012</span><span class="mi">844</span><span class="n">s</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
+</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>   <span class="mi">183399</span><span class="o">.</span><span class="mi">8</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
+</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>   <span class="mi">107149</span><span class="o">.</span><span class="mi">6</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">71</span><span class="n">x</span>  <span class="n">slower</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>    <span class="mi">99053</span><span class="o">.</span><span class="mi">1</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">85</span><span class="n">x</span>  <span class="n">slower</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdef3b04440</span>
+</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
+</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef8c3cbf0 @iterations=499086, @label=&quot;JSON.parse&quot;, @measurement_cycle=9786, @microseconds=5043910.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef8c3cc68 @error=3164, @mean=99053.0983205518&gt;&gt;,</span>
+</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef7a234a0 @iterations=538928, @label=&quot;Yajl&quot;, @measurement_cycle=10364, @microseconds=5036016.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef7a23568 @error=3672, @mean=107149.64088869188&gt;&gt;,</span>
+</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef89e6c98 @iterations=918486, @label=&quot;Oj&quot;, @measurement_cycle=17009, @microseconds=5012844.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef89e6d10 @error=5584, @mean=183399.80361005384&gt;&gt;]&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>OJ</code>が<code>Yajl</code>よりは1.7倍、<code>JSON</code>よりは1.8倍速かった。<br/>
+<code>String</code>じゃなくてモデルにしたらどうなるだろう。<br/>
+apiコントローラーのコードを変えてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@users</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみに<code>User.count</code>は<code>100</code>。<br/>
+さっきの比較コードを実行してみると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>   <span class="mi">253</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'>                <span class="no">Yajl</span>   <span class="mi">259</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'>                  <span class="no">Oj</span>   <span class="mi">387</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
+</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>      <span class="mi">2</span><span class="o">.</span><span class="mi">529</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">4</span><span class="sx">%) i/s -     12.650k in   5.007160s</span>
+</span><span class='line'><span class="sx">                Yajl      2.612k (± 2.6%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">13</span><span class="o">.</span><span class="mi">209</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">061015</span><span class="n">s</span>
+</span><span class='line'>                  <span class="no">Oj</span>      <span class="mi">3</span><span class="o">.</span><span class="mi">952</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">6</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">20</span><span class="o">.</span><span class="mi">124</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mi">098328</span><span class="n">s</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
+</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>     <span class="mi">3952</span><span class="o">.</span><span class="mi">4</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
+</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>     <span class="mi">2611</span><span class="o">.</span><span class="mi">7</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">51</span><span class="n">x</span>  <span class="n">slower</span>
+</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>     <span class="mi">2529</span><span class="o">.</span><span class="mi">5</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">56</span><span class="n">x</span>  <span class="n">slower</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdf594c4678</span>
+</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
+</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5da291a0 @iterations=12650, @label=&quot;JSON.parse&quot;, @measurement_cycle=253, @microseconds=5007160.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5da29268 @error=87, @mean=2529.463823054468&gt;&gt;,</span>
+</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5a59b8c0 @iterations=13209, @label=&quot;Yajl&quot;, @measurement_cycle=259, @microseconds=5061015.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5a59ba28 @error=67, @mean=2611.693591724044&gt;&gt;,</span>
+</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5d821510 @iterations=20124, @label=&quot;Oj&quot;, @measurement_cycle=387, @microseconds=5098328.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5d821588 @error=141, @mean=3952.373849831794&gt;&gt;]&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>OJ</code>が<code>Yajl</code>、<code>JSON</code>より1.5倍速いことがわかる。</p>
+
+<h3>まとめ</h3>
+
+<p>単純に速度のパフォーマンス側をみると<code>OJ</code>を使った方が良さそう！</p>
+
+<h1>参考</h1>
+
+<p><a href="http://blog.toshimaru.net/json-parser-benchmark/">RubyのJSONパーサーのパース速度比較</a><br/>
+<a href="https://github.com/ohler55/oj">OJ Github</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Doorkeeper Gemについて]]></title>
@@ -4525,380 +4808,6 @@ Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数
 
 <p><a href="http://www.hirotsuru.com/entry/2016/04/09/184818">第２回 クラスとインスタンス　〜Rubyの勉強〜</a><br/>
 <a href="http://yamacent.hatenablog.com/entry/2015/05/17/235908">Rubyのモジュールについて調べた</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rubyの継承とinclude、extendの使い方]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/03/09/keishou-include-extend/"/>
-    <updated>2017-03-09T18:03:17+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/03/09/keishou-include-extend</id>
-    <content type="html"><![CDATA[<p>Rubyはオブジェクト指向言語であるのだけれど、Javaや他の言語の継承と考え方、方法が違うので調べてみた</p>
-
-<h3>継承</h3>
-
-<p>普通にSubクラスに親クラスを継承したら親クラスのメソッドを使えるようになる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyName</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is Jo&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Subクラスが親クラスのメソッドをoverrideすると同じように親クラスのメソッドを使える</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
-</span><span class='line'>    <span class="k">super</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Subクラスでoverrideした親クラスのメソッドにsuperを書かないと親クラスからの影響はされない</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is...&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My name is...&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>だが、上のメソッドにsuperを入れたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is...&quot;</span>
-</span><span class='line'>    <span class="k">super</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My name is...&quot;</span>
-</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>include</h3>
-
-<p>includeはクラスにモジュールを使うようにしてくれる<br>
-継承の場合と少し似ている<br>
-まず、普通にクラスにモジュールを継includeしたらモジュールのメソッドを使えるようになる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyAge</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is 30.&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>overrideしたクラスのメソッドにsuperをつけると同じようにモジュールのメソッドを使えるようになる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
-</span><span class='line'>    <span class="k">super</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>superを書かない場合はモジュールに影響されない</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is.....&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My age is.....&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>その上、superを書いたらクラスのメソッドの処理とモジュールのメソッドの処理が両方行われる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is.....&quot;</span>
-</span><span class='line'>    <span class="k">super</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My age is.....&quot;</span>
-</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>extend</h3>
-
-<p>extendの使い方はさっきの継承やincludeと少し違う</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyHobby</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_hobby</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My hobby is read a book!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">MyHobby</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>モジュールをextendしてクラスをオブジェクト化してメソッドを実行しようとすると
-NoMethodErrorが出てくる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_hobby</span>
-</span><span class='line'>
-</span><span class='line'><span class="ss">NoMethodError</span><span class="p">:</span> <span class="n">undefined</span> <span class="nb">method</span> <span class="sb">`my_hobby&#39; for #&lt;Introduction:0x007fd74c0cae38&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>だが、次のようにしてみると通る</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">my_hobby</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My hobby is read a book!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>つまり、extendしたモジュールのメソッドはクラスメソッドのように使えるということ</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">MyHobby</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">my_hobby</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My hobby is.....&quot;</span>
-</span><span class='line'>    <span class="k">super</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">my_hobby</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;My hobby is.....&quot;</span>
-</span><span class='line'><span class="s2">&quot;My hobby is read a book!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>extendはクラスメソッドに影響する</p>
-
-<h4>参考</h4>
-
-<p><a href="http://d.hatena.ne.jp/kasei_san/20091021/p1">継承, mix-in, include, extend について覚え書き</a><br/>
-<a href="http://qiita.com/metheglin/items/ff877fdfe5dd1fd965e2">superを使って継承/Include/Extendしたメソッドをオーバーライド</a><br/>
-<a href="http://jonny.hatenablog.com/entry/2014/03/07/145731">rubyのrequire/include/extend/継承/クラス拡張ミックスインまとめ</a></p>
 ]]></content>
   </entry>
   

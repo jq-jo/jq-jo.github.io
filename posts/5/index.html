@@ -9,7 +9,9 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="HAML (HTML Abstraction Markup Language) インラインコードを使わなくてウェブHTML文書を記述することに使用するマークアップ言語です。PHPやASP、ほとんどのRubyOnRails Applicationで使用されています。 &hellip;">
+  <meta name="description" content="Mobile Applicationの種類 1. Native Application
+2. Hybrid Application
+3. Responsive Web Application Native Application Native Appの開発でアプリはios, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +78,132 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/31/Hybrid-Native-Responsive/">Hybrid, Native, Responsive</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-31T16:02:03+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:02 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><small></p>
+
+<h1>Mobile Applicationの種類</h1>
+
+<p><img src="/images/threeApps.jpg"><br>
+1. Native Application<br>
+2. Hybrid Application<br>
+3. Responsive Web Application<br></p>
+
+<h2>Native Application</h2>
+
+<p>Native Appの開発でアプリはios, androidなどの特定のMobile Platformに合わせて作成することになり、一般的にはPlatform会社の開発道具を使用して作られます。他のPlatformにはコードの再使用はできません。<br><br></p>
+
+<h4>メリット</h4>
+
+<p>• 性能が高い（特にゲームの場合）<br>
+<small>- グラフィックユーザーインターフェース、速度など</small><br>
+• デバイスの全ての機能を使える（センサー、カメラ、連絡先など）<br>
+• Appleのアップストア、GooglePlayなどの公開アップストアを通して配布<br></p>
+
+<h4>デメリット</h4>
+
+<p>• 開発者不足<br>
+• Platform別にそれぞれアプリを作るため費用を使う<br>
+• Platform別にコードベースを管理するため費用と時間を使う<br>
+• 長い開発期間<br>
+• 開発のかかる時間で各Platformのバージョンがそれぞれになる可能性がある<br>
+• 各アップストアの承認手順を待たなきゃいけないのでアプリの配布が遅くなる可能性がある<br></p>
+
+<h4>開発道具</h4>
+
+<p>• Apple: XCode<br>
+• Android: Android Studio, eclipse<br></p>
+
+<h2>Responsive</h2>
+
+<p>HTML 5, CSS, JSなどを使用して作るWeb Application。デバイスのブラウザーを通して接近できます。デバイスの機能を使用することが難しいです。<br></p>
+
+<h4>メリット</h4>
+
+<p>• 既存Web開発者を活用して作れる<br>
+• 費用が一番安い<br>
+• 一つのコードベースだけ管理する<br>
+• 早く編集、アップデートや配布が可能<br></p>
+
+<h4>デメリット</h4>
+
+<p>• インターフェースが標準Native Appと違う可能性がある<br>
+• マルチメディアの性能がよくない<br>
+• デバイスの機能を使うことが難しい<br></p>
+
+<h4>開発道具</h4>
+
+<p>HTML 5, JS, CSSを使ってWebを作ることに使用される全ての開発道具はResponsive Web Applicationを作ることができます。<br>
+• AngularJS - Googleが管理しているopen source web application framework<br>
+• Ember.js - open source javascript web application framework<br>
+• React - facebookが管理しているopen source javascript library<br>
+• JQuery - javascript library<br>
+• Bootstrap - Responsiveを優先するCSS framework<br></p>
+
+<h2>Hybrid Application</h2>
+
+<p>Hybrid ApplicationはResponsive AppをMobile Platformで実行するAppになります。ウェブ標準を使用するが最終アプリはデバイスでnative appで実行されます。Native AppとResponsive Appのメリットだけ合わせるように誕生した。<br></p>
+
+<h4>メリット</h4>
+
+<p>• ウェブ標準を使用して作る（APIやデバイスの機能に接近するためコーディングが必要<br>
+• 既存ウェブ開発者を活用して開発可能<br>
+• 早く編集、アップデートや配布が可能<br>
+• 各PlatformでNative Appで実行する<br></p>
+
+<h4>デメリット</h4>
+
+<p>• インターフェースが標準Native Appと違う可能性がある<br>
+• Native Appよりは性能がよくない<br>
+• 一般的にデバイスの全ての機能が使えるが新たな機能は少し時間がかかる<br>
+• Platformによってそれぞれ違うコードベースにしなきゃいけない<br></p>
+
+<h4>開発道具</h4>
+
+<p>• Apache Cordova - HTML 5, CSS, javascriptを使用しているResponsive Appを基盤にしてNative Appをbuildするopen source platform<br>
+• Adobe PhoneGap - Adobeが作ったApache Cordovaの変形<br>
+• Alpha Anywhere - Responsive Appを作ってそれをNative Appに配布するようにしてくれる開発環境<br>
+• Ionic Framework - AngularJSやCordovaと連携してResponsive Appを基盤にしてNative Appをbuildするユーザーインターフェース中心のframework<br></p>
+
+<h1>b#まとめ</h1>
+
+<p><img src="/images/chart_apps.png"></p>
+
+<p></small></p>
+
+<h2>参照</h2>
+
+<p><small>
+<a href="http://www.itworld.co.kr/news/95791">http://www.itworld.co.kr/news/95791</a></p>
+
+<p></small></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
