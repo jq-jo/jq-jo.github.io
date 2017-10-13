@@ -378,7 +378,73 @@ apiコントローラーのコードを変えてみる。</p>
 
 <p>単純に速度のパフォーマンス側をみると<code>OJ</code>を使った方が良さそう！</p>
 
-<h1>参考</h1>
+<h2>追記</h2>
+
+<h3>mastodonでのOJの使い方</h3>
+
+<ul>
+<li>emoji.jsonの変換</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/lib/emoji.rb</span>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="s1">&#39;emoji.json&#39;</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>serviceクラスでのpayload作成</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/services/batched_remove_status_service.rb</span>
+</span><span class='line'><span class="vi">@json_payloads</span> <span class="o">=</span> <span class="n">statuses</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span><span class="o">.</span><span class="n">to_h</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># app/services/fan_out_on_write_service.rb</span>
+</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">:status</span><span class="p">)</span>
+</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="vi">@payload</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># app/services/notify_service.rb</span>
+</span><span class='line'><span class="no">Redis</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;timeline:</span><span class="si">#{</span><span class="vi">@recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:notification</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="vi">@notification</span><span class="p">,</span> <span class="vi">@recipient</span><span class="p">,</span> <span class="ss">:notification</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># app/services/remove_status_service.rb</span>
+</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>reactコンポーネントへのprops</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="c">// app/views/home/index.html.haml</span>
+</span><span class='line'><span class="nc">.app-holder</span><span class="nf">#mastodon</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
+</span><span class='line'>
+</span><span class='line'><span class="c">// app/views/about/show.html.haml</span>
+</span><span class='line'><span class="nf">#mastodon-timeline</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
 
 <p><a href="http://blog.toshimaru.net/json-parser-benchmark/">RubyのJSONパーサーのパース速度比較</a><br/>
 <a href="https://github.com/ohler55/oj">OJ Github</a></p>
