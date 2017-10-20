@@ -9,12 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Rubyはオブジェクト指向言語であるのだけれど、Javaや他の言語の継承と考え方、方法が違うので調べてみた 継承 普通にSubクラスに親クラスを継承したら親クラスのメソッドを使えるようになる 1
-2
-3
-4
-5
-class MyName def my_name p &quot;My name is &hellip;">
+  <meta name="description" content="Rubyはオブジェクト指向プログラミング言語であり、オブジェクトというものをわからなければRubyを正しく理解することはできない。なので、オプジェクト指向とオプジェクトの一般的な概念になるクラスやモジュールをまとめてみる。 オブジェクト指向とは Ruby, Java, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +76,392 @@ class MyName def my_name p &quot;My name is &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/14/ruby-class-instance-module/">クラスとインスタンス、モジュールの違い</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-14T17:09:20+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>5:09 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Rubyはオブジェクト指向プログラミング言語であり、オブジェクトというものをわからなければRubyを正しく理解することはできない。なので、オプジェクト指向とオプジェクトの一般的な概念になるクラスやモジュールをまとめてみる。</p>
+
+<h2>オブジェクト指向とは</h2>
+
+<p>Ruby, Java, Pythonなどはオブジェクト指向言語というものに分類されている。オブジェクトというものは具体的に識別できるものならなんでもオブジェクトなれる。例えば、文字列、数値、時刻など全てのデータがオブジェクトとして扱われる。"hello, world"とか"object"は文字列オブジェクト、1や3.14などは数値オブジェクトと呼ばれる。<br/>
+また、オブジェクトはメソッドを通して何かの行動ができる。オブジェクトのメソッドを実行するには下記のようなコードを使う。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(オブジェクト).(メソッド名)</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>クラス、インスタンス</h2>
+
+<p>クラスとはオブジェクトの種類を表したものである。Rubyのオブジェクトは必ずクラスに属している。オブジェクトがどんなクラスに属しているかを確認するためには下記のように<code>.class</code>メソッドを使って調べる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">str</span> <span class="o">=</span> <span class="s2">&quot;hello, world!&quot;</span>
+</span><span class='line'><span class="nb">p</span> <span class="n">str</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; String</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このクラスというものは設計図になるとしたら、インスタンスはその設計図を使って実際に作り出すものになる。つまり、インスタンスはクラスを具体化したものだということ。そして全てのオブジェクトはあるクラスのインスタンスだとも言える。</p>
+
+<h4>実際に使ってみる</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Greet</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;こんにちは、&quot;</span> <span class="o">+</span> <span class="nb">name</span> <span class="o">+</span> <span class="s2">&quot;さん&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">greet</span> <span class="o">=</span> <span class="no">Greet</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">greet</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s2">&quot;Jo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &quot;こんにちは、Joさん&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>説明すると</p>
+
+<ul>
+<li>クラスを定義する</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="err">クラス名</span>
+</span><span class='line'>  <span class="c1"># クラスの内容</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>メソッドを定義する</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="err">メソッド名</span>
+</span><span class='line'>  <span class="c1"># 実行する処理</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>インスタンスを作成</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">インスタンス名</span> <span class="o">=</span> <span class="err">クラス名</span><span class="o">.</span><span class="n">new</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>newメソッドを用いることでインスタンスを作成できる。</p>
+
+<h2>モジュール</h2>
+
+<p>まず、コンソールで試してみたら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Class</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Module</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>モジュールはクラスのスーパークラスということをわかる。<br/>
+クラスとモジュールの違いは、リファレンスマニュアルを見ると、こう書かれてる。</p>
+
+<blockquote><p>クラスとモジュールには</p>
+
+<ul>
+<li>クラスはインスタンスを作成できるが、モジュールはできない。</li>
+<li>モジュールを他のモジュールやクラスにインクルードすることはできるが，クラスをインクルードすることはできない。</li>
+</ul>
+
+
+<p>という違いがありますが、それ以外のほとんどの機能は Module から継 承されています。Module のメソッドのうち</p>
+
+<ul>
+<li>Module#module_function</li>
+<li>Module#extend_object</li>
+<li>Module#append_features</li>
+<li>Module#prepend_features</li>
+<li>Module#refine</li>
+</ul>
+
+
+<p>は Class では未定義にされています。</p></blockquote>
+
+<p><a href="https://docs.ruby-lang.org/ja/2.3.0/class/Class.html">class Class - Ruby 2.3.0 リファレンスマニュアル</a></p>
+
+<p>上記の特性を見ると、モジュールはあくまでクラスの機能を補助（拡張）するものというイメージ。<br/>
+下記は一番シンプルな例。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;module method&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="n">M</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
+</span><span class='line'><span class="c1"># =&gt; module method</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Rubyでのモジュールの役割</h4>
+
+<p>大きく二つの役割がある</p>
+
+<ul>
+<li>Mix-in</li>
+<li>Namespace</li>
+</ul>
+
+
+<h4>Mix-in</h4>
+
+<p>クラスやモジュールにモジュールをインクルードすることを<code>Mix-in</code>と呼ぶ。
+Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数のモジュールをインクルードすることができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;method foo&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>    <span class="s1">&#39;method bar&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">M2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
+</span><span class='line'><span class="c1"># =&gt; method foo</span>
+</span><span class='line'><span class="c1"># =&gt; method bar</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Namespace</h4>
+
+<p>クラス定義をモジュールで囲むことで、<code>Namespace</code>として利用できる。異なる<code>Namespace</code>であれば、同名のクラスも定義できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>      <span class="s1">&#39;foo&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>      <span class="s1">&#39;bar&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="no">M1</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
+</span><span class='line'><span class="nb">puts</span> <span class="no">M2</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
+</span><span class='line'><span class="c1"># =&gt; foo</span>
+</span><span class='line'><span class="c1"># =&gt; bar</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>優先順位</h4>
+
+<p>インクルードしたモジュールにスーパークラスと同名のメソッドが定義されていた場合、モジュールが優先される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;module foo&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;class foo&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">B</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
+</span><span class='line'><span class="c1"># =&gt; module foo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>複数のモジュールをインクルードした場合は、後でインクルードしたモジュールのメソッドが優先。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;M1 foo&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
+</span><span class='line'>    <span class="s1">&#39;M2 foo&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">M2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
+</span><span class='line'><span class="c1"># =&gt; M2 foo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参照</h3>
+
+<p><a href="http://www.hirotsuru.com/entry/2016/04/09/184818">第２回 クラスとインスタンス　〜Rubyの勉強〜</a><br/>
+<a href="http://yamacent.hatenablog.com/entry/2015/05/17/235908">Rubyのモジュールについて調べた</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -4191,198 +4572,6 @@ consoleで確認してみたら</p>
 
 <p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
 <a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/12/21/make-environment-androidstudio2/">ビルド環境設定(Android Studio)2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-12-21T18:05:11+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>6:05 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>はじめに</h2>
-
-<p>前回にAndroidStudio, XCodeのビルド環境設定の記事を書いたとき、環境変数とか環境によって違う機能を分けることについてもっといい方法があるんじゃないかなという疑問ができたので調べてみたのをまとめた。<br>
-その中で見つけたのが<code>buildConfigField</code>だった。
-<br><code>buildConfigField</code>は<code>build.gradle</code>の<code>buildTypes</code>、<code>productFlavors</code>に使える定義するものである。<br></p>
-
-<h3>gradle.properties</h3>
-
-<p>ちなみに、<code>build.gradle</code>はgitや他のバージョン管理ツールで公開されるので直接書くのではなくて、<code>gradle.properties</code>から読み込む方法をとる。<br>
-まずは<code>gradle.properties</code>に設定をする。<code>build.gradle</code>にはString、int、array、double、floatなどいろんなobjectを宣言可能だが今回はシンプルにwebviewのurlを使うためのStringを設定してみる。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
-</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>gradle.properties</code>に設定をしたら<code>build.gradle</code>にも設定をする。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>第一変数はobjectの種類、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。こういうふうにしたらすぐ使えるようになる。それではwebviewのところで<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mWebView</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="n">MAIN_URL</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こんなにstatic変数のように使う。すると、<br></p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/6vuaeg3dXBGYdX8KNGlshaopTD8pDU.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/h9z6kCp1JQEwOimWquoTEwezalKVu2.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p><br>
-これの上にアプリの名前も変えてみよう。
-<br><code>gradle.properties</code>にアプリの名前に使うStringを設定する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">google_url</span><span class="o">=</span><span class="nl">https:</span><span class="c1">//www.google.co.jp</span>
-</span><span class='line'><span class="n">yahoo_url</span><span class="o">=</span><span class="nl">http:</span><span class="c1">//www.yahoo.co.jp</span>
-</span><span class='line'><span class="n">google_appName</span><span class="o">=</span><span class="n">Googleアプリ</span>
-</span><span class='line'><span class="n">yahoo_appName</span><span class="o">=</span><span class="n">Yahooアプリ</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>あと、<code>build.gradle</code>に追加します。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_appName}\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_appName}\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに<code>build.gradle</code>に<code>resValue</code>と設定したらリソースとして使用できる。<br>
-第一変数はリソースの種類（ここはStringではなく、stringにすることを注意）、第二変数は実際に使う名前、第三変数は<code>gradle.properties</code>で設定した名前になる。そして<code>AndroidManifest</code>で<code>@string/appName</code>とすると、</p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/RN5ZOAe570jot528uC0udeGXTBu38m.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/MfFYzVlrySfsiFDZJpASY8rAZwyT7e.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p>日本語がちゃんと出てこない。<br></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">productFlavors</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">google</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${google_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Googleアプリ\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'>  <span class="n">yahoo</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">buildConfigField</span><span class="o">(</span><span class="s">&quot;String&quot;</span><span class="o">,</span> <span class="s">&quot;MAIN_URL&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;${yahoo_url}\&quot;&quot;</span><span class="o">)</span>
-</span><span class='line'>    <span class="n">resValue</span> <span class="s">&quot;string&quot;</span><span class="o">,</span> <span class="s">&quot;appName&quot;</span><span class="o">,</span> <span class="s">&quot;\&quot;Yahooアプリ\&quot;&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>productFlavors</code>に直接書いたら、</p>
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/LCI9N7RqKUPYZ2YxA6347xXp6r8L5c.png">
-<p style="text-align: center;">yahooのFlavors</p>
-</div>
-
-
-<div style="width: 49%; float: left;">
-<img src="https://monosnap.com/file/AK7E4N7OVOUyItSQqKGZje8JWgHLmT.png">
-<p style="text-align: center;">googleのFlavors</p>
-</div>
-
-
-<p><br>
-アプリ名も変えられる。でもなんで日本語がうまく出てこないのかの疑問ができたので今度また調べてまとめることにしよう。<br><br><br></p>
-
-<h2>参照</h2>
-
-<p><small>
-<a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829"><a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829">http://sakebook.hatenablog.com/entry/2015/11/20/015829</a></a>
-<a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B"><a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B">http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B</a></a>
-</small></p>
 </div>
   
   

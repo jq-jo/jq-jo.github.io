@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-10-13T10:26:49+09:00</updated>
+  <updated>2017-10-20T10:30:24+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mastodon把握 - ①]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/10/18/mastodon-post/"/>
+    <updated>2017-10-18T10:26:33+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/10/18/mastodon-post</id>
+    <content type="html"><![CDATA[<h2>投稿</h2>
+
+<ul>
+<li>処理Flow</li>
+</ul>
+
+
+<p><img src="https://monosnap.com/file/QVqhw0WIHyJTAVI3oulFPaLhES8BMv.png" alt="Alt text" /></p>
+
+<ul>
+<li>簡単な説明
+
+<ul>
+<li>Frontend側
+
+<ul>
+<li>JSは細かくコンポーネント化になっていてそれのConnectのために<code>react-redux</code>というライブラリを利用</li>
+</ul>
+</li>
+<li>Backend側
+
+<ul>
+<li>アーキテクチャとしてServiceクラスを主に使っている</li>
+<li>それ以外には<code>app</code>の中に<code>lib</code>フォルダーを置き、処理のためのクラスを管理している</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OJ Gem]]></title>
@@ -4509,371 +4547,6 @@ MVCのおさらいと、RailsのMVCについて説明する</a></p>
 
 <p><a href="http://qiita.com/mogulla3/items/cd4d6e188c34c6819709">【まとめ】インスタンス変数、クラス変数、クラスインスタンス変数</a><br/>
 <a href="https://docs.ruby-lang.org/ja/latest/doc/spec=2fvariables.html">class Class - Ruby 2.3.0 変数と定数</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[クラスとインスタンス、モジュールの違い]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/03/14/ruby-class-instance-module/"/>
-    <updated>2017-03-14T17:09:20+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/03/14/ruby-class-instance-module</id>
-    <content type="html"><![CDATA[<p>Rubyはオブジェクト指向プログラミング言語であり、オブジェクトというものをわからなければRubyを正しく理解することはできない。なので、オプジェクト指向とオプジェクトの一般的な概念になるクラスやモジュールをまとめてみる。</p>
-
-<h2>オブジェクト指向とは</h2>
-
-<p>Ruby, Java, Pythonなどはオブジェクト指向言語というものに分類されている。オブジェクトというものは具体的に識別できるものならなんでもオブジェクトなれる。例えば、文字列、数値、時刻など全てのデータがオブジェクトとして扱われる。"hello, world"とか"object"は文字列オブジェクト、1や3.14などは数値オブジェクトと呼ばれる。<br/>
-また、オブジェクトはメソッドを通して何かの行動ができる。オブジェクトのメソッドを実行するには下記のようなコードを使う。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(オブジェクト).(メソッド名)</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>クラス、インスタンス</h2>
-
-<p>クラスとはオブジェクトの種類を表したものである。Rubyのオブジェクトは必ずクラスに属している。オブジェクトがどんなクラスに属しているかを確認するためには下記のように<code>.class</code>メソッドを使って調べる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">str</span> <span class="o">=</span> <span class="s2">&quot;hello, world!&quot;</span>
-</span><span class='line'><span class="nb">p</span> <span class="n">str</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; String</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このクラスというものは設計図になるとしたら、インスタンスはその設計図を使って実際に作り出すものになる。つまり、インスタンスはクラスを具体化したものだということ。そして全てのオブジェクトはあるクラスのインスタンスだとも言える。</p>
-
-<h4>実際に使ってみる</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Greet</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;こんにちは、&quot;</span> <span class="o">+</span> <span class="nb">name</span> <span class="o">+</span> <span class="s2">&quot;さん&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">greet</span> <span class="o">=</span> <span class="no">Greet</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="n">greet</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s2">&quot;Jo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &quot;こんにちは、Joさん&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>説明すると</p>
-
-<ul>
-<li>クラスを定義する</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="err">クラス名</span>
-</span><span class='line'>  <span class="c1"># クラスの内容</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>メソッドを定義する</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="err">メソッド名</span>
-</span><span class='line'>  <span class="c1"># 実行する処理</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>インスタンスを作成</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">インスタンス名</span> <span class="o">=</span> <span class="err">クラス名</span><span class="o">.</span><span class="n">new</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>newメソッドを用いることでインスタンスを作成できる。</p>
-
-<h2>モジュール</h2>
-
-<p>まず、コンソールで試してみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Class</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Module</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Module</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>モジュールはクラスのスーパークラスということをわかる。<br/>
-クラスとモジュールの違いは、リファレンスマニュアルを見ると、こう書かれてる。</p>
-
-<blockquote><p>クラスとモジュールには</p>
-
-<ul>
-<li>クラスはインスタンスを作成できるが、モジュールはできない。</li>
-<li>モジュールを他のモジュールやクラスにインクルードすることはできるが，クラスをインクルードすることはできない。</li>
-</ul>
-
-
-<p>という違いがありますが、それ以外のほとんどの機能は Module から継 承されています。Module のメソッドのうち</p>
-
-<ul>
-<li>Module#module_function</li>
-<li>Module#extend_object</li>
-<li>Module#append_features</li>
-<li>Module#prepend_features</li>
-<li>Module#refine</li>
-</ul>
-
-
-<p>は Class では未定義にされています。</p></blockquote>
-
-<p><a href="https://docs.ruby-lang.org/ja/2.3.0/class/Class.html">class Class - Ruby 2.3.0 リファレンスマニュアル</a></p>
-
-<p>上記の特性を見ると、モジュールはあくまでクラスの機能を補助（拡張）するものというイメージ。<br/>
-下記は一番シンプルな例。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;module method&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="n">M</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'><span class="c1"># =&gt; module method</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Rubyでのモジュールの役割</h4>
-
-<p>大きく二つの役割がある</p>
-
-<ul>
-<li>Mix-in</li>
-<li>Namespace</li>
-</ul>
-
-
-<h4>Mix-in</h4>
-
-<p>クラスやモジュールにモジュールをインクルードすることを<code>Mix-in</code>と呼ぶ。
-Rubyのクラスは多重継承できないが、<code>Mix-in</code>なら複数のモジュールをインクルードすることができる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;method foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>    <span class="s1">&#39;method bar&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">M2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'><span class="nb">puts</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
-</span><span class='line'><span class="c1"># =&gt; method foo</span>
-</span><span class='line'><span class="c1"># =&gt; method bar</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Namespace</h4>
-
-<p>クラス定義をモジュールで囲むことで、<code>Namespace</code>として利用できる。異なる<code>Namespace</code>であれば、同名のクラスも定義できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>      <span class="s1">&#39;foo&#39;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>      <span class="s1">&#39;bar&#39;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="no">M1</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'><span class="nb">puts</span> <span class="no">M2</span><span class="o">::</span><span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">bar</span>
-</span><span class='line'><span class="c1"># =&gt; foo</span>
-</span><span class='line'><span class="c1"># =&gt; bar</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>優先順位</h4>
-
-<p>インクルードしたモジュールにスーパークラスと同名のメソッドが定義されていた場合、モジュールが優先される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;module foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;class foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">B</span> <span class="o">&lt;</span> <span class="n">A</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">B</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'><span class="c1"># =&gt; module foo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>複数のモジュールをインクルードした場合は、後でインクルードしたモジュールのメソッドが優先。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M1</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;M1 foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">M2</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="s1">&#39;M2 foo&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">A</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">M1</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">M2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="n">A</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span>
-</span><span class='line'><span class="c1"># =&gt; M2 foo</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>参照</h3>
-
-<p><a href="http://www.hirotsuru.com/entry/2016/04/09/184818">第２回 クラスとインスタンス　〜Rubyの勉強〜</a><br/>
-<a href="http://yamacent.hatenablog.com/entry/2015/05/17/235908">Rubyのモジュールについて調べた</a></p>
 ]]></content>
   </entry>
   
