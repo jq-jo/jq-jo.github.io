@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-10-20T10:30:24+09:00</updated>
+  <updated>2017-11-10T10:06:47+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,37 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mastodon把握 - ②]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/11/08/mastodon-follow/"/>
+    <updated>2017-11-08T17:50:45+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/11/08/mastodon-follow</id>
+    <content type="html"><![CDATA[<h2>フォロー</h2>
+
+<ul>
+<li><p><strong>Flow</strong><br/>
+色んな細かい処理を行なっているが大きい処理を見てみると下記のようになる。</p>
+
+<ol>
+<li>フォロー情報の保存</li>
+<li>プッシュ通知</li>
+<li>購読の処理</li>
+</ol>
+</li>
+</ul>
+
+
+<p><br></p>
+
+<ul>
+<li>処理Flow</li>
+</ul>
+
+
+<p><img src="https://monosnap.com/file/vGLBLfDyD4s5COvelDp8MYZui5pXKj.png" alt="Alt text" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mastodon把握 - ①]]></title>
@@ -4298,255 +4329,6 @@ MVCのおさらいと、RailsのMVCについて説明する</a></p>
 <p><a href="http://www.techscore.com/blog/2013/03/01/rails-include%E3%81%95%E3%82%8C%E3%81%9F%E6%99%82%E3%81%AB%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%A8%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%83%A1/">Rails: includeされた時にクラスメソッドとインスタンスメソッドを同時に追加する頻出パターン</a><br/>
 <a href="http://blog.yujigraffiti.com/2015/01/rails-42module-classmethodsconcernclass.html">Rails 4.2からはmodule ClassMethodsではなくConcern#class_methodsを使おう</a><br/>
 <a href="http://qiita.com/castaneai/items/6dc121ce6ff100614f42">[Rails] ActiveSupport::Concern の存在理由</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[クラス変数、インスタンス変数]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/03/23/class-instance-method-and-mixin/"/>
-    <updated>2017-03-23T17:38:37+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/03/23/class-instance-method-and-mixin</id>
-    <content type="html"><![CDATA[<p><a href="https://jq-jo.github.io/blog/2017/03/14/ruby-class-instance-module">前回のポスト（クラスとインスタンスの違い）</a>の続きでクラス変数、インスタンス変数及びMix-inの使い方についてまとめてみる。</p>
-
-<h2>クラス変数、インスタンス変数</h2>
-
-<h4>クラス変数</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="vc">@@foo</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>@@で始まる変数はクラス変数である。クラス変数はクラス定義の中で定義され、クラスの特異メソッド、インスタンスメソッドなどから参照／代入ができる。<br>
-クラス変数は</p>
-
-<ul>
-<li>サブクラスから参照／代入が可能</li>
-<li>インスタンスメソッドから参照／代入が可能</li>
-</ul>
-
-
-<p>クラス変数は、そのクラスやサブクラスのインスタンスで共有され、グローバル変数のように使える。</p>
-
-<p><strong>定義</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>使い方</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span> <span class="o">&lt;</span> <span class="no">Foo</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Baz</span> <span class="o">&lt;</span> <span class="no">Bar</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 3</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>モジュールで定義されたクラス変数(モジュール変数)は、そのモジュールをインクルードしたクラス間でも共有される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Baz</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 3</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>インスタンス変数</h4>
-
-<p>@で始まる変数はインスタンス変数であり、これはオブジェクトに所属している。<br>
-明示的にインスタンス変数を宣言しなくて良い。</p>
-
-<ul>
-<li>インスタンス変数にアクセスできるのは、initializeメソッドとオブジェクトのインスタンスメソッドだけ
-
-<ul>
-<li>initializeメソッドで初期化されて、その後各インスタンスメソッドから参照・変更</li>
-</ul>
-</li>
-</ul>
-
-
-<p><strong>定義</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@foo</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>使い方</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>  <span class="c1"># initializeメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@foo</span> <span class="o">=</span> <span class="n">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> が初期化されました。&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># インスタンスメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;barメソッドから </span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> がプリントされました。&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># クラスメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">foobar</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="vi">@foo</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># initializeメソッドからはアクセスできる</span>
-</span><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;foo が初期化されました。&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># 各インスタンスごとに違う値を持つことができる</span>
-</span><span class='line'><span class="n">foo2</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;bar が初期化されました。&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># インスタンスメソッドからもアクセスできる</span>
-</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo がプリントされました。&#39;</span>
-</span><span class='line'><span class="n">foo2</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから bar がプリントされました。&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># クラスメソッドからはアクセスできない</span>
-</span><span class='line'><span class="no">Foo</span><span class="o">.</span><span class="n">foobar</span> <span class="c1"># =&gt; nil</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>attr_accessorの書き方</strong><br/>
-上記のクラスにattr_accessorを定義するとさらに使いやすくなる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
-</span><span class='line'>  <span class="c1"># attr_accessorを定義する</span>
-</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:foo</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># initializeメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@foo</span> <span class="o">=</span> <span class="n">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> が初期化されました。&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># インスタンスメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;barメソッドから </span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> がプリントされました。&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># クラスメソッドからアクセス</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">foobar</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="vi">@foo</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに定義すると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;foo1&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;foo1 が初期化されました。&#39;</span>
-</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo1 がプリントされました。&#39;</span>
-</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;foo2&quot;</span> <span class="c1"># =&gt; &#39;foo2&#39;</span>
-</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo2 がプリントされました。&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように使える。</p>
-
-<h3>参照</h3>
-
-<p><a href="http://qiita.com/mogulla3/items/cd4d6e188c34c6819709">【まとめ】インスタンス変数、クラス変数、クラスインスタンス変数</a><br/>
-<a href="https://docs.ruby-lang.org/ja/latest/doc/spec=2fvariables.html">class Class - Ruby 2.3.0 変数と定数</a></p>
 ]]></content>
   </entry>
   

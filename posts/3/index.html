@@ -9,7 +9,14 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Rubyはオブジェクト指向プログラミング言語であり、オブジェクトというものをわからなければRubyを正しく理解することはできない。なので、オプジェクト指向とオプジェクトの一般的な概念になるクラスやモジュールをまとめてみる。 オブジェクト指向とは Ruby, Java, &hellip;">
+  <meta name="description" content="前回のポスト（クラスとインスタンスの違い）の続きでクラス変数、インスタンス変数及びMix-inの使い方についてまとめてみる。 クラス変数、インスタンス変数 クラス変数 1
+2
+3
+4
+5
+6
+class Foo @@foo = 1 def bar puts @@foo end
+end @@ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +83,276 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/23/class-instance-method-and-mixin/">クラス変数、インスタンス変数</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-23T17:38:37+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2017</span></span> <span class='time'>5:38 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://jq-jo.github.io/blog/2017/03/14/ruby-class-instance-module">前回のポスト（クラスとインスタンスの違い）</a>の続きでクラス変数、インスタンス変数及びMix-inの使い方についてまとめてみる。</p>
+
+<h2>クラス変数、インスタンス変数</h2>
+
+<h4>クラス変数</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="vc">@@foo</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>@@で始まる変数はクラス変数である。クラス変数はクラス定義の中で定義され、クラスの特異メソッド、インスタンスメソッドなどから参照／代入ができる。<br>
+クラス変数は</p>
+
+<ul>
+<li>サブクラスから参照／代入が可能</li>
+<li>インスタンスメソッドから参照／代入が可能</li>
+</ul>
+
+
+<p>クラス変数は、そのクラスやサブクラスのインスタンスで共有され、グローバル変数のように使える。</p>
+
+<p><strong>定義</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>使い方</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span> <span class="o">&lt;</span> <span class="no">Foo</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Baz</span> <span class="o">&lt;</span> <span class="no">Bar</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 3</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>モジュールで定義されたクラス変数(モジュール変数)は、そのモジュールをインクルードしたクラス間でも共有される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
+</span><span class='line'>  <span class="vc">@@foo</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Baz</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="vc">@@foo</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># =&gt; 3</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>インスタンス変数</h4>
+
+<p>@で始まる変数はインスタンス変数であり、これはオブジェクトに所属している。<br>
+明示的にインスタンス変数を宣言しなくて良い。</p>
+
+<ul>
+<li>インスタンス変数にアクセスできるのは、initializeメソッドとオブジェクトのインスタンスメソッドだけ
+
+<ul>
+<li>initializeメソッドで初期化されて、その後各インスタンスメソッドから参照・変更</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>定義</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@foo</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>使い方</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="c1"># initializeメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@foo</span> <span class="o">=</span> <span class="n">foo</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> が初期化されました。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># インスタンスメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;barメソッドから </span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> がプリントされました。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># クラスメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">foobar</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="vi">@foo</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># initializeメソッドからはアクセスできる</span>
+</span><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;foo が初期化されました。&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 各インスタンスごとに違う値を持つことができる</span>
+</span><span class='line'><span class="n">foo2</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;bar が初期化されました。&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># インスタンスメソッドからもアクセスできる</span>
+</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo がプリントされました。&#39;</span>
+</span><span class='line'><span class="n">foo2</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから bar がプリントされました。&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># クラスメソッドからはアクセスできない</span>
+</span><span class='line'><span class="no">Foo</span><span class="o">.</span><span class="n">foobar</span> <span class="c1"># =&gt; nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>attr_accessorの書き方</strong><br/>
+上記のクラスにattr_accessorを定義するとさらに使いやすくなる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="c1"># attr_accessorを定義する</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:foo</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># initializeメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@foo</span> <span class="o">=</span> <span class="n">foo</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> が初期化されました。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># インスタンスメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;barメソッドから </span><span class="si">#{</span><span class="vi">@foo</span><span class="si">}</span><span class="s2"> がプリントされました。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># クラスメソッドからアクセス</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">foobar</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="vi">@foo</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに定義すると</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">foo</span> <span class="o">=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;foo1&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &#39;foo1 が初期化されました。&#39;</span>
+</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo1 がプリントされました。&#39;</span>
+</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;foo2&quot;</span> <span class="c1"># =&gt; &#39;foo2&#39;</span>
+</span><span class='line'><span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="c1"># =&gt; &#39;barメソッドから foo2 がプリントされました。&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように使える。</p>
+
+<h3>参照</h3>
+
+<p><a href="http://qiita.com/mogulla3/items/cd4d6e188c34c6819709">【まとめ】インスタンス変数、クラス変数、クラスインスタンス変数</a><br/>
+<a href="https://docs.ruby-lang.org/ja/latest/doc/spec=2fvariables.html">class Class - Ruby 2.3.0 変数と定数</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -4169,409 +4446,6 @@ consoleで確認してみたら</p>
 <p><a href="http://ruby-rails.hatenadiary.com/entry/20141207/1417926599">Rails4でポリモフィックのリレーションを実装する</a><br/>
 <a href="http://ruby-rails.hatenadiary.com/entry/20141206/1417839458">Rails4でSTI(単一継承テーブル)を行う</a><br/>
 <a href="http://easyramble.com/rails-activerecord-single-table-inheritance.html">Rails ActiveRecordのSTI(Single Table Inheritance)の使い方</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/01/11/make-environment-xcode2/">ビルド環境設定(XCode)2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-01-11T10:04:36+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:04 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>問題</h2>
-
-<p>この前、<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">ここの記事</a>のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。</p>
-
-<h2>ソリューション</h2>
-
-<p>例えば、Railsにはymlファイルに環境別に変数を設定したり、environmentsフォルダーにconfigの設定をするようにXCodeにもPlistファイルに設定して使う。<a href="https://jq-jo.github.io/blog/2016/11/30/make-environment-xcode/">前の記事</a>に続いてセッティングしたら良いと。</p>
-
-<h2>使い方</h2>
-
-<h3>1. info.plistを編集</h3>
-
-<p><img src="https://monosnap.com/file/m0cQfWs4DcRqy48GpdP8N7iXD7q476.png" alt="Alt text" /></p>
-
-<h3>2. Environment.plistを追加</h3>
-
-<p>plistの新規作成
-<img src="https://monosnap.com/file/0X16dE8UFtdkaPiXUQXUVciKRVWlp7.png" alt="Alt text" />
-項目追加
-<img src="https://monosnap.com/file/GNcdNK4Rw2X9hpdiFkIXmSrEpg88Xn.png" alt="Alt text" /></p>
-
-<h3>3. AppDelegateに設定</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  let bundle = NSBundle.bundle()
-</span><span class='line'>  // Configuration取得
-</span><span class='line'>  let configuration = bundle.infoDictionary!["Configuration"]
-</span><span class='line'>
-</span><span class='line'>  // Configurations.plist読み込み
-</span><span class='line'>  let path = bundle.pathForResource("Environments", ofType: "plist")
-</span><span class='line'>  let configurations = NSDictionary(contentsOfFile: path!)
-</span><span class='line'>
-</span><span class='line'>  // URL取得
-</span><span class='line'>  let variables = configurations?.objectForKey(configuration!) as! [String : AnyObject]
-</span><span class='line'>
-</span><span class='line'>  let urlStr = variables["URL"]
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. ViewController</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
-</span><span class='line'>
-</span><span class='line'>  @IBOutlet weak var webView: UIWebView!
-</span><span class='line'>  var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-</span><span class='line'>
-</span><span class='line'>  override func viewDidLoad() {
-</span><span class='line'>        super.viewDidLoad()
-</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
-</span><span class='line'>        self.webView.delegate = self
-</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
-</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
-</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
-</span><span class='line'>        webView.scrollView.isScrollEnabled = true
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 使いやすい方法</h3>
-
-<p>Configurationクラスを新規作成</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
-</span><span class='line'>
-</span><span class='line'>final class ConfigurationManager {
-</span><span class='line'>
-</span><span class='line'>    private static let sharedInstance = ConfigurationManager()
-</span><span class='line'>
-</span><span class='line'>    private var configuration: String
-</span><span class='line'>    private var variables: NSDictionary
-</span><span class='line'>
-</span><span class='line'>    private init() {
-</span><span class='line'>
-</span><span class='line'>        // Singletonの確認用
-</span><span class='line'>        print("Configuration initialization")
-</span><span class='line'>
-</span><span class='line'>        let bundle = Bundle.main
-</span><span class='line'>        // Fetch Current Configuration
-</span><span class='line'>        self.configuration = (bundle.infoDictionary?["Configuration"]) as! String
-</span><span class='line'>        // Load Configurations
-</span><span class='line'>        guard let path = bundle.path(forResource: "Environments", ofType: "plist") else {
-</span><span class='line'>            self.variables = [:]
-</span><span class='line'>            return
-</span><span class='line'>        }
-</span><span class='line'>        let configurations =  NSDictionary(contentsOfFile: path)
-</span><span class='line'>        // Load Variables for Current Configuration
-</span><span class='line'>        self.variables = configurations?.object(forKey: self.configuration) as! NSDictionary
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    class func Configuration() -&gt; String {
-</span><span class='line'>        return sharedInstance.configuration
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    class func URL() -&gt; String {
-</span><span class='line'>        guard let url = sharedInstance.variables["URL"] else {
-</span><span class='line'>            return ""
-</span><span class='line'>        }
-</span><span class='line'>        return url as! String
-</span><span class='line'>    }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Appdelegate編集</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  let urlStr = ConfigurationManager.URL()
-</span><span class='line'>
-</span><span class='line'>  (略)</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>6. 結果</h3>
-
-<div>
-<img src="https://monosnap.com/file/MWaisZvYficmUHFcvpSzpnfSYdQlrP.png" style="width: 32%;">
-<img src="https://monosnap.com/file/SaK6q623KKMxNVnA3S9ErtUghksOFD.png" style="width: 32%;">
-<img src="https://monosnap.com/file/kGcje9rS0P0UScxwBoq7bKX65ijm4m.png" style="width: 32%;">
-</div>
-
-
-<h2>適用</h2>
-
-<h3>1. Environment.plistに追加</h3>
-
-<p><img src="https://monosnap.com/file/bnSdtBjYdERQ8AV4u30YbvbC6VxJ60.png" alt="Alt text" /></p>
-
-<h3>2. ConfigurationManager.swiftにコード追加</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import Foundation
-</span><span class='line'>
-</span><span class='line'>final class ConfigurationManager {
-</span><span class='line'>
-</span><span class='line'>  (略)
-</span><span class='line'>
-</span><span class='line'>  class func BarColor() -&gt; NSDictionary {
-</span><span class='line'>      guard let barColor = sharedInstance.variables["BarColor"] else {
-</span><span class='line'>          return "" as! NSDictionary
-</span><span class='line'>      }
-</span><span class='line'>      return barColor as! NSDictionary
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>3. AppDelegate</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>@UIApplicationMain
-</span><span class='line'>class AppDelegate: UIResponder, UIApplicationDelegate {
-</span><span class='line'>
-</span><span class='line'>  var window: UIWindow?
-</span><span class='line'>  let urlStr = ConfigurationManager.URL()
-</span><span class='line'>  let barColor = ConfigurationManager.BarColor()
-</span><span class='line'>  let appEnvironment = ConfigurationManager.Configuration()
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -&gt; Bool {
-</span><span class='line'>      // Override point for customization after application launch.
-</span><span class='line'>
-</span><span class='line'>      return true
-</span><span class='line'>  }
-</span><span class='line'>
-</span><span class='line'>  (略)
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>4. ViewController</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import UIKit
-</span><span class='line'>
-</span><span class='line'>class ViewController: UIViewController, UIWebViewDelegate {
-</span><span class='line'>
-</span><span class='line'>    @IBOutlet weak var webView: UIWebView!
-</span><span class='line'>    var appDelegate: AppDelegate = UIApplication.shared.delegate as! AppDelegate
-</span><span class='line'>    @IBOutlet weak var Environment: UILabel!
-</span><span class='line'>
-</span><span class='line'>    override func viewDidLoad() {
-</span><span class='line'>        super.viewDidLoad()
-</span><span class='line'>        // Do any additional setup after loading the view, typically from a nib.
-</span><span class='line'>        self.webView.delegate = self
-</span><span class='line'>        let initialUrl = NSURL(string: self.appDelegate.urlStr)
-</span><span class='line'>        let request = NSURLRequest(url:initialUrl as! URL)
-</span><span class='line'>        self.webView.loadRequest(request as URLRequest)
-</span><span class='line'>        webView.scrollView.isScrollEnabled = true
-</span><span class='line'>        Environment.text = appDelegate.appEnvironment
-</span><span class='line'>        Environment.backgroundColor = UIColor(red: self.appDelegate.barColor["Red"] as! CGFloat, green: self.appDelegate.barColor["Green"] as! CGFloat, blue: self.appDelegate.barColor["Blue"] as! CGFloat, alpha: 1.0)
-</span><span class='line'>        Environment.textColor = UIColor.white
-</span><span class='line'>        Environment.textAlignment = .center
-</span><span class='line'>
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    override func didReceiveMemoryWarning() {
-</span><span class='line'>        super.didReceiveMemoryWarning()
-</span><span class='line'>        // Dispose of any resources that can be recreated.
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>5. 結果</h3>
-
-<div>
-<img src="https://monosnap.com/file/ELhzOprPWibPz7EijtFXFE6PTbSGjt.png" style="width: 32%;">
-<img src="https://monosnap.com/file/77vXKNb9cyZiR1RAqi1MHzrzlyHUri.png" style="width: 32%;">
-<img src="https://monosnap.com/file/GyBMCa15r5EI6uNLBU069dBu1D2AZl.png" style="width: 32%;">
-</div>
-
-
-<p><br><br></p>
-
-<h2>参照</h2>
-
-<p><a href="http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742">http://stackoverflow.com/questions/40230396/ios-simple-way-to-manage-rest-end-points/40230742#40230742</a><br>
-<a href="http://qiita.com/negibouze/items/1c1c977cab5ef26224fd">http://qiita.com/negibouze/items/1c1c977cab5ef26224fd</a></p>
 </div>
   
   
