@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-11-29T13:48:34+09:00</updated>
+  <updated>2017-11-29T13:52:55+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -139,7 +139,7 @@
 <li>PubSubHubbubとは
 
 <ul>
-<li>link!!</li>
+<li><a href="https://jq-jo.github.io/blog/2017/11/29/pubsubhubbub/">PubSubHubbub</a></li>
 </ul>
 </li>
 <li>処理
