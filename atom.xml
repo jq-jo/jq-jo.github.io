@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-11-10T10:06:47+09:00</updated>
+  <updated>2017-11-29T13:48:34+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,176 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PubSubHubbub]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/11/29/pubsubhubbub/"/>
+    <updated>2017-11-29T13:42:07+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/11/29/pubsubhubbub</id>
+    <content type="html"><![CDATA[<h2>PubSubHubbubとは</h2>
+
+<blockquote><p>PubSubHubbub (パブサブハブバブ) とは、更新情報を Google にリアルタイムで通知することができるプロトコルです。略して、PuSH (プッシュ) とも呼ばれます。Pub は Publisher (配信)、Sub は Subscriber (購読) を意味しており、その間に Hub というサービス (中間サーバ) があるため、このような名前になっています。配信側がコンテンツを更新すると、Hub が購読側に通知を行います。購読側は更新情報をすぐに知ることができるため、リアルタイムの情報配信が実現できる仕組みになっています。</p></blockquote>
+
+<p>参照 - <a href="https://murashun.jp/blog/20150915-01.html">https://murashun.jp/blog/20150915-01.html</a></p>
+
+<h2>PubSubHubbubにリクエストを送る方法</h2>
+
+<p>PubSubHubbubにリクエストを送る場合は、下記のURLにPOSTでリクエストを送る。</p>
+
+<p><strong> <a href="http://pubsubhubbub.appspot.com/">http://pubsubhubbub.appspot.com/</a> </strong></p>
+
+<p>リクエストを送る場合、dataとして<code>hub.mode</code>に<code>publish</code>を設定し、<code>hub.url</code>に<code>フィードのURL</code>を設定する。また、<code>Content-Type</code>には<code>application/x-www-form-urlencoded</code>を設定する。</p>
+
+<h2>PubSubHubbub対応に使えるGems</h2>
+
+<ul>
+<li><a href="https://github.com/igrigorik/PubSubHubbub">igrigorik/PubSubHubbub</a></li>
+<li><a href="https://github.com/Gargron/pubsubhubbub">Gargron/pubsubhubbub</a></li>
+<li><a href="https://github.com/shiro16/nagareboshi">shiro16/nagareboshi</a></li>
+</ul>
+
+
+<p>とりあえずgithubのstarsが<code>igrigorik/PubSubHubbub</code>の方が多かったのでこれの使い方を少しみてみる。<br/>
+- Simple client example</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">EventMachine</span><span class="o">.</span><span class="n">run</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">pub</span> <span class="o">=</span> <span class="no">EventMachine</span><span class="o">::</span><span class="no">PubSubHubbub</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;http://pubsubhubbub.appspot.com/publish&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span> <span class="s2">&quot;http://www.test.com/&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">callback</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Successfully notified hub.&quot;</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">errback</span>  <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Uh oh, something broke: </span><span class="si">#{</span><span class="n">pub</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Posting multiple URL&rsquo;s</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">EventMachine</span><span class="o">.</span><span class="n">run</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">feeds</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;http://www.test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.test.com/2&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">pub</span> <span class="o">=</span> <span class="no">EventMachine</span><span class="o">::</span><span class="no">PubSubHubbub</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;http://pubsubhubbub.appspot.com/publish&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span> <span class="n">feeds</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">callback</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Successfully notified hub.&quot;</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">errback</span>  <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Uh oh, something broke: </span><span class="si">#{</span><span class="n">pub</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参照</h2>
+
+<p><a href="https://qiita.com/tackeyy/items/0d2079d901d495f50c1e">https://qiita.com/tackeyy/items/0d2079d901d495f50c1e</a><br/>
+<a href="https://murashun.jp/blog/20150915-01.html">https://murashun.jp/blog/20150915-01.html</a><br/>
+<a href="https://github.com/igrigorik/PubSubHubbub">https://github.com/igrigorik/PubSubHubbub</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mastodon把握 - ③（FollowServiceの処理）]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/11/22/mastodon-follow02/"/>
+    <updated>2017-11-22T13:40:02+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/11/22/mastodon-follow02</id>
+    <content type="html"><![CDATA[<h2>callメソッド</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">target_account</span> <span class="o">=</span> <span class="no">ResolveRemoteAccountService</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordNotFound</span> <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">target_account</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">source_account</span><span class="o">.</span><span class="n">id</span> <span class="o">||</span> <span class="n">target_account</span><span class="o">.</span><span class="n">suspended?</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">Mastodon</span><span class="o">::</span><span class="no">NotPermittedError</span>  <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">blocking?</span><span class="p">(</span><span class="n">source_account</span><span class="p">)</span> <span class="o">||</span> <span class="n">source_account</span><span class="o">.</span><span class="n">blocking?</span><span class="p">(</span><span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="k">if</span> <span class="n">source_account</span><span class="o">.</span><span class="n">following?</span><span class="p">(</span><span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">locked?</span>
+</span><span class='line'>    <span class="n">request_follow</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="n">direct_follow</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本的にfollowはターゲットユーザーが非公開アカウントかどうかによって処理が変わる。非公開アカウントの設定は<code>Account</code>モデルの<code>locked</code>というカラムに保存するようになっている。<br/>
+まずターゲットユーザーが非公開アカウントじゃない場合から見てみると、<br/>
+<code>direct_follow</code>というメソッドが呼ばれる。<br/>
+<code>direct_follow</code>メソッドにはターゲットユーザーが<code>local</code>かどうかによって処理が変わる。ここの<code>local</code>っていうのは<code>Account</code>モデルの<code>domain</code>カラムがnilかどうかによって判断する。<br/>
+ターゲットユーザーが<code>local</code>の場合はただメール通知が行われる。<code>local</code>じゃない場合は<code>Pubsubhubbub::SubscribeWorker</code>、<code>NotificationWorker</code>、<code>AfterRemoteFollowWorker</code>クラスが呼ばれる。</p>
+
+<h2>Pubsubhubbub::SubscribeWorker</h2>
+
+<ul>
+<li>PubSubHubbubとは
+
+<ul>
+<li>link!!</li>
+</ul>
+</li>
+<li>処理
+
+<ul>
+<li>SubscribeServiceを呼ぶ → ターゲットユーザーのAccountモデルに保存されているhub_urlを元にしてhubサーバーにrequestし、購読しているユーザーにみえるようにする。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>NotificationWorker</h2>
+
+<ul>
+<li>Salmon Protocolとは
+
+<ul>
+<li>また来週！</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>AfterRemoteFollowWorker</h2>
+
+<ul>
+<li>Atom Protocolとは
+
+<ul>
+<li>また来週！</li>
+</ul>
+</li>
+<li>処理
+
+<ul>
+<li>新しくアップデートされたターゲットユーザーの<code>locked</code>が<code>true</code>になっている場合は<code>follow</code>をキャンセルして再開<code>FollowService</code>を呼び出す。</li>
+</ul>
+</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mastodon把握 - ②]]></title>
@@ -3912,423 +4082,6 @@ VueDraggableを使うためには二つの方法がある。</p>
 <li>Ractive.js</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RailsにおけるMVC]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/04/13/mvc-pattern/"/>
-    <updated>2017-04-13T18:53:33+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/04/13/mvc-pattern</id>
-    <content type="html"><![CDATA[<p>MVCはモデル/ビュー/コントローラーの頭文字を取ってMVCと呼ばれていて、各役割について処理を分割する。分割することでフロントエンドとバックエンドの業務を分けてさらに効率的な作業が可能になる。<br>
-MVCパターンの基本的な流れとしては下記のようになる。</p>
-
-<p><img src="https://monosnap.com/file/6D4KRnFkJP48XmI74QxbiF8kJRlES2.png" alt="Alt text" /></p>
-
-<p><sub>(参照 - <a href="http://super-apparel-engineer.hatenablog.com/entry/2016/10/11/102637">MVCパターン再考</a>)<sub></p>
-
-<h3>MVCの目的</h3>
-
-<ul>
-<li>コードの再利用性を高める: ビジネスロジックをモデルに詰め込むことで、コードの再利用性を上げる</li>
-<li>処理の分割: 分割することでフロントエンドとバックエンドの業務を分け、さらに効率的な作業が可能になる</li>
-</ul>
-
-
-<h3>MVCの役割</h3>
-
-<h5>コントローラ</h5>
-
-<p><img src="https://monosnap.com/file/h5gecR0zZhPHnPHpZqDuDuF9F5bqxW.png" alt="Alt text" />
-<sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
-
-<p>利用者がブラウザ経由でRailアプリケーションにリクエストを送信すると、まずはWebサーバでそのリクエストを受け取る。そのリクエストはURLとして届くようになる。届いたURLを分析し、どのコントローラーに含まれるアクションを実行すればいいのかを判断する時に使われるのが「routes.rb」ファイルである。コントローラーのアクションが呼び出されるとそのアクションによって必要なモデルを呼び出したりビューをレンダーしたりする。</p>
-
-<h5>モデル</h5>
-
-<ul>
-<li>データベース管理</li>
-<li>ビジネスロジックを実行</li>
-</ul>
-
-
-<p>Railsのモデルはデータベースとのやり取りを行うクラスのことであり、データベースはテーブルの集合でできている。</p>
-
-<p><sub>テーブルの例<sub></p>
-
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>ユーザー名</th>
-<th>ユーザー年齢</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>鈴木</td>
-<td>36</td>
-</tr>
-<tr>
-<td>2</td>
-<td>佐藤</td>
-<td>30</td>
-</tr>
-<tr>
-<td>3</td>
-<td>高橋</td>
-<td>32</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>モデルのクラスはテーブルの各カラムをそれぞれのインスタンスとして持ち、活用できるようになる。<br>
-例えば、</p>
-
-<table>
-<thead>
-<tr>
-<th>インスタンス1</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-</tr>
-<tr>
-<td>鈴木</td>
-</tr>
-<tr>
-<td>36</td>
-</tr>
-</tbody>
-</table>
-
-
-<table>
-<thead>
-<tr>
-<th>インスタンス2</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>2</td>
-</tr>
-<tr>
-<td>佐藤</td>
-</tr>
-<tr>
-<td>30</td>
-</tr>
-</tbody>
-</table>
-
-
-<table>
-<thead>
-<tr>
-<th>インスタンス3</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3</td>
-</tr>
-<tr>
-<td>高橋</td>
-</tr>
-<tr>
-<td>32</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>のようになる。モデルを使うと、直感的で記述しやすいコードでデータベースの処理ができる。
-MVCの流れに戻ってみると、コントローラーにある何かのアクションから呼ばれ、必要なロジックを行う。</p>
-
-<p><img src="https://monosnap.com/file/sn4NbwHa50fZbFypbSY8vMmtwGxvlN.png" alt="Alt text" /></p>
-
-<p><sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
-
-<h5>ビュー</h5>
-
-<p><img src="https://monosnap.com/file/8E9jSA9L9i6IR4k8DTz0kXmo5ffgPl.png" alt="Alt text" /><br/>
-<sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
-
-<p>モデルを通して取得したデータをコントローラーに返し、コントローラーは変数としてビューにデータを渡す。ビューは渡されたデータを活用してHTML文書を作成、またコントローラーに返す。</p>
-
-<h5>結果を返す</h5>
-
-<p>返したビューはコントローラーによってブラウザを通してクライアントに見えるようになる。</p>
-
-<p><img src="https://monosnap.com/file/DlhLikO7H5hfcCWTVqG1dccYFcUE1F.png" alt="Alt text" /></p>
-
-<p><sub>(参照 - <a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a>)<sub></p>
-
-<h2>参照</h2>
-
-<p><a href="http://www.rubylife.jp/rails/ini/index7.html">RailsにおけるMVC(モデル/ビュー/コントローラ)</a><br/>
-<a href="http://udemy.benesse.co.jp/development/rails-model.html">Railsのmodelを徹底解説！知っておくべき3つの知識も紹介</a><br/>
-<a href="http://udemy.benesse.co.jp/development/rails-controller.html">Rails controllerを徹底解説！知っておくべき3つの知識も紹介</a><br/>
-<a href="http://kasei-san.hatenablog.com/entry/2015/09/19/204803">
-MVCのおさらいと、RailsのMVCについて説明する</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mix-in(クラスメソッド、インスタンスメソッド),concernsの使い方]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/03/29/mixin/"/>
-    <updated>2017-03-29T18:28:51+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/03/29/mixin</id>
-    <content type="html"><![CDATA[<p>Rubyのクラスは多重継承ができない。そういう限界を解決できるようにしてくれるのが<code>Mix-in</code>という開発パタン。<br>
-モジュールを通して複数の機能を追加することができる。</p>
-
-<h3>インスタンスメソッドの場合</h3>
-
-<p>基本的にincludeするとモジュールのメソッドをインスタンスメソッドとして使用できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<h3>クラスメソッドの場合</h3>
-
-<p>モジュールのメソッドをクラスメソッドとして使用するためには</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">ClassMethods</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">module</span> <span class="nn">ClassMethods</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>クラスでインクルードされたら<code>self.included(base)</code>にコールバックされる。ここで引数に渡されるのはインクルードしたクラスになる。そこにモジュールをextendしたらクラスメソッドとしても使用できる。</p>
-
-<h3>concernsの使い方</h3>
-
-<p>concernsは<code>ActiveSupport::Concern</code>をextendするだけでmix-inの複雑な記述を省略できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># なくても良い</span>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>concernsのメリット</strong><br/>
-複雑な依存関係を考えなくても良い。<code>Foo</code>をextendする<code>Bar</code>をHogeクラスでextendするとしたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># なくても良い</span>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Foo&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Foo class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Bar</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Bar&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
-</span><span class='line'>      <span class="k">super</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Bar class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Bar</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_method</span> <span class="c1"># =&gt;</span>
-</span><span class='line'><span class="c1"># &quot;included Foo&quot;</span>
-</span><span class='line'><span class="c1"># &quot;included Bar&quot;</span>
-</span><span class='line'><span class="c1"># &quot;Foo class good job!&quot;</span>
-</span><span class='line'><span class="c1"># &quot;Bar class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに簡単にできる。</p>
-
-<h3>終わり</h3>
-
-<ul>
-<li>モジュールをインクルードすることでモジュールのメソッドをインスタンスメソッドとして使用できる</li>
-<li>includedメソッドを使ってextendさせたらインスタンスメソッドを使いながらクラスメソッドも使用できる</li>
-<li>concernsを使ったらもっと簡単に<code>mix-in</code>ができる</li>
-<li>concernsで複雑な依存関係をさらに簡単にまとめられる</li>
-</ul>
-
-
-<h3>参考</h3>
-
-<p><a href="http://www.techscore.com/blog/2013/03/01/rails-include%E3%81%95%E3%82%8C%E3%81%9F%E6%99%82%E3%81%AB%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%A8%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%83%A1/">Rails: includeされた時にクラスメソッドとインスタンスメソッドを同時に追加する頻出パターン</a><br/>
-<a href="http://blog.yujigraffiti.com/2015/01/rails-42module-classmethodsconcernclass.html">Rails 4.2からはmodule ClassMethodsではなくConcern#class_methodsを使おう</a><br/>
-<a href="http://qiita.com/castaneai/items/6dc121ce6ff100614f42">[Rails] ActiveSupport::Concern の存在理由</a></p>
 ]]></content>
   </entry>
   

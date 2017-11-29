@@ -9,10 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="フォロー Flow
-色んな細かい処理を行なっているが大きい処理を見てみると下記のようになる。 フォロー情報の保存
-プッシュ通知
-購読の処理 処理Flow ">
+  <meta name="description" content="PubSubHubbubとは PubSubHubbub (パブサブハブバブ) とは、更新情報を Google にリアルタイムで通知することができるプロトコルです。略して、PuSH (プッシュ) とも呼ばれます。Pub は Publisher (配信)、Sub は Subscriber (購読) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +76,218 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/29/pubsubhubbub/">PubSubHubbub</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-11-29T13:42:07+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>1:42 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>PubSubHubbubとは</h2>
+
+<blockquote><p>PubSubHubbub (パブサブハブバブ) とは、更新情報を Google にリアルタイムで通知することができるプロトコルです。略して、PuSH (プッシュ) とも呼ばれます。Pub は Publisher (配信)、Sub は Subscriber (購読) を意味しており、その間に Hub というサービス (中間サーバ) があるため、このような名前になっています。配信側がコンテンツを更新すると、Hub が購読側に通知を行います。購読側は更新情報をすぐに知ることができるため、リアルタイムの情報配信が実現できる仕組みになっています。</p></blockquote>
+
+<p>参照 - <a href="https://murashun.jp/blog/20150915-01.html">https://murashun.jp/blog/20150915-01.html</a></p>
+
+<h2>PubSubHubbubにリクエストを送る方法</h2>
+
+<p>PubSubHubbubにリクエストを送る場合は、下記のURLにPOSTでリクエストを送る。</p>
+
+<p><strong> <a href="http://pubsubhubbub.appspot.com/">http://pubsubhubbub.appspot.com/</a> </strong></p>
+
+<p>リクエストを送る場合、dataとして<code>hub.mode</code>に<code>publish</code>を設定し、<code>hub.url</code>に<code>フィードのURL</code>を設定する。また、<code>Content-Type</code>には<code>application/x-www-form-urlencoded</code>を設定する。</p>
+
+<h2>PubSubHubbub対応に使えるGems</h2>
+
+<ul>
+<li><a href="https://github.com/igrigorik/PubSubHubbub">igrigorik/PubSubHubbub</a></li>
+<li><a href="https://github.com/Gargron/pubsubhubbub">Gargron/pubsubhubbub</a></li>
+<li><a href="https://github.com/shiro16/nagareboshi">shiro16/nagareboshi</a></li>
+</ul>
+
+
+<p>とりあえずgithubのstarsが<code>igrigorik/PubSubHubbub</code>の方が多かったのでこれの使い方を少しみてみる。<br/>
+- Simple client example</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">EventMachine</span><span class="o">.</span><span class="n">run</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">pub</span> <span class="o">=</span> <span class="no">EventMachine</span><span class="o">::</span><span class="no">PubSubHubbub</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;http://pubsubhubbub.appspot.com/publish&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span> <span class="s2">&quot;http://www.test.com/&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">callback</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Successfully notified hub.&quot;</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">errback</span>  <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Uh oh, something broke: </span><span class="si">#{</span><span class="n">pub</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Posting multiple URL&rsquo;s</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">EventMachine</span><span class="o">.</span><span class="n">run</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">feeds</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;http://www.test.com&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.test.com/2&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">pub</span> <span class="o">=</span> <span class="no">EventMachine</span><span class="o">::</span><span class="no">PubSubHubbub</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;http://pubsubhubbub.appspot.com/publish&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">publish</span> <span class="n">feeds</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">callback</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Successfully notified hub.&quot;</span> <span class="p">}</span>
+</span><span class='line'>  <span class="n">pub</span><span class="o">.</span><span class="n">errback</span>  <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;Uh oh, something broke: </span><span class="si">#{</span><span class="n">pub</span><span class="o">.</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参照</h2>
+
+<p><a href="https://qiita.com/tackeyy/items/0d2079d901d495f50c1e">https://qiita.com/tackeyy/items/0d2079d901d495f50c1e</a><br/>
+<a href="https://murashun.jp/blog/20150915-01.html">https://murashun.jp/blog/20150915-01.html</a><br/>
+<a href="https://github.com/igrigorik/PubSubHubbub">https://github.com/igrigorik/PubSubHubbub</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/22/mastodon-follow02/">Mastodon把握 - ③（FollowServiceの処理）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-11-22T13:40:02+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2017</span></span> <span class='time'>1:40 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>callメソッド</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">target_account</span> <span class="o">=</span> <span class="no">ResolveRemoteAccountService</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordNotFound</span> <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">nil?</span> <span class="o">||</span> <span class="n">target_account</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">source_account</span><span class="o">.</span><span class="n">id</span> <span class="o">||</span> <span class="n">target_account</span><span class="o">.</span><span class="n">suspended?</span>
+</span><span class='line'>  <span class="k">raise</span> <span class="no">Mastodon</span><span class="o">::</span><span class="no">NotPermittedError</span>  <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">blocking?</span><span class="p">(</span><span class="n">source_account</span><span class="p">)</span> <span class="o">||</span> <span class="n">source_account</span><span class="o">.</span><span class="n">blocking?</span><span class="p">(</span><span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="k">if</span> <span class="n">source_account</span><span class="o">.</span><span class="n">following?</span><span class="p">(</span><span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="n">target_account</span><span class="o">.</span><span class="n">locked?</span>
+</span><span class='line'>    <span class="n">request_follow</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="n">direct_follow</span><span class="p">(</span><span class="n">source_account</span><span class="p">,</span> <span class="n">target_account</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本的にfollowはターゲットユーザーが非公開アカウントかどうかによって処理が変わる。非公開アカウントの設定は<code>Account</code>モデルの<code>locked</code>というカラムに保存するようになっている。<br/>
+まずターゲットユーザーが非公開アカウントじゃない場合から見てみると、<br/>
+<code>direct_follow</code>というメソッドが呼ばれる。<br/>
+<code>direct_follow</code>メソッドにはターゲットユーザーが<code>local</code>かどうかによって処理が変わる。ここの<code>local</code>っていうのは<code>Account</code>モデルの<code>domain</code>カラムがnilかどうかによって判断する。<br/>
+ターゲットユーザーが<code>local</code>の場合はただメール通知が行われる。<code>local</code>じゃない場合は<code>Pubsubhubbub::SubscribeWorker</code>、<code>NotificationWorker</code>、<code>AfterRemoteFollowWorker</code>クラスが呼ばれる。</p>
+
+<h2>Pubsubhubbub::SubscribeWorker</h2>
+
+<ul>
+<li>PubSubHubbubとは
+
+<ul>
+<li>link!!</li>
+</ul>
+</li>
+<li>処理
+
+<ul>
+<li>SubscribeServiceを呼ぶ → ターゲットユーザーのAccountモデルに保存されているhub_urlを元にしてhubサーバーにrequestし、購読しているユーザーにみえるようにする。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>NotificationWorker</h2>
+
+<ul>
+<li>Salmon Protocolとは
+
+<ul>
+<li>また来週！</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>AfterRemoteFollowWorker</h2>
+
+<ul>
+<li>Atom Protocolとは
+
+<ul>
+<li>また来週！</li>
+</ul>
+</li>
+<li>処理
+
+<ul>
+<li>新しくアップデートされたターゲットユーザーの<code>locked</code>が<code>true</code>になっている場合は<code>follow</code>をキャンセルして再開<code>FollowService</code>を呼び出す。</li>
+</ul>
+</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1767,631 +1976,6 @@ Manage appボタンからダッシュボードを開き、Dyno formationからCo
 
 <p>メタプログラミングRuby 45p - インスタンス変数<br/>
 メタプログラミングRuby 144 ~ 146p - クラスインスタンス変数</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/19/call-by-value-call-by-variable/">Rubyの値渡しと参照渡し</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-07-19T20:33:53+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>8:33 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>一般的に、引数は二つの方法がある。一つが値渡しで、もう一つが参照渡しである。<br/>
-値渡しの概念はとても簡単。</p>
-
-<ol>
-<li>受け取るデータを格納する変数 (仮引数) を用意する。</li>
-<li>データを引数に代入する。</li>
-<li>関数の実行終了後、引数を廃棄する。</li>
-</ol>
-
-
-<p>値渡しのポイントは2番目。データを引数に代入するとき、データのコピーが行われる。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; def foo(a)
-</span><span class='line'>irb&gt; a = 100
-</span><span class='line'>irb&gt; print a
-</span><span class='line'>irb&gt; end
-</span><span class='line'>=&gt; :foo
-</span><span class='line'>irb&gt; x = 10
-</span><span class='line'>=&gt; 10
-</span><span class='line'>irb&gt; foo x
-</span><span class='line'>100=&gt; nil
-</span><span class='line'>irb&gt; x
-</span><span class='line'>=&gt; 10</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>foo</code>が参照渡しであれば、仮引数<code>a</code>の値を100に書き換えると、実引数である<code>x</code>の値も100になるはず。<code>foo(x)</code>を呼び出したあと、<code>x</code>の値は10のままなので、Rubyは「値渡し」であることがわかる。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>irb&gt; def print_obj_id arg
-</span><span class='line'>irb&gt; p "before change : #{int.object_id}"
-</span><span class='line'>irb&gt; arg = 10
-</span><span class='line'>irb&gt; p "after changed : #{int.object_id}"
-</span><span class='line'>irb&gt; arg
-</span><span class='line'>irb&gt; end
-</span><span class='line'>
-</span><span class='line'>irb&gt; int = 1
-</span><span class='line'>
-</span><span class='line'>irb&gt; p "int before func : #{int}"
-</span><span class='line'>irb&gt; p "obj_id outside func : #{int.object_id}"
-</span><span class='line'>irb&gt; p "excute func : #{print_obj_id int}"
-</span><span class='line'>irb&gt; p "int after excuted func : #{int.object_id}"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このコードに対する結果は下記のようになる。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>"int before func : 1"
-</span><span class='line'>"obj_id outside func : 3"
-</span><span class='line'>"before change : 3"
-</span><span class='line'>"after changed : 21"
-</span><span class='line'>"excute func : 10"
-</span><span class='line'>"int after excuted func : 3"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>これは渡された仮引数の<code>arg</code>が変わっても実引数の変数<code>int</code>は変わらないことを証明する。<br/>
-しかし、配列、hashなどは<code>mutable(書き換え可)</code>なオブジェクトなので、関数の引数に配列やhashを渡してそれを修正すると、呼び出し元の変数の値も書き換えられるようになる。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># arrayの場合
-</span><span class='line'>irb&gt; def bar(x, y)
-</span><span class='line'>irb&gt; x.push y
-</span><span class='line'>irb&gt; x[0] = 10
-</span><span class='line'>irb&gt; end
-</span><span class='line'>=&gt; :bar
-</span><span class='line'>irb&gt; a = [1, 2, 3]
-</span><span class='line'>=&gt; [1, 2, 3]
-</span><span class='line'>irb&gt; a.object_id
-</span><span class='line'>=&gt; 70284299180520
-</span><span class='line'>irb&gt; bar a, 4
-</span><span class='line'>=&gt; 10
-</span><span class='line'>irb&gt; a
-</span><span class='line'>=&gt; [10, 2, 3, 4]
-</span><span class='line'>irb&gt; a.object_id
-</span><span class='line'>=&gt; 70284299180520
-</span><span class='line'>
-</span><span class='line'># hashの場合
-</span><span class='line'>irb&gt; def baz x, y
-</span><span class='line'>irb&gt; x.store "fourth", y
-</span><span class='line'>irb&gt; x[:first] = 10
-</span><span class='line'>irb&gt; end
-</span><span class='line'>=&gt; :baz
-</span><span class='line'>irb&gt; hash = {first: 1, second: 2, third: 3}
-</span><span class='line'>=&gt; {:first=&gt;1, :second=&gt;2, :third=&gt;3}
-</span><span class='line'>irb&gt; baz hash, 4
-</span><span class='line'>=&gt; 10
-</span><span class='line'>irb&gt; hash
-</span><span class='line'>=&gt; {:first=&gt;10, :second=&gt;2, :third=&gt;3, "fourth"=&gt;4}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のコードを見てみるとarrayの場合はarray変数の0番目indexの値が変わり、端っこにデータが追加されたのが確認できる。hashの場合も<code>first</code>のオブジェクトが変わり、端っこにデータが追加されたのが確認できる。</p>
-
-<h2>追記</h2>
-
-<p>オブジェクトはどうなるかについても試してみたので追記。<br/>
-下記のようなクラスを作成する。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Name</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@first_name</span> <span class="o">=</span> <span class="n">first_name</span>
-</span><span class='line'>    <span class="vi">@last_name</span> <span class="o">=</span> <span class="n">last_name</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">first_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@first_name</span> <span class="o">=</span> <span class="nb">name</span>
-</span><span class='line'>    <span class="vi">@first_name</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">last_name</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@last_name</span> <span class="o">=</span> <span class="nb">name</span>
-</span><span class='line'>    <span class="vi">@last_name</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">full_name</span>
-</span><span class='line'>    <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@last_name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@first_name</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>Name</code>のオブジェクトを作って<code>full_name</code>のメソッドを実行すると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483c1f8b8 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Oda Nobunaga&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>普通に入力した通り<code>Oda Nobunaga</code>というフルネームが取得される。<br/>
-ここで下記のようなクラスを作成して試してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Change</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@name_obj</span> <span class="o">=</span> <span class="n">obj</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change_str</span>
-</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="s2">&quot;hogehoge&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>この<code>Change</code>クラスに<code>create_name</code>オブジェクトを渡して実装してみると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483c1f8b8 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Oda Nobunaga&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span> <span class="o">=</span> <span class="no">Change</span><span class="o">.</span><span class="n">new</span> <span class="n">create_name</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Change:0x007f84838aae58 @name_obj=#&lt;Name:0x007f84838c0898 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span><span class="o">.</span><span class="n">change_name</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;foo&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">full_name</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;foo hogehoge&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>create_name.full_name</code>を叩いた時に値が変わることが確認できる。<br/>
-では、<code>create_name</code>と<code>Change</code>クラスの<code>@name_obj</code>の変数が同じものなのかな。確認してみよう。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Change</span>
-</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:name_obj</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@name_obj</span> <span class="o">=</span> <span class="n">obj</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change_name</span>
-</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">first_name</span><span class="p">(</span><span class="s2">&quot;hogehoge&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@name_obj</span><span class="o">.</span><span class="n">last_name</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>Change</code>クラスに<code>attr_accessor</code>を追加して<code>@name_obj</code>を使えるようにする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">=</span> <span class="no">Name</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Nobunaga&quot;</span><span class="p">,</span> <span class="s2">&quot;Oda&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Name:0x007f8483b03740 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span> <span class="o">=</span> <span class="no">Change</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">create_name</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Change:0x007f8483ae06c8 @name_obj=#&lt;Name:0x007f8483b03740 @first_name=&quot;Nobunaga&quot;, @last_name=&quot;Oda&quot;&gt;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span> <span class="o">===</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">true</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">equal?</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">true</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">create_name</span><span class="o">.</span><span class="n">object_id</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">70103560887200</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">change</span><span class="o">.</span><span class="n">name_obj</span><span class="o">.</span><span class="n">object_id</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">70103560887200</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>create_name</code>と<code>@name_obj</code>は同じものだったそうだ。<br/>
-ということで、オブジェクトも参照の値渡しということが分かってきた。</p>
-
-<h2>参照</h2>
-
-<p><a href="http://www.geocities.jp/m_hiroi/light/abcruby03.html">お気楽 Ruby プログラミング入門</a><br/>
-<a href="http://blog.takanabe.tokyo/2015/08/25/1323/">Rubyの関数の引数は値渡しであることの証明をする</a><br/>
-<a href="http://blog.cototoco.net/work/201406/%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E5%BC%95%E6%95%B0%EF%BC%88%E5%80%A4%E6%B8%A1%E3%81%97%E3%80%81%E5%8F%82%E7%85%A7%E6%B8%A1%E3%81%97%EF%BC%89/">メソッドの引数（値渡し、参照渡し）</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/05/capybara/">Capybara</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-07-05T19:07:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>7:07 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。<br/>
-ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。</p>
-
-<h2>準備</h2>
-
-<p>今回のテストはrspecとcapybaraを使ってみる。</p>
-
-<h4>install</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>group :test do
-</span><span class='line'>  gem 'rspec-rails'
-</span><span class='line'>  gem 'poltergeist'
-</span><span class='line'>  gem 'capybara-screenshot'
-</span><span class='line'>  gem 'database_rewinder'
-</span><span class='line'>  gem 'factory_girl_rails'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>gemの説明をしてみると、<br/>
-poltergeistはcapybara用ドライバーである。poltergeistを使えばphantomJSが提供するブラウザでテストすることができる。それとJSの実装やスクリーンショットも撮ることもできる。<br/>
-capybara-screenshotはスクリーンショットの便利性のために使う。<br/>
-database_rewinderはdatabaseのクリーナーであり、factory_girl_railsはモデルオブジェクトを作るために入れる。</p>
-
-<ul>
-<li>rspecのinstall</li>
-</ul>
-
-
-<p>rails generate rspec:install</p>
-
-<ul>
-<li>require</li>
-</ul>
-
-
-<p><code>spec/rails_helper.rb</code>に以下のように書き込む。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rspec/rails'
-</span><span class='line'>require 'capybara/rails'
-</span><span class='line'>require 'capybara/rspec'
-</span><span class='line'>require 'capybara/poltergeist'
-</span><span class='line'>require 'database_rewinder'
-</span><span class='line'>
-</span><span class='line'># capybara
-</span><span class='line'>Capybara.app_host = "http://example.com"
-</span><span class='line'>Capybara.always_include_port = true
-</span><span class='line'>Capybara.default_max_wait_time = 5
-</span><span class='line'>
-</span><span class='line'>Capybara::Screenshot.autosave_on_failure = false
-</span><span class='line'>
-</span><span class='line'>Capybara.javascript_driver = :poltergeist
-</span><span class='line'>
-</span><span class='line'>Capybara.register_driver :poltergeist do |app|
-</span><span class='line'>  Capybara::Poltergeist::Driver.new(app, {
-</span><span class='line'>    inspector: true,
-</span><span class='line'>    js_errors: false,
-</span><span class='line'>    timeout: 1000,
-</span><span class='line'>    phantomjs_options: [
-</span><span class='line'>      '--load-images=no',
-</span><span class='line'>      '--ignore-ssl-errors=yes',
-</span><span class='line'>      '--ssl-protocol=any'
-</span><span class='line'>    ]
-</span><span class='line'>  })
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'># database_rewinder
-</span><span class='line'>RSpec.configure do |config|
-</span><span class='line'>  config.before :suite do
-</span><span class='line'>    DatabaseRewinder.clean_all
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.before(:each) do
-</span><span class='line'>    DatabaseRewinder.clean
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.before(:each, js: true) do
-</span><span class='line'>    DatabaseRewinder.strategy = :truncation
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.after :all do
-</span><span class='line'>    DatabaseRewinder.clean
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>PhantomJSのinstall</li>
-</ul>
-
-
-<p>poltergeistを使うためにphantomJsをインストールする。<br/>
-macだとPhantomJSは<code>brew install phantomjs</code>で簡単に入れられる。</p>
-
-<h2>簡単なテスト</h2>
-
-<p>まず、テストのため、scaffoldでmodel, controller, viewを作る。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g scaffold post title:string content:text</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そしたらこういうビューが作られる。<br/>
-<img src="https://monosnap.com/file/tj8ppXp1gaIKCLWfrTv8MtWOJX9hpK.png" alt="Alt text" /></p>
-
-<p>このページでPostを作成するテストをしてみる。<br/>
-specフォルダーにpostsのフォルダーを追加、その中に<code>index_spec.rb</code>というファイルを作成する。<br/>
-そして、そのファイルに</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
-</span><span class='line'>
-</span><span class='line'>feature 'Post一覧画面の表示' do
-</span><span class='line'>
-</span><span class='line'>  scenario 'Postが作成できること', js: true do
-</span><span class='line'>    visit posts_url
-</span><span class='line'>    expect(page).to have_css('h1', text: 'Posts')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_link('New Post')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    fill_in('post_title', with: 'Title01')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    fill_in('post_content', with: 'Content01')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_button('Create Post')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    find('p#notice', text: 'Post was successfully created.').visible?
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_link('Back')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうコードを入れてみる。<br/>
-capybaraはいろんなDSLを提供している。<br/>
-みたらすぐわかるくらいsimpleでわかりやすく使えるようになっている。<br/>
-ちなみに、<code>fill_in('post_title', with: 'Title01')</code>は<code>find('input[name="post[title]"]').set('Title01')</code>に変えることもできる。同じように<code>click_link</code>も<code>find('hogehoge).click</code>に変えられる。<br/>
-このテストの結果は</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Post一覧画面の表示
-</span><span class='line'>  Postが作成できること
-</span><span class='line'>
-</span><span class='line'>Finished in 4.42 seconds (files took 3.02 seconds to load)
-</span><span class='line'>1 example, 0 failures</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こうなっていて、下はスクリーンショット。<br/>
-<img src="https://monosnap.com/file/rHx38I8b2uTMxt0FRiko6tV0s79vK5.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/3b4PuPHi5P0GoxmUGeQH9YeAMhtCmg.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/D0HHkb249O7InIbj6uYGtRhpCL3WbD.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/AFoXqrbQVrCst6o5eU4YXp6EAfkdsF.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/pU9kmqZqSxEbmTOnA14Itg8YswivcT.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/dh0IlY7zrAWj3uqgdXnkMsF1cYzYSg.png" alt="Alt text" /></p>
-
-<h2>参考</h2>
-
-<p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
-<a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
 </div>
   
   

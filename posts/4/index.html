@@ -9,7 +9,8 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="問題 この前、ここの記事のようにビルド環境を分けようとしてたが、環境を分けるだけで環境別に変数を設定したりするのは一つ一つ書かないといけなかったので、あまりも効率的ではなっかたからもっといい方法があるだろうと思って調べた結果をまとめる。 ソリューション 例えば、 &hellip;">
+  <meta name="description" content="Active Recordのコールバック Rails側では、内部でオブジェクトが作成されたり、更新されたり削除されたりする。コールバックとは、オブジェクトのライフサイクル期間における特定の瞬間に呼び出されるメソッドである。
+コールバックを利用することで、Active Recordオブジェクトが作成 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +77,377 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/25/railsmodelcallback/">RailsのModelのコールバック</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-25T14:30:52+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:30 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Active Recordのコールバック</h1>
+
+<p>Rails側では、内部でオブジェクトが作成されたり、更新されたり削除されたりする。コールバックとは、オブジェクトのライフサイクル期間における特定の瞬間に呼び出されるメソッドである。<br>
+コールバックを利用することで、Active Recordオブジェクトが作成、保存、更新、削除などのイベント発生の時に常に実行されるコードを書くことができる。</p>
+
+<h3>種類と順番</h3>
+
+<ul>
+<li><p>オブジェクトの生成</p>
+
+<ul>
+<li>before_validation</li>
+<li>after_validation</li>
+<li>before_save</li>
+<li>around_save</li>
+<li>before_create</li>
+<li>around_create</li>
+<li>after_create</li>
+<li>after_save</li>
+</ul>
+</li>
+<li><p>オブジェクトの更新</p>
+
+<ul>
+<li>before_validation</li>
+<li>after_validation</li>
+<li>before_save</li>
+<li>around_save</li>
+<li>before_update</li>
+<li>around_update</li>
+<li>after_update</li>
+<li>after_save</li>
+</ul>
+</li>
+<li><p>オブジェクトの削除</p>
+
+<ul>
+<li>before_destroy</li>
+<li>around_destroy</li>
+<li>after_destroy</li>
+</ul>
+</li>
+<li><p>オブジェクトのinstance化</p>
+
+<ul>
+<li>after_initialize</li>
+</ul>
+</li>
+<li><p>find</p>
+
+<ul>
+<li>after_find</li>
+</ul>
+</li>
+<li><p>touch</p>
+
+<ul>
+<li>after_touch</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>使い方</h3>
+
+<p>普通にモデルクラスの中に書いたら良い。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">before_validation</span> <span class="ss">:hoge</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">hoge</span>
+</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">before_validation</span> <span class="k">do</span>
+</span><span class='line'>    <span class="s2">&quot;何かのコード&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">before_validation</span> <span class="o">-&gt;</span> <span class="p">{</span> <span class="s2">&quot;何かのコード&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上の三つの書き方で自分が実行したい瞬間に実行されるコードを書くことができる。<br><br><br></p>
+
+<h2>参照</h2>
+
+<p><a href="https://railsguides.jp/active_record_callbacks.html">Active Record コールバック</a><br/>
+<a href="http://ruby-rails.hatenadiary.com/entry/20141211/1418301640">Rails4でモデルのコールバックの一覧と順番</a><br/>
+<a href="http://qiita.com/rtoya/items/29cef3e328299781a328">Railsのcallbackについて調べた</a><br/>
+<a href="http://blog.toshimaru.net/active-record-callbacks/">ActiveRecordのコールバックの順序・コールバック内のロールバック処理について</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/18/rails-model-polymorphic/">RailsのモデルのSTI(Single Table Inheritance)とポリモーフィックの実装</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-18T14:02:52+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:02 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>RailsのActiveRecordには単一テーブル継承(STI)とポリモーフィック関係という二つの便利な関係性設定がある。同じような機能を持っているモデルが多数存在してそのモデルたちをまとめたいときとか、多数のモデルが一つのモデルを持ちたいときなどの複雑な関係性をもっと簡単にしてくれるのでその二つの関係性をまとめる。</p>
+
+<h1>STI</h1>
+
+<h3>状況設定</h3>
+
+<p>例えば、本とコンピューターを同時に管理するproductsというモデルを作る。もちろんbooks、computersの二つのモデルを作ってもできなくはないけどSTIを通して実装すればテーブルを作らなくてもproductsの一つのテーブルで管理できる。</p>
+
+<h3>Productモデル作成</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g model product name:string price:integer type:string author:string category:string maker:string inch:integer
+</span><span class='line'>$ rake db:migrate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここでtypeは必須になる。author, categoryはbookのために、maker, inchはcomputerのためのcolumnになる。</p>
+
+<h3>class作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Product</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうclassが作られたら実際に使いたいbook、computerのclassを作成。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Book</span> <span class="o">&lt;</span> <span class="no">Product</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Computer</span> <span class="o">&lt;</span> <span class="no">Product</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>気をつけないとならないのはProductのclassを継承すること。<br>
+これで設定は完了。<br>
+すると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Computer</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;お得パソコン&#39;</span><span class="p">,</span> <span class="ss">price</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span> <span class="ss">maker</span><span class="p">:</span> <span class="s1">&#39;apple&#39;</span><span class="p">,</span> <span class="ss">inch</span><span class="p">:</span> <span class="mi">15</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにデータを作成したら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">INSERT</span> <span class="no">INTO</span> <span class="s2">&quot;products&quot;</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;maker&quot;</span><span class="p">,</span> <span class="s2">&quot;inch&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">)</span> <span class="no">VALUES</span> <span class="p">(</span><span class="vg">$1</span><span class="p">,</span> <span class="vg">$2</span><span class="p">,</span> <span class="vg">$3</span><span class="p">,</span> <span class="vg">$4</span><span class="p">,</span> <span class="vg">$5</span><span class="p">,</span> <span class="vg">$6</span><span class="p">,</span> <span class="vg">$7</span><span class="p">)</span> <span class="no">RETURNING</span> <span class="s2">&quot;id&quot;</span>  <span class="o">[[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;お得パソコン&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">100000</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;Computer&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;maker&quot;</span><span class="p">,</span> <span class="s2">&quot;apple&quot;</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;inch&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mo">01</span><span class="o">-</span><span class="mi">18</span> <span class="mi">08</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">39</span> <span class="no">UTC</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="mi">2017</span><span class="o">-</span><span class="mo">01</span><span class="o">-</span><span class="mi">18</span> <span class="mi">08</span><span class="p">:</span><span class="mi">57</span><span class="p">:</span><span class="mi">39</span> <span class="no">UTC</span><span class="o">]]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな結果になり、Productテーブルに保存される。typeはclass名になる。<br>
+呼び出すのも簡単に<code>Computer.find(Product.id)</code>や<code>Computer.all</code>でできる。
+<br><code>Computer.find(Product.id)</code>を実行したら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&lt;</span><span class="no">Computer</span> <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;お得パソコン&quot;</span><span class="p">,</span> <span class="ss">price</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="s2">&quot;Computer&quot;</span><span class="p">,</span> <span class="ss">author</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">category</span><span class="p">:</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">maker</span><span class="p">:</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="ss">inch</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="ss">created_at</span><span class="p">:</span> <span class="s2">&quot;2017-01-25 06:44:17&quot;</span><span class="p">,</span> <span class="ss">updated_at</span><span class="p">:</span> <span class="s2">&quot;2017-01-25 06:44:17&quot;</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>bookのために作ったcolumnは全部nilになる。つまり、一つのテーブルで三つのテーブルを使うようにはなるけど無駄なcolumnが多くなるデメリットもある。</p>
+
+<h1>Polymorphic</h1>
+
+<h3>状況設定</h3>
+
+<p>プロジェクトの中で一つのモデルを多数のモデルに関係をつける時がある。<br>
+例えば、掲示板の投稿をユーザーが作成した場合と管理者が作成した場合があるとするとPolymorphicで管理できる。<br></p>
+
+<h3>ポリモフィックなテーブルの作成</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">admin</span> <span class="nb">name</span><span class="ss">:string</span> <span class="ss">email</span><span class="p">:</span><span class="n">string</span>
+</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">user</span> <span class="nb">name</span><span class="ss">:string</span> <span class="ss">email</span><span class="p">:</span><span class="n">string</span>
+</span><span class='line'><span class="err">$</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">model</span> <span class="n">post</span> <span class="ss">owner</span><span class="p">:</span><span class="n">references</span><span class="p">{</span><span class="n">polymorphic</span><span class="p">}</span><span class="ss">:index</span> <span class="ss">title</span><span class="p">:</span><span class="n">string</span> <span class="ss">content</span><span class="p">:</span><span class="n">text</span>
+</span><span class='line'><span class="err">$</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>するとpostのmigrationは下記のようになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CreatePosts</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
+</span><span class='line'>    <span class="n">create_table</span> <span class="ss">:posts</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:title</span>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:content</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>モデルにbelongs_toとhas_many追加</h3>
+
+<p>上記のように実行したらpostのクラスはさらにこういうふうになってます。そしてpostのテーブルにはowner_type, owner_idが生成されます。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そこでadminとuser側だけhas_manyを追加したら良いです。<br></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Admin</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:owner</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>実行</h3>
+
+<p>そうした上にconsoleに下記のように実行してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">admin</span> <span class="o">=</span> <span class="no">Admin</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;admin1&#39;</span><span class="p">,</span> <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;admin@example.com&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Admin id: 1, name: &quot;admin1&quot;, email: &quot;admin@example.com&quot;, created_at: &quot;2017-01-25 07:46:25&quot;, updated_at: &quot;2017-01-25 07:46:25&quot;&gt;</span>
+</span><span class='line'><span class="n">post1</span> <span class="o">=</span> <span class="n">admin</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;post1&#39;</span><span class="p">,</span> <span class="ss">content</span><span class="p">:</span> <span class="s1">&#39;content1&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 1, owner_type: &quot;Admin&quot;, owner_id: 1, title: &quot;post1&quot;, content: &quot;content1&quot;, created_at: &quot;2017-01-25 07:47:21&quot;, updated_at: &quot;2017-01-25 07:47:21&quot;&gt;</span>
+</span><span class='line'><span class="n">post1</span><span class="o">.</span><span class="n">owner</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Admin id: 1, name: &quot;admin1&quot;, email: &quot;admin@example.com&quot;, created_at: &quot;2017-01-25 07:46:25&quot;, updated_at: &quot;2017-01-25 07:46:25&quot;&gt;</span>
+</span><span class='line'><span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;user1&#39;</span><span class="p">,</span> <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;User id: 1, name: &quot;user1&quot;, email: &quot;user@example.com&quot;, created_at: &quot;2017-01-25 07:48:00&quot;, updated_at: &quot;2017-01-25 07:48:00&quot;&gt;</span>
+</span><span class='line'><span class="n">post2</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;post2&#39;</span><span class="p">,</span> <span class="ss">content</span><span class="p">:</span> <span class="s1">&#39;content2&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 2, owner_type: &quot;User&quot;, owner_id: 1, title: &quot;post2&quot;, content: &quot;content2&quot;, created_at: &quot;2017-01-25 07:49:04&quot;, updated_at: &quot;2017-01-25 07:49:04&quot;&gt;</span>
+</span><span class='line'><span class="n">post2</span><span class="o">.</span><span class="n">owner</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;User id: 1, name: &quot;user1&quot;, email: &quot;user@example.com&quot;, created_at: &quot;2017-01-25 07:48:00&quot;, updated_at: &quot;2017-01-25 07:48:00&quot;&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">owner</span><span class="p">:</span> <span class="n">admin</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 1, owner_type: &quot;Admin&quot;, owner_id: 1, title: &quot;post1&quot;, content: &quot;content1&quot;, created_at: &quot;2017-01-25 07:47:21&quot;, updated_at: &quot;2017-01-25 07:47:21&quot;&gt;</span>
+</span><span class='line'><span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">owner</span><span class="p">:</span> <span class="n">user</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Post id: 2, owner_type: &quot;User&quot;, owner_id: 1, title: &quot;post2&quot;, content: &quot;content2&quot;, created_at: &quot;2017-01-25 07:49:04&quot;, updated_at: &quot;2017-01-25 07:49:04&quot;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに活用できる。<br><br><br></p>
+
+<h2>参照</h2>
+
+<p><a href="http://ruby-rails.hatenadiary.com/entry/20141207/1417926599">Rails4でポリモフィックのリレーションを実装する</a><br/>
+<a href="http://ruby-rails.hatenadiary.com/entry/20141206/1417839458">Rails4でSTI(単一継承テーブル)を行う</a><br/>
+<a href="http://easyramble.com/rails-activerecord-single-table-inheritance.html">Rails ActiveRecordのSTI(Single Table Inheritance)の使い方</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1938,154 +2310,6 @@ iOSはプレビューとスクリーンショット以外にはそんなに難�
 3. Android 4.2<br></strong><br>
 <img src="https://monosnap.com/file/rpTQ1JSdrqyULk7VMhACNKqxFctp1s.png" style="width: 50%; float: left;">
 <img src="https://monosnap.com/file/wGalecUVjVX5q0GVkpxYQcAfj3s6Ua.png" style="width: 50%;"></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/10/05/usewebview/">WebViewの作り方＆JavascriptInterface</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-10-05T03:26:21+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:26 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>WebViewを作る</h2>
-
-<p>まず、プロジェクトを作ってみましょう。
-<img src="https://monosnap.com/file/zcNSh0T9E0IGr4sn6I2U49nvDsoynb.png"><br>
-下のようにアップ名とカンパニーのdomainを入力したらそれの組み合わせでPackage名が決められます。<br>
-<img src="https://monosnap.com/file/91DKw5Dxrq0xjpfwaquLb4kuVKKemp.png"><br>
-ターゲットのデバイスとこのアプリで使える最小のSDKを選びます。<br>
-<img src="https://monosnap.com/file/4uxXhAHZghjDddHRlqRhj6Qq7AcYgw.png"><br>
-Activityを選びます。Activityは該当アプリの使い方によって選んだら良いです。<br>
-<img src="https://monosnap.com/file/Mw7gGujs6eGDf9SeMocpsvTBltFe1f.png"><br>
-最後にActivityとLayoutの名前をついてFinishをクリックするとアプリが生成できます。<br>
-<img src="https://monosnap.com/file/3S16TCQNnA2lr2UEARc6uYXAmJtRPl.png"><br>
-初めての画面です。MainActivityはアプリが起動されるときのStartPointになるところです。<br>
-<img src="https://monosnap.com/file/R4LbMH5L6yChRGXjrOjw0mvoYlX0mg.png"><br>
-次はLayoutですが、下のactivity_main.xmlというものがMainActivityのLayoutになり、MainActivityはこのLayoutを通してデバイスの画面に表せます。<br>
-<img src="https://monosnap.com/file/naq9yOnw5K0Nz7FlucQVKQHDdVQX2P.png"><br>
-Fragmentを使うためにこのLayoutはFrameLayoutにします。<br>
-<img src="https://monosnap.com/file/gvI1KUjyuBClK3rCMqMVvhBpj7Hebh.png"><br>
-では、Fragmentファイルを作ります。該当のPackageに右クリック-> New -> Java Class にして新しいJava Classを生成します。<br>
-<img src="https://monosnap.com/file/RbJPARbQwh4GE5XjXO1BvWUuZczhqO.png"><br>
-<img src="https://monosnap.com/file/AJoWo66RzT8vI7tdgWHR7AYpR5oJgn.png"><br>
-上のように生成されたらそのClassの中身にコードを入れてみましょう。<br></p>
-
-<p><div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;MainFragment&nbsp;<span style="color:#ff3399">extends</span>&nbsp;Fragment&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;TAG&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;MainFragment.<span style="color:#ff3399">class</span>.getSimpleName();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;WebView&nbsp;mWebView;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;MainFragment()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;View&nbsp;onCreateView(LayoutInflater&nbsp;inflater,&nbsp;ViewGroup&nbsp;container,&nbsp;Bundle&nbsp;savedInstanceState)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;View&nbsp;rootView&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;inflater.inflate(R.layout.fragment_main,&nbsp;container,&nbsp;<span style="color:#c10aff">false</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(WebView)&nbsp;rootView.findViewById(R.id.fragment_main_webview);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setUpWebViewDefaults(mWebView);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.setWebChromeClient(<span style="color:#ff3399">new</span>&nbsp;WebChromeClient(){</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Override</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;onCreateWindow(WebView&nbsp;view,&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;isDialog,&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;isUserGesture,&nbsp;Message&nbsp;resultMsg)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">super</span>.onCreateWindow(view,&nbsp;isDialog,&nbsp;isUserGesture,&nbsp;resultMsg);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(mWebView.getUrl()&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">null</span>)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.loadUrl(<span style="color:#ffd500">&ldquo;<a href="https://www.google.co.jp">https://www.google.co.jp</a>&rdquo;</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;rootView;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@TargetApi(Build.VERSION_CODES.HONEYCOMB)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;setUpWebViewDefaults(WebView&nbsp;webView)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WebSettings&nbsp;settings&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;webView.getSettings();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;Javascript</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setJavaScriptEnabled(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Use&nbsp;WideViewport&nbsp;and&nbsp;Zoom&nbsp;out&nbsp;if&nbsp;there&nbsp;is&nbsp;no&nbsp;viewport&nbsp;defined</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setUseWideViewPort(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setLoadWithOverviewMode(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;pinch&nbsp;to&nbsp;zoom&nbsp;without&nbsp;the&nbsp;zoom&nbsp;buttons</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setBuiltInZoomControls(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(Build.VERSION.SDK_INT&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;Build.VERSION_CODES.HONEYCOMB)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Hide&nbsp;the&nbsp;zoom&nbsp;controls&nbsp;for&nbsp;HONEYCOMB+</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;settings.setDisplayZoomControls(<span style="color:#c10aff">false</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Enable&nbsp;remote&nbsp;debugging&nbsp;via&nbsp;chrome://inspect</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>(Build.VERSION.SDK_INT&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Build.VERSION_CODES.KITKAT)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WebView.setWebContentsDebuggingEnabled(<span style="color:#c10aff">true</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;We&nbsp;set&nbsp;the&nbsp;WebViewClient&nbsp;to&nbsp;ensure&nbsp;links&nbsp;are&nbsp;consumed&nbsp;by&nbsp;the&nbsp;WebView&nbsp;rather</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;than&nbsp;passed&nbsp;to&nbsp;a&nbsp;browser&nbsp;if&nbsp;it&nbsp;can</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.setWebViewClient(<span style="color:#ff3399">new</span>&nbsp;WebViewClient());</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
-このFragmentにWebViewを入れ込むのでLayoutを作ります。<br>
-<img src="https://monosnap.com/file/mlvo7dFMsH9ufCb2WFrUvcP2hqRZ74.png"><br>
-<img src="https://monosnap.com/file/TBmAs5ZoSs9GK5jfd5KOt0OtjZ3Yac.png"><br>
-下のようにWebViewのコードを入れてみます。<br>
-<img src="https://monosnap.com/file/p1XkTbYVu9uzZpYLOueM7BtKI1cYPh.png"><br>
-InternetのPermissionを取ります。<br>
-<img src="https://monosnap.com/file/LOFKZuqf5LvMvBymESQ6TacdqTkwue.png"><br>
-すると、<br>
-<img src="https://monosnap.com/file/nnbEyiIdhIvfZEi4Oud5HicjJ3Qdth.png" style="width: 60%;"><br></p>
-
-<h2>JavascriptInterface</h2>
-
-<p>WebViewを通してJSとNative間のConnectingができます。
-<img src="https://monosnap.com/file/8Ois8MsX22mqIYtoBLPkP6TVEDnVit.png"><br>
-上の設定を説明します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">getSettings().setJavaScriptEnabled(<span style="color:#c10aff">true</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-これは文字そのとおりWebViewでJavascriptを使えるようになるものです。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">addJavascriptInterface(<span style="color:#ff3399">new</span>&nbsp;AndroidBridge(),&nbsp;<span style="color:#ffd500">&ldquo;HybridApp&rdquo;</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-これはWebViewにJavascriptInterfaceを追加するもので、前の引数は実行するNative側のClassで、後ろの引数はJSから呼ぶときに使うキーです。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">String</span>&nbsp;userAgent&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;mWebView.getSettings().getUserAgentString();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mWebView.getSettings().setUserAgentString(userAgent&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#ffd500">&ldquo;&nbsp;inuckapp&rdquo;</span>);</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-次はUserAgentの設定です。UserAgentを設定したら特定なアプリだけで呼ばれ、他のアプリやMobileブラウザーで無駄に呼ばれるのを止められます。<br>
-続いてJSから呼ばれるClassをみてみると、<br>
-<img src="https://monosnap.com/file/f2CqycMqiYP3ibV8WoxaXQDWG1QC8K.png"><br>
-inuckapp()というメソッドを呼ぶことにします。ではinuckapp()の上にJavascriptInterfaceというAnotationを必ずつけなきゃいけないです。<br>
-Native側からもJSのメソッドを呼ぶことができます。それはloadUrl()を使って、javascript:[メソッド名]を引数として入れます。<br>
-次はサーバ側です。<br>
-<img src="https://monosnap.com/file/QoWbqLzvAvpcc4RchSKy82g1zMOSfk.png"><br>
-navigator.userAgentを使ってどんなデバイスかを取得します。<br>
-Androidは「window.設定したキー.メソッド名」で簡単に呼べます。<br>
-さて、JS側のgoodMorning()を呼んでみます。<br>
-<img src="https://monosnap.com/file/Y6QmlWB0RRtC5BhQaZZywsOiPjdISl.png"><br>
-テストのため、ボタンを入れてみました。<br>
-<img src="https://monosnap.com/file/NGUC5bwtGl8R87difLA0iLsstM7WFk.png" style="width: 60%;"><br>
-ボタンをクリックすると、<br>
-<img src="https://monosnap.com/file/ZQCroY61ga4fL9aBVmj949AJ0wnvTn.png" style="width: 60%;"><br>
-JS側のメソッドが実行になり、Alertが出ました。<br>
-では、Native側からもデータを送ってみます。<br>
-メソッドの引数として渡すことができます。<br>
-<img src="https://monosnap.com/file/EHiux9F55evd7z4K5osc5FaZ9YXgwE.png"><br>
-すると、<br>
-<img src="https://monosnap.com/file/1Z8xXibNxUInayOurjwYlV7YNBRotu.png" style="width: 60%;"><br>
-Native側からJSにデータが送信されたのが確認できます。<br></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/09/28/sessionmanagement/">Railsにおけるセッション管理</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-09-28T14:09:14+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:09 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>セッションとは</h2>
-
-<h2>セッションを設定</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;LoginsController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ApplicationController</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ログインする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;create</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;User.authenticate(params[:username],&nbsp;params[:password])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ユーザーIDをセッションに保存する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session[:user_id]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;user.id</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redirect_to&nbsp;root_url</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f; text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
-
-
-<h2>セッションを取得</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ApplicationController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ActionController::Base</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;private</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;現在のユーザーを取得する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;@_current_userが空の場合は、session情報をキーにしてDBから検索する</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;current_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@_current_user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span><span style="color:#0086b3"></span><span style="color:#ff3399">|</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;User.find_by(id:&nbsp;session[:user_id])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td></tr></table></div>
-
-
-<h2>セッションを削除する</h2>
-
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;LoginsController&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;ApplicationController</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;ログアウトする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;destroy</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">#&nbsp;@_current_userの値をnilにする</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@_current_user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">nil</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;reset_session</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;redirect_to&nbsp;root_url</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td></tr></table></div>
-
-
-<h2>Railsのセッション管理方法</h2>
-
-<h4>CookieStore</h4>
-
-<h4>ActiveRecordSessionStore</h4>
-
-<h4>DalliStore</h4>
 </div>
   
   
