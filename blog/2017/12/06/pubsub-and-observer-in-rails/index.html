@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>PubSubとObserver - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="PubSub PubSubとは 出版-購読型モデル（しゅっぱん-こうどくがたモデル、英: Publish/subscribe）は、非同期メッセージングパラダイムの一種であり、メッセージの送信者（出版側）が特定の受信者（購読側）を想定せずにメッセージを送るようプログラムされたものである。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2017/12/06/pubsub-and-observer-in-rails">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">PubSubとObserver</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-12-06T15:22:06+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:22 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>PubSub</h2>
+
+<h3>PubSubとは</h3>
+
+<blockquote><p>出版-購読型モデル（しゅっぱん-こうどくがたモデル、英: Publish/subscribe）は、非同期メッセージングパラダイムの一種であり、メッセージの送信者（出版側）が特定の受信者（購読側）を想定せずにメッセージを送るようプログラムされたものである。出版されたメッセージにはクラス分けされ、購読者に関する知識を持たない。購読側は興味のあるクラスを指定しておき、そのクラスに属するメッセージだけを受け取り、出版者についての知識を持たない。出版側と購読側の結合度が低いため、スケーラビリティがよく、動的なネットワーク構成に対応可能である。</p></blockquote>
+
+<p>参照：<a href="https://ja.wikipedia.org/wiki/%E5%87%BA%E7%89%88-%E8%B3%BC%E8%AA%AD%E5%9E%8B%E3%83%A2%E3%83%87%E3%83%AB">出版-購読型モデル（ウィキペディア）</a></p>
+
+<h3>利点</h3>
+
+<p>出版側と購読側は疎結合されており、相手の存在を知る必要もない。トピックに関して通信さえできれば、両者はシステムのネットワーク構成も知る必要がない。また、相手の状態がどうであろうと個々のシステムは正常に稼動し続ける。一般的な密結合のクライアントサーバモデルでは、クライアントはサーバ上でサーバプロセスが動作していないときはメッセージを送ることが出来ないし、サーバはクライアントが動作していないときはメッセージを受け取れない。出版-購読型モデルでは、出版側と購読側を位置的に分離すると同時に、時間的にも分離する。出版-購読型システムの戦略として、出版側がダウンしていても、バックログを使って購読側が動作し続けるようにできる（帯域幅調整の一種）。</p>
+
+<h3>欠点</h3>
+
+<p>ブローカー（サーバ）を使った出版-購読型システムでは、購読側がブローカーに対してメッセージ送信を要求するのは帯域内で行われ、セキュリティ問題が発生する可能性がある。ブローカーを騙して間違ったクライアントにメッセージを送らせたり、クライアントがサービスを受けられないようにすることが考えられる。購読の正当性を検証するようにした場合、ブローカーが過負荷に陥る可能性もある。ブローカーを使わないシステムでも、購読側が認証されていないメッセージを受信する可能性がある。認証されていない出版側は不正で損害を与えるようなメッセージをシステム内に送り込む可能性がある。これはシステムがブロードキャストやマルチキャストを使っているために発生する。このような不正アクセスに対する防御策としては、今のところ暗号化（SSL/TLSなど）しかない。</p>
+
+<h3>RailsのPubSub</h3>
+
+<p>Railsでは前記事を書いてた<a href="https://jq-jo.github.io/blog/2017/03/02/rails5-action-cable/">ActionCable</a>がPubSubモデルを利用して使われている。<br/>
+<code>RailsGuide（日本語版）</code>にはこう書いてある。</p>
+
+<blockquote><p>Action Cableは、 WebSocketとRailsのその他の部分をシームレスに統合するためのものです。Action Cable が導入されたことで、Rails アプリケーションの効率の良さとスケーラビリティを損なわずに、通常のRailsアプリケーションと同じスタイル・方法でリアルタイム機能をRubyで記述できます。クライアント側のJavaScriptフレームワークとサーバー側のRubyフレームワークを同時に提供する、フルスタックのフレームワークです。Active RecordなどのORMで書かれたすべてのドメインモデルにアクセスできます。</p>
+
+<p>Pub/Subは出版-購読型モデルとも呼ばれる、メッセージキューのパラダイムです。出版側（Publisher）が、購読側（Subscriber）の抽象クラスに情報を送信します。 このとき、個別の受信者を指定しません。Action Cableでは、このアプローチを採用してサーバーと多数のクライアント間で通信を行います。</p></blockquote>
+
+<p>参照：<a href="https://railsguides.jp/action_cable_overview.html">RailsGuide（日本語版）</a></p>
+
+<h2>Observer</h2>
+
+<h3>Observerパターンとは</h3>
+
+<p>ウィキペディアにはObserverパターンに対してこう書いてある。</p>
+
+<blockquote><p>Observer パターン（オブザーバ・パターン）とは、プログラム内のオブジェクトの状態を観察（英: observe）するようなプログラムで使われるデザインパターンの一種。出版-購読型モデルとも呼ばれる。暗黙的呼び出しの原則と関係が深い。</p>
+
+<p>分散イベント処理システムの実装に主に使われる。言語によっては、このパターンで扱われる問題は言語が持つイベント処理構文で処理される。リアルタイムのアプリケーション配置の手段として興味深い機能である。</p></blockquote>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Observer-pattern-class-diagram.png" alt="" /></p>
+
+<p>参考：<a href="https://ja.wikipedia.org/wiki/Observer_%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">Observer パターン（ウィキペディア）</a></p>
+
+<p>つまり、出版者（Subject）に対して購読者（Observer）は監視するし、出版者に何かの変更があればそれに対する処理を行うということになる。</p>
+
+<h3>RailsのObserverパターン</h3>
+
+<p>Rubyには<code>observable</code>というModuleがあって監視できるようになっている。</p>
+
+<h4>サンプルコード</h4>
+
+<ul>
+<li>Employee(サブジェクト)：従業員を表す</li>
+<li>Payroll(オブザーバ1)：給与の小切手の発行を行う</li>
+<li>TaxMan(オブザーバ2)：税金の請求書の発行を行う</li>
+</ul>
+
+
+<p>まずは従業員を表すEmployeeクラスは、name, title, salaryといったデータと、salaryの変更を受け付けるメソッドを持っている。
+さらに、Employeeクラスに<code>observable</code>を<code>include</code>する。
+<code>observable</code>で用いるメソッドは次のとなる。</p>
+
+<ul>
+<li><code>add_observer</code>メソッドで通知する先のオブジェクトを追加</li>
+<li><code>changed</code>メソッドと<code>notify_observers</code>メソッドでオブジェクトに通知</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;observer&#39;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Employee</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Observable</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:salary</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">salary</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name</span>   <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="vi">@title</span>  <span class="o">=</span> <span class="n">title</span>
+</span><span class='line'>    <span class="vi">@salary</span> <span class="o">=</span> <span class="n">salary</span>
+</span><span class='line'>    <span class="n">payroll</span> <span class="o">=</span> <span class="no">Payroll</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">taxman</span>  <span class="o">=</span> <span class="no">TaxMan</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">add_observer</span><span class="p">(</span><span class="n">payroll</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">add_observer</span><span class="p">(</span><span class="n">taxman</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">salary</span><span class="o">=</span><span class="p">(</span><span class="n">new_salary</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@salary</span> <span class="o">=</span> <span class="n">new_salary</span>
+</span><span class='line'>    <span class="n">changed</span>
+</span><span class='line'>    <span class="n">notify_observers</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に給与の小切手の発行を行うPayrollクラスと、税金の請求書の発行を行うTaxManクラスを作成する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Payroll</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">changed_employee</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;彼の給料は</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">salary</span><span class="si">}</span><span class="s2">になりました！</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">のために新しい小切手を切ります。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">TaxMan</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">changed_employee</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">に新しい税金の請求書を送ります&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コードはここまでになるので、コンソールで確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">jo</span> <span class="o">=</span> <span class="no">Employee</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;Jo&#39;</span><span class="p">,</span> <span class="s1">&#39;System Team member&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+</span><span class='line'><span class="n">jo</span><span class="o">.</span><span class="n">salary</span> <span class="o">=</span> <span class="mi">6000</span>
+</span><span class='line'><span class="c1">#=&gt; 彼の給料は6000になりました！Joのために新しい小切手を切ります。</span>
+</span><span class='line'><span class="c1">#=&gt; Joに新しい税金の請求書を送ります</span>
+</span><span class='line'><span class="n">jo</span><span class="o">.</span><span class="n">salary</span> <span class="o">=</span> <span class="mi">7000</span>
+</span><span class='line'><span class="c1">#=&gt; 彼の給料は7000になりました！Joのために新しい小切手を切ります。</span>
+</span><span class='line'><span class="c1">#=&gt; Joに新しい税金の請求書を送ります</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにRubyでObserverの機能を使える。</p>
+
+<h2>参照</h2>
+
+<p><a href="https://ja.wikipedia.org/wiki/%E5%87%BA%E7%89%88-%E8%B3%BC%E8%AA%AD%E5%9E%8B%E3%83%A2%E3%83%87%E3%83%AB">出版-購読型モデル（ウィキペディア）</a><br/>
+<a href="https://ja.wikipedia.org/wiki/Observer_%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">Observer パターン（ウィキペディア）</a><br/>
+<a href="https://railsguides.jp/action_cable_overview.html">RailsGuide（日本語版）</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-12-06T15:22:06+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:22 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2017/12/06/pubsub-and-observer-in-rails/" data-via="" data-counturl="http://jq-jo.github.io/blog/2017/12/06/pubsub-and-observer-in-rails/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/11/29/pubsubhubbub/" title="Previous Post: PubSubHubbub">&laquo; PubSubHubbub</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

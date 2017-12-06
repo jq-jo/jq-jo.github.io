@@ -9,7 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="PubSubHubbubとは PubSubHubbub (パブサブハブバブ) とは、更新情報を Google にリアルタイムで通知することができるプロトコルです。略して、PuSH (プッシュ) とも呼ばれます。Pub は Publisher (配信)、Sub は Subscriber (購読) &hellip;">
+  <meta name="description" content="PubSub PubSubとは 出版-購読型モデル（しゅっぱん-こうどくがたモデル、英: Publish/subscribe）は、非同期メッセージングパラダイムの一種であり、メッセージの送信者（出版側）が特定の受信者（購読側）を想定せずにメッセージを送るようプログラムされたものである。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,197 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/06/pubsub-and-observer-in-rails/">PubSubとObserver</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-12-06T15:22:06+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:22 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>PubSub</h2>
+
+<h3>PubSubとは</h3>
+
+<blockquote><p>出版-購読型モデル（しゅっぱん-こうどくがたモデル、英: Publish/subscribe）は、非同期メッセージングパラダイムの一種であり、メッセージの送信者（出版側）が特定の受信者（購読側）を想定せずにメッセージを送るようプログラムされたものである。出版されたメッセージにはクラス分けされ、購読者に関する知識を持たない。購読側は興味のあるクラスを指定しておき、そのクラスに属するメッセージだけを受け取り、出版者についての知識を持たない。出版側と購読側の結合度が低いため、スケーラビリティがよく、動的なネットワーク構成に対応可能である。</p></blockquote>
+
+<p>参照：<a href="https://ja.wikipedia.org/wiki/%E5%87%BA%E7%89%88-%E8%B3%BC%E8%AA%AD%E5%9E%8B%E3%83%A2%E3%83%87%E3%83%AB">出版-購読型モデル（ウィキペディア）</a></p>
+
+<h3>利点</h3>
+
+<p>出版側と購読側は疎結合されており、相手の存在を知る必要もない。トピックに関して通信さえできれば、両者はシステムのネットワーク構成も知る必要がない。また、相手の状態がどうであろうと個々のシステムは正常に稼動し続ける。一般的な密結合のクライアントサーバモデルでは、クライアントはサーバ上でサーバプロセスが動作していないときはメッセージを送ることが出来ないし、サーバはクライアントが動作していないときはメッセージを受け取れない。出版-購読型モデルでは、出版側と購読側を位置的に分離すると同時に、時間的にも分離する。出版-購読型システムの戦略として、出版側がダウンしていても、バックログを使って購読側が動作し続けるようにできる（帯域幅調整の一種）。</p>
+
+<h3>欠点</h3>
+
+<p>ブローカー（サーバ）を使った出版-購読型システムでは、購読側がブローカーに対してメッセージ送信を要求するのは帯域内で行われ、セキュリティ問題が発生する可能性がある。ブローカーを騙して間違ったクライアントにメッセージを送らせたり、クライアントがサービスを受けられないようにすることが考えられる。購読の正当性を検証するようにした場合、ブローカーが過負荷に陥る可能性もある。ブローカーを使わないシステムでも、購読側が認証されていないメッセージを受信する可能性がある。認証されていない出版側は不正で損害を与えるようなメッセージをシステム内に送り込む可能性がある。これはシステムがブロードキャストやマルチキャストを使っているために発生する。このような不正アクセスに対する防御策としては、今のところ暗号化（SSL/TLSなど）しかない。</p>
+
+<h3>RailsのPubSub</h3>
+
+<p>Railsでは前記事を書いてた<a href="https://jq-jo.github.io/blog/2017/03/02/rails5-action-cable/">ActionCable</a>がPubSubモデルを利用して使われている。<br/>
+<code>RailsGuide（日本語版）</code>にはこう書いてある。</p>
+
+<blockquote><p>Action Cableは、 WebSocketとRailsのその他の部分をシームレスに統合するためのものです。Action Cable が導入されたことで、Rails アプリケーションの効率の良さとスケーラビリティを損なわずに、通常のRailsアプリケーションと同じスタイル・方法でリアルタイム機能をRubyで記述できます。クライアント側のJavaScriptフレームワークとサーバー側のRubyフレームワークを同時に提供する、フルスタックのフレームワークです。Active RecordなどのORMで書かれたすべてのドメインモデルにアクセスできます。</p>
+
+<p>Pub/Subは出版-購読型モデルとも呼ばれる、メッセージキューのパラダイムです。出版側（Publisher）が、購読側（Subscriber）の抽象クラスに情報を送信します。 このとき、個別の受信者を指定しません。Action Cableでは、このアプローチを採用してサーバーと多数のクライアント間で通信を行います。</p></blockquote>
+
+<p>参照：<a href="https://railsguides.jp/action_cable_overview.html">RailsGuide（日本語版）</a></p>
+
+<h2>Observer</h2>
+
+<h3>Observerパターンとは</h3>
+
+<p>ウィキペディアにはObserverパターンに対してこう書いてある。</p>
+
+<blockquote><p>Observer パターン（オブザーバ・パターン）とは、プログラム内のオブジェクトの状態を観察（英: observe）するようなプログラムで使われるデザインパターンの一種。出版-購読型モデルとも呼ばれる。暗黙的呼び出しの原則と関係が深い。</p>
+
+<p>分散イベント処理システムの実装に主に使われる。言語によっては、このパターンで扱われる問題は言語が持つイベント処理構文で処理される。リアルタイムのアプリケーション配置の手段として興味深い機能である。</p></blockquote>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Observer-pattern-class-diagram.png" alt="" /></p>
+
+<p>参考：<a href="https://ja.wikipedia.org/wiki/Observer_%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">Observer パターン（ウィキペディア）</a></p>
+
+<p>つまり、出版者（Subject）に対して購読者（Observer）は監視するし、出版者に何かの変更があればそれに対する処理を行うということになる。</p>
+
+<h3>RailsのObserverパターン</h3>
+
+<p>Rubyには<code>observable</code>というModuleがあって監視できるようになっている。</p>
+
+<h4>サンプルコード</h4>
+
+<ul>
+<li>Employee(サブジェクト)：従業員を表す</li>
+<li>Payroll(オブザーバ1)：給与の小切手の発行を行う</li>
+<li>TaxMan(オブザーバ2)：税金の請求書の発行を行う</li>
+</ul>
+
+
+<p>まずは従業員を表すEmployeeクラスは、name, title, salaryといったデータと、salaryの変更を受け付けるメソッドを持っている。
+さらに、Employeeクラスに<code>observable</code>を<code>include</code>する。
+<code>observable</code>で用いるメソッドは次のとなる。</p>
+
+<ul>
+<li><code>add_observer</code>メソッドで通知する先のオブジェクトを追加</li>
+<li><code>changed</code>メソッドと<code>notify_observers</code>メソッドでオブジェクトに通知</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;observer&#39;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Employee</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Observable</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:salary</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">salary</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name</span>   <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="vi">@title</span>  <span class="o">=</span> <span class="n">title</span>
+</span><span class='line'>    <span class="vi">@salary</span> <span class="o">=</span> <span class="n">salary</span>
+</span><span class='line'>    <span class="n">payroll</span> <span class="o">=</span> <span class="no">Payroll</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">taxman</span>  <span class="o">=</span> <span class="no">TaxMan</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="n">add_observer</span><span class="p">(</span><span class="n">payroll</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">add_observer</span><span class="p">(</span><span class="n">taxman</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">salary</span><span class="o">=</span><span class="p">(</span><span class="n">new_salary</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@salary</span> <span class="o">=</span> <span class="n">new_salary</span>
+</span><span class='line'>    <span class="n">changed</span>
+</span><span class='line'>    <span class="n">notify_observers</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>次に給与の小切手の発行を行うPayrollクラスと、税金の請求書の発行を行うTaxManクラスを作成する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Payroll</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">changed_employee</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;彼の給料は</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">salary</span><span class="si">}</span><span class="s2">になりました！</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">のために新しい小切手を切ります。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">TaxMan</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">changed_employee</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">changed_employee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">に新しい税金の請求書を送ります&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コードはここまでになるので、コンソールで確認してみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">jo</span> <span class="o">=</span> <span class="no">Employee</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;Jo&#39;</span><span class="p">,</span> <span class="s1">&#39;System Team member&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+</span><span class='line'><span class="n">jo</span><span class="o">.</span><span class="n">salary</span> <span class="o">=</span> <span class="mi">6000</span>
+</span><span class='line'><span class="c1">#=&gt; 彼の給料は6000になりました！Joのために新しい小切手を切ります。</span>
+</span><span class='line'><span class="c1">#=&gt; Joに新しい税金の請求書を送ります</span>
+</span><span class='line'><span class="n">jo</span><span class="o">.</span><span class="n">salary</span> <span class="o">=</span> <span class="mi">7000</span>
+</span><span class='line'><span class="c1">#=&gt; 彼の給料は7000になりました！Joのために新しい小切手を切ります。</span>
+</span><span class='line'><span class="c1">#=&gt; Joに新しい税金の請求書を送ります</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにRubyでObserverの機能を使える。</p>
+
+<h2>参照</h2>
+
+<p><a href="https://ja.wikipedia.org/wiki/%E5%87%BA%E7%89%88-%E8%B3%BC%E8%AA%AD%E5%9E%8B%E3%83%A2%E3%83%87%E3%83%AB">出版-購読型モデル（ウィキペディア）</a><br/>
+<a href="https://ja.wikipedia.org/wiki/Observer_%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3">Observer パターン（ウィキペディア）</a><br/>
+<a href="https://railsguides.jp/action_cable_overview.html">RailsGuide（日本語版）</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1757,225 +1948,6 @@ Manage appボタンからダッシュボードを開き、Dyno formationからCo
 <p><a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Development-guide.md">tootsuite/documentation(Development guide)</a><br/>
 <a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md">tootsuite/documentation(Heroku guide)</a><br/>
 <a href="https://github.com/zunda/mastodon/wiki/CreateInstanceOnHeroku#heroku-cli%E3%82%92%E4%BD%BF%E3%81%86">zunda/mastodon(CreateInstanceOnHeroku)</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/07/26/class-instance-variable/">クラス変数、インスタンス変数、クラスインスタス変数</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-07-26T19:02:16+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>7:02 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>クラス変数</h3>
-
-<p>クラスに変数を持ちたい時にはクラス変数を定義すれば良い。<code>@@</code>というプレフィックスをつけるとクラス変数の定義して使うことができる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
-</span><span class='line'>    <span class="vc">@@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>クラス変数はサブクラスや通常のインスタンスメソッドからアクセスすることもできる。上記の<code>Variable</code>クラスの<code>class_var</code>を実行してみると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c8f730&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>普通にクラス変数の<code>@@var</code>を取得できる。しかし、クラス変数には少し使いにくいところがある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
-</span><span class='line'>    <span class="vc">@@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">parent_var</span> <span class="o">=</span> <span class="no">ParentVariable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;ParentVariable:0x007f8480e4dd90&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">prent_var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8480de7388&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">pvar</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうにクラス変数を変更する場合、このクラス変数にかかっている全てのオブジェクトに影響を与えるので実際の変数の値が変更されてしまう。ということで多くのRubyistはクラス変数は使ってない（らしい）。</p>
-
-<h3>インスタンス変数</h3>
-
-<p>インスタンス変数は<code>@</code>というプレフィックスをつけて使う。これはオブジェクトに所属していて、クラスとは何もつながりがない。なので、同じクラスのオブジェクトでもインスタンス変数の値はそれぞれ違う。インスタンス変数は値を代入した時に初めて出現する。だから明示的に定義しなくても良い。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span> <span class="n">var</span>
-</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;variable : &#39;</span><span class="si">#{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483923e98&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Hello&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Bye&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>クラスインスタンス変数</h3>
-
-<p>Rubyでは、全てのインスタンス変数はカレントオブジェクト<code>self</code>に属している。クラスの定義の中では<code>self</code>はクラスのことになるから、下記にクラスに定義された<code>@var</code>はクラスに属していることになる。同じインスタンス変数<code>@var</code>だけどどこに定義されているかによって違い、それぞれ異なるスコープに定義されており、別々のオブジェクトに属している。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
-</span><span class='line'>  <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="n">str</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span>
-</span><span class='line'>    <span class="vi">@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_instance_var</span>
-</span><span class='line'>    <span class="vi">@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Instance Hello!&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c56bd8 @var=&quot;Instance Hello!&quot;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Instance Hello!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Variable</span><span class="o">.</span><span class="n">class_instance_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>１つ目<code>instance_var</code>メソッドで呼ばれた<code>@var</code>は<code>var</code>オブジェクトが<code>self</code>になる。つまり、<code>var</code>オブジェクトのインスタンス変数だ。２つ目の<code>class_instance_var</code>のクラス変数で呼ばれた<code>@var</code>は<code>Variable</code>が<code>self</code>になる。つまり、これは<code>Variable</code>オブジェクトのインスタンス変数だ。これは<code>Class</code>クラスのオブジェクトである<code>Variable</code>に属しているので通常のインスタンス変数だ。これをクラスインスタンス変数と呼ぶ。<br/>
-クラスインスタンス変数はクラスからしかアクセスできない。クラスのインスタンスやサブクラスからはアクセスできない。</p>
-
-<h2>参照</h2>
-
-<p>メタプログラミングRuby 45p - インスタンス変数<br/>
-メタプログラミングRuby 144 ~ 146p - クラスインスタンス変数</p>
 </div>
   
   
