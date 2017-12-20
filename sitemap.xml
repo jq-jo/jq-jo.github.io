@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://jq-jo.github.io/blog/2017/12/19/observer-pattern-by-ruby/</loc>
+<lastmod>2017-12-19T18:45:15+09:00</lastmod>
+</url>
+<url>
 <loc>http://jq-jo.github.io/blog/2017/12/06/pubsub-and-observer-in-rails/</loc>
 <lastmod>2017-12-06T15:22:06+09:00</lastmod>
 </url>
