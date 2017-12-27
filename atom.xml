@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-12-20T19:48:24+09:00</updated>
+  <updated>2017-12-27T19:18:23+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,708 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rubyのblock, Proc, Lambda]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/"/>
+    <updated>2017-12-27T10:50:28+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/12/27/block-proc-lambda</id>
+    <content type="html"><![CDATA[<h2>ブロック</h2>
+
+<h3>ブロックとは</h3>
+
+<ul>
+<li>do~endまたは{~}で囲われた引数となるためのもの</li>
+<li>それ単体では存在できず、メソッドの引数にしかなれない</li>
+<li>引数として渡されたブロックは、yieldによって実行される</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>説明</h4>
+
+<ul>
+<li>引数を明示</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">block</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>「&amp;」とは<br/>
+<code>&amp;</code>を付けることで、実際に引数にブロックが渡ってきた際、<br/>
+Procオブジェクトに変換している。</p></li>
+<li><p>Procオブジェクトとは</p>
+
+<ul>
+<li>ブロックをオブジェクト化したものがProc
+
+<ul>
+<li>ブロックをオブジェクトに変換することで、引き渡されたメソッド内で扱えるようにする</li>
+</ul>
+</li>
+<li>Procオブジェクトは、callで呼び出すことが出来る</li>
+</ul>
+</li>
+<li><p>注意点<br/>
+引数として渡せるブロックは一つだけ。</p></li>
+<li><p>yieldが使える<br/>
+引数として渡されるブロックが１つに限られているならば、呼び出し箇所を<code>block.call</code>と明示せずに、yieldで統一する。</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#メソッド定義</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>さらに、<br/>
+<code>yield</code>を使うなら引数の<code>(&amp;block)</code>はいらないので</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに省略できる。</p>
+
+<h2>Proc</h2>
+
+<ul>
+<li>ブロックをオブジェクト化したものがProc</li>
+<li>Procオブジェクトはcallで呼び出すことが出来る</li>
+<li>Procに引数を持つこともできる</li>
+<li>Proc.newとlambdaはほぼ同義</li>
+</ul>
+
+
+<h3>Procオブジェクトの定義と呼び出し</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;hoge&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hoge&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Procに引数が渡された場合</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, </span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2">!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Proc&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, Proc!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Proc.newとlambdaはほぼ同義</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">lambda1</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="nb">p</span> <span class="s2">&quot;hoge&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="n">lambda1</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hoge&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">lambda2</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;Hello, </span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2">!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="n">lambda2</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Proc&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, Proc!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Procとlambdaの違い</h3>
+
+<ul>
+<li>lambdaはブロックの引数の数が違うとエラーを起こしてくれる。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">a</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">lambda1</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">a</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="n">lambda1</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="n">wrong</span> <span class="n">number</span> <span class="n">of</span> <span class="n">arguments</span> <span class="p">(</span><span class="mi">2</span> <span class="k">for</span> <span class="mi">3</span><span class="p">)</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>明示的にreturnやbreakを行った場合の挙動が違います。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">method_proc</span>
+</span><span class='line'>  <span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">p</span> <span class="s2">&quot;proc&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;method_proc&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">method_proc</span>
+</span><span class='line'><span class="o">=&gt;</span><span class="s2">&quot;proc&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">method_lambda</span>
+</span><span class='line'>  <span class="nb">lambda</span> <span class="o">=</span> <span class="nb">lambda</span><span class="p">{</span> <span class="k">return</span> <span class="nb">p</span> <span class="s2">&quot;lambda&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="nb">lambda</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;method_lambda&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">method_lambda</span>
+</span><span class='line'><span class="o">=&gt;</span><span class="s2">&quot;lambda&quot;</span>
+</span><span class='line'>  <span class="s2">&quot;method_lambda&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>ブロックやProcのメリット</h2>
+
+<h3>柔軟に拡張できる</h3>
+
+<p>下のコードのようにメソッドを汎用的に使うことができる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">someProc</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">someProc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">sum_proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sum_proc</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">string_proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="p">,</span> <span class="n">string</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">string</span> <span class="o">*</span> <span class="n">x</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span><span class="p">(</span><span class="s1">&#39;hello_proc! &#39;</span><span class="p">,</span> <span class="n">string_proc</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello_proc! hello_proc! hello_proc! hello_proc! hello_proc! &quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>クロージャとしての機能が得られる</h3>
+
+<h4>サンプル①</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">bar</span>
+</span><span class='line'>  <span class="n">str</span> <span class="o">=</span> <span class="s1">&#39;bye&#39;</span>
+</span><span class='line'>  <span class="k">yield</span><span class="p">(</span><span class="s1">&#39;Jo&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">str</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
+</span><span class='line'><span class="n">bar</span> <span class="p">{</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">str</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello, Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>サンプル②</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3</span>
+</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>block_given?</h3>
+
+<h4>block_given?とは</h4>
+
+<p>引数としてブロックが与えられたかどうかを判別するメソッド。</p>
+
+<h4>使い方</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">greet_method</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>    <span class="k">yield</span><span class="p">(</span><span class="s1">&#39;hello!&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;ブロックがありません。&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">greet_method</span> <span class="k">do</span> <span class="o">|</span><span class="n">str</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">str</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">greet_method</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;ブロックがありません。&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="https://qiita.com/kidach1/items/15cfee9ec66804c3afd2">https://qiita.com/kidach1/items/15cfee9ec66804c3afd2</a><br/>
+<a href="https://qiita.com/ryo-ma/items/24c46592b45775e8644d">https://qiita.com/ryo-ma/items/24c46592b45775e8644d</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Active Storage]]></title>
+    <link href="http://jq-jo.github.io/blog/2017/12/25/active-storage/"/>
+    <updated>2017-12-25T10:49:14+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2017/12/25/active-storage</id>
+    <content type="html"><![CDATA[<p>Rails5.2の新しい機能の中に<code>Active Storage</code>というものが気になったので使ってみた。</p>
+
+<h2>Active Storageとは</h2>
+
+<p>AWS S3やGoogle Cloud Storageなどのクラウドファイルストレージサービスへのアップロードをシンプルにやってくれる仕組みとのこと。<br/>
+もちろん物理的なディスクシステムへ保存することもできるけど、主眼はあくまでクラウドサービスに置いているらしい。</p>
+
+<h2>Modelの仕組</h2>
+
+<p>Active Storageをインストールすると<code>active_storage_blobs</code>,<code>active_storage_attachments</code>が生成される。</p>
+
+<p><code>active_storage_blobs</code>は<code>metadata (filename, content-type, etc.)</code>を保存する<code>table</code>になっている。<code>key</code>カラムは<code>identifier key</code>としてクラウドファイルストレージのアップするファイルのfilenameになる。</p>
+
+<p><img src="https://monosnap.com/file/xyt2cDYuvKTA8VzYhA6XzqTwcN8Nwh.png" style="width: 50%;">
+<img src="https://monosnap.com/file/kNPH6J23jIHAywqUdjDYRHfp7V86iB.png" style="width: 50%;"></p>
+
+<p><code>active_storage_attachments</code>は添付ファイルの親モデルと<code>active_storage_blobs</code>をアソシエートしてくれる。親モデルはpolymorphicになる。<br/>
+<img src="https://monosnap.com/file/YOHUlhsSpV1Nt5COr0YZX4RdI7KXD4.png" style="width: 50%;"></p>
+
+<h2>使い方</h2>
+
+<ul>
+<li>環境
+
+<ul>
+<li>Rails 5.2.0.beta2</li>
+<li>ruby 2.4.1p111</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>インストール</h3>
+
+<p><code>rails new</code>を通してプロジェクトを作成するとき自動的に<code>Active Storage</code>がインストールされる。<br/>
+<code>rails new --skip-active-storage</code>にするとインストールせずにプロジェクトを作成できる。</p>
+
+<p>既存プロジェクトに<code>Active Storage</code>を入れたい場合は、まず<code>Rails</code>のバージョンをアップグレードしてから、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails active_storage:install
+</span><span class='line'>bundle exec rake db:migrate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>で入れることができる。</p>
+
+<h3>サンプルコード</h3>
+
+<ul>
+<li>gemfile</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;mini_magick&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 4.8&#39;</span> <span class="c1"># 画像の加工のために</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;aws-sdk-s3&#39;</span> <span class="c1"># S3へのアップロード</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>model</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">has_one_attached</span> <span class="ss">:avatar</span> <span class="c1"># has_oneの場合</span>
+</span><span class='line'>  <span class="n">has_many_attached</span> <span class="ss">:images</span> <span class="c1"># has_manyの場合</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>controller</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">UsersController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user_params</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">:new</span> <span class="ow">and</span> <span class="k">return</span> <span class="k">unless</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:avatar</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">avatar</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">images</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:images</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">redirect_to</span> <span class="n">users_path</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>view</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">form_for</span> <span class="vi">@user</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:email</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">email_field</span> <span class="ss">:email</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:avatar</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:avatar</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:images</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:images</span><span class="p">,</span> <span class="ss">multiple</span><span class="p">:</span> <span class="kp">true</span> <span class="c1"># has_manyの場合</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;作成&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>クラウド設定</h4>
+
+<ul>
+<li>config/environments/development.rb</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Store uploaded files on the local file system (see config/storage.yml for options)</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">active_storage</span><span class="o">.</span><span class="n">service</span> <span class="o">=</span> <span class="ss">:amazon</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>config/storage.yml</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1"># Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)</span>
+</span><span class='line'><span class="l-Scalar-Plain">amazon</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">service</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">S3</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">access_key_id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_ACCESS_KEY&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">secret_access_key</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_SECRET_KEY&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">region</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_REGION&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">bucket</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_BUCKET&#39;] %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>リサイズ</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">image_tag</span> <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">variant</span><span class="p">(</span><span class="ss">resize</span><span class="p">:</span> <span class="s1">&#39;200x200&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このように<code>variant</code>メソッドを使えばリサイズでビューに表示できる。<br/>
+<small>
+参照：<a href="https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb">https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb</a>
+</small></p>
+
+<h4>Direct upload</h4>
+
+<p>JSを使って<code>Direct upload</code>することもできる。</p>
+
+<ul>
+<li><p>include activestorage.js</p>
+
+<ul>
+<li>asset pipelineの場合</li>
+</ul>
+
+
+<pre><code class="javascript">//= require activestorage
+</code></pre>
+
+<ul>
+<li>npm packageの場合</li>
+</ul>
+
+
+<pre><code class="javascript">import * as ActiveStorage from "activestorage"
+ActiveStorage.start()
+</code></pre></li>
+<li><p>file_fieldに設定</p>
+
+<ul>
+<li>ビューの file_field に direct_upload: true を入れる</li>
+</ul>
+
+
+<pre><code class="slim">= f.file_field :avatar, direct_upload: true
+</code></pre></li>
+</ul>
+
+
+<h2>サンプル</h2>
+
+<p><a href="https://active-storage-jo.herokuapp.com">https://active-storage-jo.herokuapp.com</a></p>
+
+<h2>参考</h2>
+
+<p><a href="https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7">https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7</a><br/>
+<a href="https://github.com/rails/rails/tree/master/activestorage">https://github.com/rails/rails/tree/master/activestorage</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RubyにおけるObserverパターン]]></title>
@@ -4015,627 +4717,6 @@ VueDraggableを使うためには二つの方法がある。</p>
 <p><a href="http://qiita.com/akifo/items/a13b76dd94348114111f">Vue.jsのリストレンダリングとhtml5のドラッグ＆ドロップの実装</a><br/>
 <a href="https://www.html5rocks.com/ja/tutorials/dnd/basics/">ネイティブ HTML5 ドラッグ＆ドロップ</a><br/>
 <a href="http://uraway.hatenablog.com/entry/2015/11/30/require_is_not_defined%E3%82%92%E8%A7%A3%E6%B6%88%E3%81%97%E3%81%A6require%E3%82%92%E4%BD%BF%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B">require is not definedを解消してrequireを使えるようにする</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Vue.jsを使ってTodoリストを作成する]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/05/11/todo-list-with-vuejs/"/>
-    <updated>2017-05-11T10:30:58+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/05/11/todo-list-with-vuejs</id>
-    <content type="html"><![CDATA[<p>この前書いた<a href="https://jq-jo.github.io/blog/2017/04/24/vuejs/">RailsにおけるVue.jsの使い方</a>に続いてVue.jsを使ってTodoを作成するようにしてみた。</p>
-
-<h3>環境</h3>
-
-<ul>
-<li>Rails 5.1.0.rc1</li>
-<li>Ruby 2.4.0p0</li>
-<li>Vue.js 2.0</li>
-</ul>
-
-
-<h3>webpack-dev-server</h3>
-
-<p>ロカルの場合、<code>bin/webpack-dev-server</code>コメンドを使って「webpack」を起動するとjsファイルがビルドされる。</p>
-
-<h3>単一ファイルコンポーネント</h3>
-
-<p>Vue.jsには<code>.vue</code>というファイルを通して単一ファイルコンポーネントが使える。<br>
-もちろん<code>.js</code>で管理することもできるが、Vue.jsの公式サイトでみてみると</p>
-
-<ul>
-<li>グローバル宣言は全てのコンポーネントに一意な名前を強制すること</li>
-<li>シンタックスハイライトの無い文字列テンプレートと複数行 HTML の時に醜いスラッシュが強要されること</li>
-<li>CSS サポート無しだと、 HTML と JavaScript がコンポーネントにモジュール化されている間、これ見よがしに無視されること</li>
-<li>ビルド処理がないと Pug (前 Jade) や Babel のようなプリプロセッサよりむしろ、 HTML や ES5 JavaScript を制限されること</li>
-</ul>
-
-
-<p>ということで<code>単一ファイルコンポーネント</code>を使ってこれらの問題を解決すると書いてある。正直まだjsにコンポーネントを置くのとvueファイルに置くのの違いってよく実感できないんだけど。。（笑）<br>
-とりあえず<code>Rails new</code>をしてプロジェクトを作成したら<code>app/javascript/packs</code>ディレクトリーにDefaultで<code>hello_vue.js</code>と<code>app.vue</code>ファイルが生成される。それの中身をみてみると<br>
-<sub>hello_vue.js</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./app.vue&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">))</span>
-</span><span class='line'>  <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;&lt;App/&gt;&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">components</span><span class="o">:</span> <span class="p">{</span> <span class="nx">App</span> <span class="p">}</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">app</span><span class="p">)</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><sub>app.vue</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">message</span><span class="o">:</span> <span class="s2">&quot;Hello Vue!&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">scoped</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">p</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="o">:</span> <span class="mi">2</span><span class="nx">em</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">text</span><span class="o">-</span><span class="nx">align</span><span class="o">:</span> <span class="nx">center</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>vueファイルで<code>template</code>,<code>script</code>,<code>style</code>を使うことができる。つまり、vueファイル単位で簡単にモジュール化することができる。<br>
-でも今回作るTodoリストアプリケーションは<code>script</code>だけ使ってみる。<br></p>
-
-<h3>コンポーネント作成</h3>
-
-<ul>
-<li>vueファイル作成</li>
-</ul>
-
-
-<p>まず、<code>vue</code>ファイルを作成しよう。もちろん使うRails側のコントローラーとモデルは先に用意して置こう。<br>
-<sub>todo-list.vue</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;#todo-list&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">todos</span><span class="o">:</span> <span class="p">[],</span>
-</span><span class='line'>      <span class="nx">inputValue</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">createMode</span><span class="o">:</span> <span class="kc">false</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/api/todos&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
-</span><span class='line'>      <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
-</span><span class='line'>        <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">directives</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="s2">&quot;focus&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">el</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">props</span><span class="o">:</span> <span class="p">[],</span>
-</span><span class='line'>  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">onOffCreateMode</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="kr">boolean</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">createMode</span> <span class="o">=</span> <span class="kr">boolean</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">createTodo</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/api/todos&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">title</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">inputValue</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
-</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
-</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">inputValue</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">onOffCreateMode</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">DeleteTodo</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">todo</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s1">&#39;/api/todos/&#39;</span> <span class="o">+</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
-</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
-</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>jsファイル作成</li>
-</ul>
-
-
-<p><sub>todo.js</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">TodoList</span> <span class="nx">from</span> <span class="s1">&#39;./todo-list.vue&#39;</span>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-list&#39;</span><span class="p">,</span> <span class="nx">TodoList</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>ビュー及びテンプレート作成</li>
-</ul>
-
-
-<p><sub>index.html.slim</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#todo</span>
-</span><span class='line'>  <span class="nt">todo-list</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">=</span> <span class="n">render</span> <span class="s1">&#39;components/todos&#39;</span>
-</span><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><sub>_todos.html.slim</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">template</span><span class="nf">#todo-list</span>
-</span><span class='line'>  <span class="nt">div</span>
-</span><span class='line'>    <span class="nt">ul</span>
-</span><span class='line'>      <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span>
-</span><span class='line'>        <span class="nt">button</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
-</span><span class='line'>          | +
-</span><span class='line'>      <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;createMode&quot;</span>
-</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
-</span><span class='line'>          | -
-</span><span class='line'>        <span class="nt">input</span>[v-model=&quot;inputValue&quot; v-on:keypress.enter=&quot;createTodo&quot; v-focus]
-</span><span class='line'>      <span class="nt">li</span><span class="na"> v-for</span><span class="p">=</span><span class="s2">&quot;todo in todos&quot;</span>
-</span><span class='line'>        | 
-</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;DeleteTodo(todo)&quot;</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;margin-left: 20px;&quot;</span>
-</span><span class='line'>          | Delete
-</span><span class='line'>        <span class="nt">todo-item</span><span class="na"> :todo</span><span class="p">=</span><span class="s2">&quot;todo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>他のコンポーネントの追加</h3>
-
-<p>コンポーネントの作成はさっきの同じようにする。</p>
-
-<ul>
-<li>vueファイル作成</li>
-</ul>
-
-
-<p><sub>todo-item.vue</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'>&lt;script&gt;
-</span><span class='line'><span class="nt">module</span><span class="nc">.exports</span><span class="p"> =</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nt">template:</span> &#39;#todo-item&#39;,
-</span><span class='line'>  <span class="nt">data:</span> function () {
-</span><span class='line'>    <span class="nt">return</span> {
-</span><span class='line'>      <span class="nt">todoItems:</span> [],
-</span><span class='line'>      <span class="nt">inputValue:</span> &#39;&#39;,
-</span><span class='line'>      <span class="nt">createMode:</span> false
-</span><span class='line'>    }
-</span><span class='line'>  },
-</span><span class='line'>  <span class="nt">mounted:</span> function () {
-</span><span class='line'>    <span class="nt">var</span> that = this;
-</span><span class='line'>    <span class="nt">this</span>.$http.get(&#39;/api/todo_items?todo_id=&#39; + this.todo.id).then(
-</span><span class='line'>      <span class="nt">function</span>(response){
-</span><span class='line'>        <span class="nt">that</span><span class="nc">.todoItems</span><span class="p"> =</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">;</span>
-</span><span class='line'>      });
-</span><span class='line'>  },
-</span><span class='line'>  <span class="nt">directives:</span> {
-</span><span class='line'>    &quot;focus&quot;: function(el) {
-</span><span class='line'>      <span class="nt">el</span><span class="nc">.focus</span>()
-</span><span class='line'>    }
-</span><span class='line'>  },
-</span><span class='line'>  <span class="nt">props:</span> [&#39;todo&#39;, &#39;item&#39;],
-</span><span class='line'>  <span class="nt">methods:</span> {
-</span><span class='line'>    <span class="nt">onOffCreateMode:</span> function(boolean) {
-</span><span class='line'>      <span class="nt">this</span><span class="nc">.createMode</span><span class="p"> =</span> <span class="n">boolean</span><span class="p">;</span>
-</span><span class='line'>    },
-</span><span class='line'>    <span class="nt">createItem:</span> function () {
-</span><span class='line'>      <span class="nt">var</span> that = this;
-</span><span class='line'>      <span class="nt">this</span>.$http.post(&#39;/api/todo_items&#39;, {title: this.inputValue, todo_id: this.todo.id}).then(
-</span><span class='line'>        <span class="nt">function</span>(response){
-</span><span class='line'>          <span class="nt">that</span><span class="nc">.todoItems.push</span>(response.body);
-</span><span class='line'>          <span class="nt">that</span><span class="nc">.inputValue</span><span class="p"> =</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>        });
-</span><span class='line'>      <span class="nt">this</span><span class="nc">.onOffCreateMode</span>(false);
-</span><span class='line'>    },
-</span><span class='line'>    <span class="nt">DeleteItem:</span> function (item) {
-</span><span class='line'>      <span class="nt">var</span> that = this;
-</span><span class='line'>      <span class="nt">this</span>.$http.delete(&#39;/api/todo_items/&#39; + item.id + &#39;?todo_id=&#39; + this.todo.id).then(
-</span><span class='line'>        <span class="nt">function</span>(response){
-</span><span class='line'>          <span class="nt">that</span><span class="nc">.todoItems</span><span class="p"> =</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">;</span>
-</span><span class='line'>        });
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>}
-</span><span class='line'>&lt;/script&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>jsファイル編集</li>
-</ul>
-
-
-<p>jsファイルはさっきの<code>todo.js</code>に追加する形で。<br>
-<sub>todo.js</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">TodoList</span> <span class="nx">from</span> <span class="s1">&#39;./todo-list.vue&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">TodoItem</span> <span class="nx">from</span> <span class="s1">&#39;./todo-item.vue&#39;</span> <span class="cm">/* todo-itemをimportする */</span>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-list&#39;</span><span class="p">,</span> <span class="nx">TodoList</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-item&#39;</span><span class="p">,</span> <span class="nx">TodoItem</span><span class="p">)</span> <span class="cm">/* コンポーネントを作成 */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>ビュー及びテンプレート作成</li>
-</ul>
-
-
-<p><sub>_todo_item.html.slim</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">template</span><span class="nf">#todo-item</span>
-</span><span class='line'>  <span class="nt">div</span>
-</span><span class='line'>    <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span>
-</span><span class='line'>      <span class="nt">a</span><span class="na"> href</span><span class="p">=</span><span class="s2">&quot;javascript:void(0)&quot;</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
-</span><span class='line'>        | 項目を追加
-</span><span class='line'>    <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;createMode&quot;</span>
-</span><span class='line'>      <span class="nt">input</span>[v-model=&quot;inputValue&quot; v-on:keypress.enter=&quot;createItem&quot; v-focus]
-</span><span class='line'>      <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode, todo)&quot;</span>
-</span><span class='line'>        | -
-</span><span class='line'>    <span class="nt">ul</span>
-</span><span class='line'>      <span class="nt">li</span><span class="na"> v-for</span><span class="p">=</span><span class="s2">&quot;item in todoItems&quot;</span>
-</span><span class='line'>        | 
-</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;DeleteItem(item)&quot;</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;margin-left: 20px;&quot;</span>
-</span><span class='line'>          | Delete
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="https://jp.vuejs.org/v2/guide/single-file-components.html">単一ファイルコンポーネント</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[JSのMVCフレームワーク]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/04/27/js-framework/"/>
-    <updated>2017-04-27T17:54:34+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/04/27/js-framework</id>
-    <content type="html"><![CDATA[<h3>種類</h3>
-
-<ul>
-<li>React.js
-
-<ul>
-<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
-<li>JSX、Virtual DOMという、新しいアプローチ</li>
-<li>MVCとは違う、Fluxという設計パターン</li>
-<li>Isomorphicなアーキテクチャが可能</li>
-</ul>
-</li>
-<li>Angular.js
-
-<ul>
-<li>Googleが開発している人気MVCフレームワーク</li>
-<li>フルスタックで、できないことは殆ど無い</li>
-<li>Yeomanなどを使うとSPA(Single Page Application)が30分位で作れてしまう</li>
-<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
-</ul>
-</li>
-<li>Angular.js 2.0
-
-<ul>
-<li>ES6等の最新のJavaScript規格を取り入れ、TypeScriptをベースとし記述する</li>
-<li>Angular.jsとはかなり書き方が違う</li>
-<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
-</ul>
-</li>
-<li>Backbone.js
-
-<ul>
-<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
-<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
-<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
-</ul>
-</li>
-<li>Vue.js
-
-<ul>
-<li>MVVMパターン</li>
-<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
-<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
-<li>理解しやすいフレームワークとして有名</li>
-</ul>
-</li>
-<li>Mithril.js
-
-<ul>
-<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
-</ul>
-</li>
-<li>Aurelia.js
-
-<ul>
-<li>ES6、ES7なシンタックス</li>
-<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
-</ul>
-</li>
-<li>Knockout.js
-
-<ul>
-<li>MVVM</li>
-<li>Bindingに特化したフレームワーク</li>
-<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
-</ul>
-</li>
-<li>Ember.js
-
-<ul>
-<li>後で調べる</li>
-</ul>
-</li>
-<li>Riot.js
-
-<ul>
-<li>後で調べる</li>
-</ul>
-</li>
-<li>Ractive.js
-
-<ul>
-<li>後で調べる</li>
-</ul>
-</li>
-<li>まとめ
-
-<ul>
-<li>現存するフレームワークは多すぎる。その中でReact,Vueは早い速度で成長している。Angularは最もシェアが多いのでライブラリとかもちゃんとよいされ、安定的に開発できる。Backboneは段々シェアが落ちていくけど、影響力はまだかなり大きい。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>タスクランナー</h3>
-
-<ul>
-<li>Gulp
-
-<ul>
-<li>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>モデュール化</h3>
-
-<ul>
-<li>Webpack
-
-<ul>
-<li>Webコンテンツには、CSS、JavaScript、画像、webフォント等多くのファイル（アセット）が必要になる。こういったwebで必要なファイルを取り扱うためのWebpackというものが最近人気になっている。</li>
-<li>webpackとは、 webコンテンツを構成するファイルを「モジュール」単位で取り扱い、最適な形に作り変えるためのツールである。</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>参考</h2>
-
-<p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
-<a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
-<a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
 ]]></content>
   </entry>
   

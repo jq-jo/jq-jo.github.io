@@ -9,8 +9,9 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="環境 Rails Rails 5.1.0.rc2 Ruby ruby 2.4.0p0 Vue.js 2.0 Vue.jsの使い方 アプリケーション作成 1
-$ rails new vuejs -d postgresql --webpack=vue rails newに -- &hellip;">
+  <meta name="description" content="この前書いたRailsにおけるVue.jsの使い方に続いてVue.jsを使ってTodoを作成するようにしてみた。 環境 Rails 5.1.0.rc1
+Ruby 2.4.0p0
+Vue.js 2.0 webpack-dev-server ロカルの場合、bin/webpack-dev- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,669 @@ $ rails new vuejs -d postgresql --webpack=vue rails newに -- &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/05/11/todo-list-with-vuejs/">Vue.jsを使ってTodoリストを作成する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-11T10:30:58+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:30 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>この前書いた<a href="https://jq-jo.github.io/blog/2017/04/24/vuejs/">RailsにおけるVue.jsの使い方</a>に続いてVue.jsを使ってTodoを作成するようにしてみた。</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>Rails 5.1.0.rc1</li>
+<li>Ruby 2.4.0p0</li>
+<li>Vue.js 2.0</li>
+</ul>
+
+
+<h3>webpack-dev-server</h3>
+
+<p>ロカルの場合、<code>bin/webpack-dev-server</code>コメンドを使って「webpack」を起動するとjsファイルがビルドされる。</p>
+
+<h3>単一ファイルコンポーネント</h3>
+
+<p>Vue.jsには<code>.vue</code>というファイルを通して単一ファイルコンポーネントが使える。<br>
+もちろん<code>.js</code>で管理することもできるが、Vue.jsの公式サイトでみてみると</p>
+
+<ul>
+<li>グローバル宣言は全てのコンポーネントに一意な名前を強制すること</li>
+<li>シンタックスハイライトの無い文字列テンプレートと複数行 HTML の時に醜いスラッシュが強要されること</li>
+<li>CSS サポート無しだと、 HTML と JavaScript がコンポーネントにモジュール化されている間、これ見よがしに無視されること</li>
+<li>ビルド処理がないと Pug (前 Jade) や Babel のようなプリプロセッサよりむしろ、 HTML や ES5 JavaScript を制限されること</li>
+</ul>
+
+
+<p>ということで<code>単一ファイルコンポーネント</code>を使ってこれらの問題を解決すると書いてある。正直まだjsにコンポーネントを置くのとvueファイルに置くのの違いってよく実感できないんだけど。。（笑）<br>
+とりあえず<code>Rails new</code>をしてプロジェクトを作成したら<code>app/javascript/packs</code>ディレクトリーにDefaultで<code>hello_vue.js</code>と<code>app.vue</code>ファイルが生成される。それの中身をみてみると<br>
+<sub>hello_vue.js</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
+</span><span class='line'><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./app.vue&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;DOMContentLoaded&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">))</span>
+</span><span class='line'>  <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;hello&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;&lt;App/&gt;&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">components</span><span class="o">:</span> <span class="p">{</span> <span class="nx">App</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">app</span><span class="p">)</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><sub>app.vue</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&quot;app&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">message</span><span class="o">:</span> <span class="s2">&quot;Hello Vue!&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">scoped</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">p</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="o">:</span> <span class="mi">2</span><span class="nx">em</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">text</span><span class="o">-</span><span class="nx">align</span><span class="o">:</span> <span class="nx">center</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>vueファイルで<code>template</code>,<code>script</code>,<code>style</code>を使うことができる。つまり、vueファイル単位で簡単にモジュール化することができる。<br>
+でも今回作るTodoリストアプリケーションは<code>script</code>だけ使ってみる。<br></p>
+
+<h3>コンポーネント作成</h3>
+
+<ul>
+<li>vueファイル作成</li>
+</ul>
+
+
+<p>まず、<code>vue</code>ファイルを作成しよう。もちろん使うRails側のコントローラーとモデルは先に用意して置こう。<br>
+<sub>todo-list.vue</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;#todo-list&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">todos</span><span class="o">:</span> <span class="p">[],</span>
+</span><span class='line'>      <span class="nx">inputValue</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">createMode</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/api/todos&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+</span><span class='line'>      <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>        <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">directives</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;focus&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">el</span><span class="p">.</span><span class="nx">focus</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">props</span><span class="o">:</span> <span class="p">[],</span>
+</span><span class='line'>  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">onOffCreateMode</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="kr">boolean</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">createMode</span> <span class="o">=</span> <span class="kr">boolean</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">createTodo</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/api/todos&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">title</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">inputValue</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">inputValue</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">onOffCreateMode</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">DeleteTodo</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">todo</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s1">&#39;/api/todos/&#39;</span> <span class="o">+</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span>
+</span><span class='line'>        <span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span>
+</span><span class='line'>          <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>jsファイル作成</li>
+</ul>
+
+
+<p><sub>todo.js</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
+</span><span class='line'><span class="kr">import</span> <span class="nx">TodoList</span> <span class="nx">from</span> <span class="s1">&#39;./todo-list.vue&#39;</span>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-list&#39;</span><span class="p">,</span> <span class="nx">TodoList</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ビュー及びテンプレート作成</li>
+</ul>
+
+
+<p><sub>index.html.slim</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#todo</span>
+</span><span class='line'>  <span class="nt">todo-list</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">=</span> <span class="n">render</span> <span class="s1">&#39;components/todos&#39;</span>
+</span><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><sub>_todos.html.slim</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">template</span><span class="nf">#todo-list</span>
+</span><span class='line'>  <span class="nt">div</span>
+</span><span class='line'>    <span class="nt">ul</span>
+</span><span class='line'>      <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span>
+</span><span class='line'>        <span class="nt">button</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
+</span><span class='line'>          | +
+</span><span class='line'>      <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;createMode&quot;</span>
+</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
+</span><span class='line'>          | -
+</span><span class='line'>        <span class="nt">input</span>[v-model=&quot;inputValue&quot; v-on:keypress.enter=&quot;createTodo&quot; v-focus]
+</span><span class='line'>      <span class="nt">li</span><span class="na"> v-for</span><span class="p">=</span><span class="s2">&quot;todo in todos&quot;</span>
+</span><span class='line'>        | 
+</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;DeleteTodo(todo)&quot;</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;margin-left: 20px;&quot;</span>
+</span><span class='line'>          | Delete
+</span><span class='line'>        <span class="nt">todo-item</span><span class="na"> :todo</span><span class="p">=</span><span class="s2">&quot;todo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>他のコンポーネントの追加</h3>
+
+<p>コンポーネントの作成はさっきの同じようにする。</p>
+
+<ul>
+<li>vueファイル作成</li>
+</ul>
+
+
+<p><sub>todo-item.vue</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'>&lt;script&gt;
+</span><span class='line'><span class="nt">module</span><span class="nc">.exports</span><span class="p"> =</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nt">template:</span> &#39;#todo-item&#39;,
+</span><span class='line'>  <span class="nt">data:</span> function () {
+</span><span class='line'>    <span class="nt">return</span> {
+</span><span class='line'>      <span class="nt">todoItems:</span> [],
+</span><span class='line'>      <span class="nt">inputValue:</span> &#39;&#39;,
+</span><span class='line'>      <span class="nt">createMode:</span> false
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  <span class="nt">mounted:</span> function () {
+</span><span class='line'>    <span class="nt">var</span> that = this;
+</span><span class='line'>    <span class="nt">this</span>.$http.get(&#39;/api/todo_items?todo_id=&#39; + this.todo.id).then(
+</span><span class='line'>      <span class="nt">function</span>(response){
+</span><span class='line'>        <span class="nt">that</span><span class="nc">.todoItems</span><span class="p"> =</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">;</span>
+</span><span class='line'>      });
+</span><span class='line'>  },
+</span><span class='line'>  <span class="nt">directives:</span> {
+</span><span class='line'>    &quot;focus&quot;: function(el) {
+</span><span class='line'>      <span class="nt">el</span><span class="nc">.focus</span>()
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  <span class="nt">props:</span> [&#39;todo&#39;, &#39;item&#39;],
+</span><span class='line'>  <span class="nt">methods:</span> {
+</span><span class='line'>    <span class="nt">onOffCreateMode:</span> function(boolean) {
+</span><span class='line'>      <span class="nt">this</span><span class="nc">.createMode</span><span class="p"> =</span> <span class="n">boolean</span><span class="p">;</span>
+</span><span class='line'>    },
+</span><span class='line'>    <span class="nt">createItem:</span> function () {
+</span><span class='line'>      <span class="nt">var</span> that = this;
+</span><span class='line'>      <span class="nt">this</span>.$http.post(&#39;/api/todo_items&#39;, {title: this.inputValue, todo_id: this.todo.id}).then(
+</span><span class='line'>        <span class="nt">function</span>(response){
+</span><span class='line'>          <span class="nt">that</span><span class="nc">.todoItems.push</span>(response.body);
+</span><span class='line'>          <span class="nt">that</span><span class="nc">.inputValue</span><span class="p"> =</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>        });
+</span><span class='line'>      <span class="nt">this</span><span class="nc">.onOffCreateMode</span>(false);
+</span><span class='line'>    },
+</span><span class='line'>    <span class="nt">DeleteItem:</span> function (item) {
+</span><span class='line'>      <span class="nt">var</span> that = this;
+</span><span class='line'>      <span class="nt">this</span>.$http.delete(&#39;/api/todo_items/&#39; + item.id + &#39;?todo_id=&#39; + this.todo.id).then(
+</span><span class='line'>        <span class="nt">function</span>(response){
+</span><span class='line'>          <span class="nt">that</span><span class="nc">.todoItems</span><span class="p"> =</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">;</span>
+</span><span class='line'>        });
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>&lt;/script&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>jsファイル編集</li>
+</ul>
+
+
+<p>jsファイルはさっきの<code>todo.js</code>に追加する形で。<br>
+<sub>todo.js</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
+</span><span class='line'><span class="kr">import</span> <span class="nx">TodoList</span> <span class="nx">from</span> <span class="s1">&#39;./todo-list.vue&#39;</span>
+</span><span class='line'><span class="kr">import</span> <span class="nx">TodoItem</span> <span class="nx">from</span> <span class="s1">&#39;./todo-item.vue&#39;</span> <span class="cm">/* todo-itemをimportする */</span>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-list&#39;</span><span class="p">,</span> <span class="nx">TodoList</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-item&#39;</span><span class="p">,</span> <span class="nx">TodoItem</span><span class="p">)</span> <span class="cm">/* コンポーネントを作成 */</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ビュー及びテンプレート作成</li>
+</ul>
+
+
+<p><sub>_todo_item.html.slim</sub></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nt">template</span><span class="nf">#todo-item</span>
+</span><span class='line'>  <span class="nt">div</span>
+</span><span class='line'>    <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;!createMode&quot;</span>
+</span><span class='line'>      <span class="nt">a</span><span class="na"> href</span><span class="p">=</span><span class="s2">&quot;javascript:void(0)&quot;</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode)&quot;</span>
+</span><span class='line'>        | 項目を追加
+</span><span class='line'>    <span class="nt">div</span><span class="na"> v-show</span><span class="p">=</span><span class="s2">&quot;createMode&quot;</span>
+</span><span class='line'>      <span class="nt">input</span>[v-model=&quot;inputValue&quot; v-on:keypress.enter=&quot;createItem&quot; v-focus]
+</span><span class='line'>      <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;onOffCreateMode(!createMode, todo)&quot;</span>
+</span><span class='line'>        | -
+</span><span class='line'>    <span class="nt">ul</span>
+</span><span class='line'>      <span class="nt">li</span><span class="na"> v-for</span><span class="p">=</span><span class="s2">&quot;item in todoItems&quot;</span>
+</span><span class='line'>        | 
+</span><span class='line'>        <span class="nt">button</span><span class="na"> v-on:click</span><span class="p">=</span><span class="s2">&quot;DeleteItem(item)&quot;</span><span class="na"> style</span><span class="p">=</span><span class="s2">&quot;margin-left: 20px;&quot;</span>
+</span><span class='line'>          | Delete
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="https://jp.vuejs.org/v2/guide/single-file-components.html">単一ファイルコンポーネント</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/27/js-framework/">JSのMVCフレームワーク</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-27T17:54:34+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>5:54 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>種類</h3>
+
+<ul>
+<li>React.js
+
+<ul>
+<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
+<li>JSX、Virtual DOMという、新しいアプローチ</li>
+<li>MVCとは違う、Fluxという設計パターン</li>
+<li>Isomorphicなアーキテクチャが可能</li>
+</ul>
+</li>
+<li>Angular.js
+
+<ul>
+<li>Googleが開発している人気MVCフレームワーク</li>
+<li>フルスタックで、できないことは殆ど無い</li>
+<li>Yeomanなどを使うとSPA(Single Page Application)が30分位で作れてしまう</li>
+<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
+</ul>
+</li>
+<li>Angular.js 2.0
+
+<ul>
+<li>ES6等の最新のJavaScript規格を取り入れ、TypeScriptをベースとし記述する</li>
+<li>Angular.jsとはかなり書き方が違う</li>
+<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
+</ul>
+</li>
+<li>Backbone.js
+
+<ul>
+<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
+<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
+<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>MVVMパターン</li>
+<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
+<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
+<li>理解しやすいフレームワークとして有名</li>
+</ul>
+</li>
+<li>Mithril.js
+
+<ul>
+<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
+</ul>
+</li>
+<li>Aurelia.js
+
+<ul>
+<li>ES6、ES7なシンタックス</li>
+<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
+</ul>
+</li>
+<li>Knockout.js
+
+<ul>
+<li>MVVM</li>
+<li>Bindingに特化したフレームワーク</li>
+<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
+</ul>
+</li>
+<li>Ember.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Riot.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Ractive.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>まとめ
+
+<ul>
+<li>現存するフレームワークは多すぎる。その中でReact,Vueは早い速度で成長している。Angularは最もシェアが多いのでライブラリとかもちゃんとよいされ、安定的に開発できる。Backboneは段々シェアが落ちていくけど、影響力はまだかなり大きい。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>タスクランナー</h3>
+
+<ul>
+<li>Gulp
+
+<ul>
+<li>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>モデュール化</h3>
+
+<ul>
+<li>Webpack
+
+<ul>
+<li>Webコンテンツには、CSS、JavaScript、画像、webフォント等多くのファイル（アセット）が必要になる。こういったwebで必要なファイルを取り扱うためのWebpackというものが最近人気になっている。</li>
+<li>webpackとは、 webコンテンツを構成するファイルを「モジュール」単位で取り扱い、最適な形に作り変えるためのツールである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>参考</h2>
+
+<p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
+<a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
+<a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2257,372 +2921,6 @@ renderはどんな形でも構わないがここには簡単にメッセージ�
 <h4>参考</h4>
 
 <p><a href="http://qiita.com/jnchito/items/aec75fab42804287d71b">Rails 5 + ActionCableで作る！シンプルなチャットアプリ（DHH氏のデモ動画より）</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/28/firebase-analytics-event/">Firebase Analyticsを利用してEventを発生させる方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-28T10:55:13+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:55 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Android</h2>
-
-<h4>アプリにFirebase追加</h4>
-
-<p>Rootのbuild.gradleファイルにgoogle-servicesプラグインを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">buildscript</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">// ...</span>
-</span><span class='line'>    <span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>        <span class="c1">// ...</span>
-</span><span class='line'>        <span class="n">classpath</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">:</span><span class="n">google</span><span class="o">-</span><span class="nl">services:</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">0</span><span class="err">&#39;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>次にモジュールのbuild.gradleファイルにapply pluginを追加して使用設定をする</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">application</span><span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">android</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// ...</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// ...</span>
-</span><span class='line'>  <span class="n">compile</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">firebase</span><span class="o">:</span><span class="n">firebase</span><span class="o">-</span><span class="nl">core:</span><span class="mf">10.0</span><span class="o">.</span><span class="mi">1</span><span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Getting a &quot;Could not find&quot; error? Make sure you have</span>
-</span><span class='line'>  <span class="c1">// the latest Google Repository in the Android SDK manager</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// ADD THIS AT THE BOTTOM</span>
-</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="err">&#39;</span><span class="n">com</span><span class="o">.</span><span class="na">google</span><span class="o">.</span><span class="na">gms</span><span class="o">.</span><span class="na">google</span><span class="o">-</span><span class="n">services</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最後にgoogle-services.jsonファイルをプロジェクトに追加する</p>
-
-<h4>Android Manifestファイルの設定</h4>
-
-<p>まず、Android Manifestファイルに下記の設定をする</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.ACCESS_NETWORK_STATE&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.INTERNET&quot;</span> <span class="o">/&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">uses</span><span class="o">-</span><span class="n">permission</span> <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.permission.WAKE_LOCK&quot;</span> <span class="o">/&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Firebase Analyticsの設定</h4>
-
-<p>上記のコードのように</p>
-
-<blockquote><p>compile &lsquo;com.google.firebase:firebase-core:10.0.1&rsquo;</p></blockquote>
-
-<p>を追加するとFirebaseのAnalyticsを使用できるようになる
-それからプロジェクトのActivityに変数を作る</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">FirebaseAnalytics</span> <span class="n">mFirebaseAnalytics</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><br><code>onCreate()</code>メソッドに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Obtain the FirebaseAnalytics instance.</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span> <span class="o">=</span> <span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を追加する</p>
-
-<h4>Eventの設定</h4>
-
-<p>Eventをかけたいところ(たとえば、リンクとかタブなど)に</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_ID</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">ITEM_NAME</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
-</span><span class='line'><span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Param</span><span class="o">.</span><span class="na">CONTENT_TYPE</span><span class="o">,</span> <span class="s">&quot;image&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="n">FirebaseAnalytics</span><span class="o">.</span><span class="na">Event</span><span class="o">.</span><span class="na">SELECT_CONTENT</span><span class="o">,</span> <span class="n">bundle</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように追加するとFirebaseで事前定義されたEventに記録することができる
-上記の例には<code>SELECT_CONTENT</code>というEventに<code>ITEM_ID</code>,<code>ITEM_NAME</code>というValueを記録するようになる</p>
-
-<h4>Eventのカスタマイズ</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Bundle</span><span class="o">();</span>
-</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;image_name&quot;</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
-</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;full_text&quot;</span><span class="o">,</span> <span class="n">text</span><span class="o">);</span>
-</span><span class='line'><span class="n">mFirebaseAnalytics</span><span class="o">.</span><span class="na">logEvent</span><span class="o">(</span><span class="s">&quot;share_image&quot;</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記の例には<code>share_image</code>というEventに<code>image_name</code>,<code>full_text</code>というValue記録するようになる</p>
-
-<h4>Eventの確認</h4>
-
-<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
-
-<h2>iOS - Swift</h2>
-
-<h4>アプリにFirebase追加</h4>
-
-<p>プロジェクトにpodを追加する
-podがなければプロジェクトDirectoryで<code>pod init</code>をしてpodfileを生成する
-それからpodfileに次のようにpodを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">pod</span> <span class="err">&#39;</span><span class="n">Firebase</span><span class="o">/</span><span class="n">Core</span><span class="err">&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>コンソールで</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">$</span> <span class="n">pod</span> <span class="n">install</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Firebaseの呼び出し</h4>
-
-<p>プロジェクトのDelegateに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">import</span> <span class="n">Firebase</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そして<code>application:didFinishLaunchingWithOptions:</code>メソッドに下記のようにFirebaseを呼び出す</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRApp</span><span class="p">.</span><span class="n">configure</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Eventの設定</h4>
-
-<p>下記はkFIRSelectContentの基本Eventを記録する方法である</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="n">kFIREventSelectContent</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>  <span class="nl">kFIRParameterItemID</span><span class="p">:</span> <span class="s">&quot;id-\(title!)&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="nl">kFIRParameterItemName</span><span class="p">:</span> <span class="n">title</span><span class="o">!</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="nl">kFIRParameterContentType</span><span class="p">:</span> <span class="s">&quot;cont&quot;</span> <span class="kt">as</span> <span class="bp">NSObject</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Eventのカスタマイズ</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">FIRAnalytics</span><span class="p">.</span><span class="n">logEvent</span><span class="p">(</span><span class="nl">withName</span><span class="p">:</span> <span class="s">&quot;share_image&quot;</span><span class="p">,</span> <span class="nl">parameters</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>  <span class="s">&quot;name&quot;</span><span class="o">:</span> <span class="n">name</span> <span class="kt">as</span> <span class="bp">NSObject</span><span class="p">,</span>
-</span><span class='line'>  <span class="s">&quot;full_text&quot;</span><span class="o">:</span> <span class="n">text</span> <span class="kt">as</span> <span class="bp">NSObject</span>
-</span><span class='line'><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに<code>share_image</code>というEventに<code>name</code>,<code>full_text</code>というValueを記録することができる</p>
-
-<h4>Eventの確認</h4>
-
-<p>記録されたEventはFirebase Analyticsのダッシュボードで24時間以内に確認できる</p>
-
-<h2>参考</h2>
-
-<p><a href="https://firebase.google.com/docs/analytics/android/events">Firebase Document Analytics Event Android</a><br/>
-<a href="https://firebase.google.com/docs/analytics/ios/events">Firebase Document Analytics Event iOS</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/20/counter-cache-in-rails/">カウンターキャッシュについて</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-20T16:35:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:35 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>カウンターキャッシュとは</h2>
-
-<ul>
-<li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
-</ul>
-
-
-<h2>設定</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Survey</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:questions</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Question&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のような関係を持つモデルの子モデルに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>counter_cache: :カラム名</code>のように追加する<br/>
-それからmigrationを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_column_questions_count_to_qualitative_surveys</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そこに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddColumnInquiresCountToSurveys</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:surveys</span><span class="p">,</span> <span class="ss">:questions_count</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">reversible</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">dir</span><span class="o">.</span><span class="n">up</span> <span class="k">do</span>
-</span><span class='line'>      <span class="no">Survey</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">survey</span><span class="o">|</span>
-</span><span class='line'>        <span class="no">Survey</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">(</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">:questions</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>default: 0</code>を追加し、今持っている子モデルのカウントをセッティングする場合は上記のように<code>reset_counters</code>メソッドを使って更新する
-consoleで確認してみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span> <span class="o">=</span> <span class="no">Survey</span><span class="o">.</span><span class="n">last</span>
-</span><span class='line'><span class="no">Survey</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span>  <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;surveys&quot;</span> <span class="no">ORDER</span> <span class="no">BY</span> <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="s2">&quot;id&quot;</span> <span class="no">DESC</span> <span class="no">LIMIT</span> <span class="vg">$1</span>  <span class="o">[[</span><span class="s2">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">]]</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Survey id: 83, title: &quot;Survey_title_49&quot;, content: nil, created_at: &quot;2017-02-08 10:26:51&quot;, updated_at: &quot;2017-02-16 02:55:41&quot;, questions_count: 43&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span><span class="o">.</span><span class="n">questions_count</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">43</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように確認できる</p>
 </div>
   
   
