@@ -9,7 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Assetとは RailsにはJavaScriptやCSS、Imageなどの要素をアセットと呼びます。アセットはそれぞれに &lsquo;app/assets/javascripts/'、 'app/assets/stylesheets/'、 'app/assets/images&rsquo; &hellip;">
+  <meta name="description" content="HAML (HTML Abstraction Markup Language) インラインコードを使わなくてウェブHTML文書を記述することに使用するマークアップ言語です。PHPやASP、ほとんどのRubyOnRails Applicationで使用されています。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,231 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/08/24/HAML%20&%20Slim/">HAML & Slim</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-24T10:25:08+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:25 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><small></p>
+
+<h1>HAML (HTML Abstraction Markup Language)</h1>
+
+<p>インラインコードを使わなくてウェブHTML文書を記述することに使用するマークアップ言語です。PHPやASP、ほとんどのRubyOnRails Applicationで使用されています。コードが簡単になる長所がありますが、デザイナーやパブリッシャーとの協業が必要なプロジェクトには使用が難しくなる短所があります。</p>
+
+<h2>Gem HAMLのインストール</h2>
+
+<p>HAMLのGemをプロジェクトに追加します。Gemfileを開いて、 次のコードを「追加」します。<br></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;<span style="color:#ffd500">'haml-rails'</span></div></div></td></tr></table></div>
+
+
+<p>そしてインストールします。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;install</div></div></td></tr></table></div>
+
+
+<p>これからHAMLを使えます！！</p>
+
+<h2>書き方</h2>
+
+<h3>一番基本的な記法</h3>
+
+<p>(例)</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">!!!</div><div style="padding:0 6px; white-space:pre; line-height:130%">%html{lang:&nbsp;"ja"}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%head</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;%meta{charset:&nbsp;"utf-8"}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%body</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;hello&nbsp;world!</div></div></td></tr></table></div>
+
+
+<p><br><br></p>
+
+<h4>&lt;コード解説></h4>
+
+<p>1.!!!<br>
+&lt;!DOCTYPE html>を表す<br>
+2.%<br>
+タグの前に%を付けると&lt;開始タグ>と&lt;終了タグ>を表す。%html => &lt;html>&lt;/html><br>
+3.インデントを必ず入れる<br>
+親子関係のタグは必ずインデントを入れて関係性を作る。<br>
+4.属性を入れる場合<br>
+Ruby風に{}とシンボルで書ける。<br>
+また、HTML風に書くなら「%html(lang=&ldquo;ja&rdquo;)」<br><br>
+こんなにもできます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">%div{id:&nbsp;"my-id"}&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">%div{class:&nbsp;"my-class"}&nbsp;Contents</div></div></td></tr></table></div>
+
+
+<p>ちなみにidやclassは次のように書いても同じものが表示されます。divタグの場合のみ%divを省略することもできます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">#my-id&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">.my-class&nbsp;Contents</div></div></td></tr></table></div>
+
+
+<p>これをHTMLで書くと、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">id</span>=<span style="color:#ffd500">"my-id"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"my-class"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Contents</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<p>こういうふうになります。<br><br></p>
+
+<h3>HTMLに記述されないコメント</h3>
+
+<p>次のように-#をつけて書いた文字列はHTMLには記述されません。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">-#&nbsp;test&nbsp;comment</span></div></div></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>HTMLに残すコメント</h3>
+
+<p>HTMLに残すコメントはHAMLでは次のように書きます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/&nbsp;This&nbsp;is&nbsp;the&nbsp;peanutbutterjelly&nbsp;element</span></div></div></td></tr></table></div>
+
+
+<p>すると、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&lt;!--&nbsp;This&nbsp;is&nbsp;the&nbsp;peanutbutterjelly&nbsp;element&nbsp;--&gt;</span></div></div></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>Rubyの変数を使う</h3>
+
+<p>HAML内ではRubyの変数を簡単に呼び出せます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;text&nbsp;=&nbsp;"good"</div><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;text2&nbsp;=&nbsp;'HAML'</div><div style="padding:0 6px; white-space:pre; line-height:130%">%div{class:&nbsp;hoge}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;test&nbsp;message&nbsp;is&nbsp;#{text}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;text2</div></div></td></tr></table></div>
+
+
+<p>これをHTMLに変換すると次のようになります。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"good"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;test&nbsp;message&nbsp;is&nbsp;good</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;HAML</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>Rubyのif文やcase文を埋め込む</h3>
+
+<p>Rubyのif文やcase文も埋め込むことが可能です。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">%p</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;case&nbsp;1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"1!"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;2</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"2?"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;-&nbsp;when&nbsp;3</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;"3."</div></div></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>Rubyのブロックを使う</h3>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">-&nbsp;(42...47).each&nbsp;do&nbsp;|i|</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;%p=&nbsp;i</div><div style="padding:0 6px; white-space:pre; line-height:130%">%p&nbsp;See,&nbsp;I&nbsp;can&nbsp;count!</div></div></td></tr></table></div>
+
+
+<p><br></p>
+
+<h1>Slim</h1>
+
+<p>SlimのgithubページにはSlimを
+&ldquo;Slim は 不可解にならないように view の構文を本質的な部品まで減らすことを目指したテンプレート言語です。標準的な HTML テンプレートからどれだけのものが削除できるか確かめるところから始まりました。(&lt;, >, 閉じタグなど) 多くの人が Slim に興味を持ったことで, 機能性は発展し, 柔軟な構文をもたらしました&rdquo;
+と紹介しています。</p>
+
+<h2>Gem Slimのインストール</h2>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;install&nbsp;slim</div></div></td></tr></table></div>
+
+
+<h2>Slimの書き方</h2>
+
+<p>まず、HTMLとSlimを比べてみると、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">head</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">meta</span>&nbsp;<span style="color:#a8ff58">charset</span>=<span style="color:#ffd500">"utf-8"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">title</span><span style="color:#f0f0f0">&gt;</span>Jo's&nbsp;Training<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">title</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">head</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">body</span>&nbsp;<span style="color:#a8ff58">class</span>=<span style="color:#ffd500">"sample"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">div</span>&nbsp;<span style="color:#a8ff58">id</span>=<span style="color:#ffd500">"contents"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">h1</span><span style="color:#f0f0f0">&gt;</span>Sample&nbsp;File<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">h1</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">img</span>&nbsp;<span style="color:#a8ff58">alt</span>=<span style="color:#ffd500">"sampleImage"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">src</span>=<span style="color:#ffd500">"http://www.jotraining.com/images/sampleImage.jpg"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span>テキストテキストテキスト<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span>テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;テキストテキストテキスト<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">p</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">div</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">body</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#f0f0f0">/</span><span style="color:#ff3399">html</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<p>上記のようなHTMLは</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;html</div><div style="padding:0 6px; white-space:pre; line-height:130%">html</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;head</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;meta&nbsp;charset="utf-8"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;title&nbsp;Sample&nbsp;File</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;body.sample</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;#contents</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h1&nbsp;Sample&nbsp;File</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;img&nbsp;src="http://www.e2esound.com/images/yterajima.jpg"&nbsp;alt="yterajima"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p&nbsp;テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;テキストテキストテキスト</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;テキストテキストテキスト</div></div></td></tr></table></div>
+
+
+<p>Slimではこういうふうに書けます。<br>
+Slimはインデントを用いてHTMLの入れ子を表現します。このインデントの深さは自由に決めることができます。<br></p>
+
+<h2>3つのポイント</h2>
+
+<p>1.通常のHTMLから &lt;, >, /> を取り除く<br>
+2.doctype<br>
+3.テキストと | (パイプ)の扱い<br>
+4.コメント<br></p>
+
+<h3>通常のHTMLから&lt;, >, />を取り除く</h3>
+
+<p>上記の例を見ると</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">img</span>&nbsp;<span style="color:#a8ff58">alt</span>=<span style="color:#ffd500">"sampleImage"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">src</span>=<span style="color:#ffd500">"http://www.jotraining.com/images/sampleImage.jpg"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">/</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">img&nbsp;src="http://www.jotraining.com/images/sampleImage.jpg"&nbsp;alt="sampleImage"</div></div></td></tr></table></div>
+
+
+<h3>doctype</h3>
+
+<p>上記のslimの1行目、doctype htmlはHTMLの&lt;!DOCTYPE html>を表しています。</p>
+
+<h4>XML 宣言</h4>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;xml</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">?xml</span>&nbsp;<span style="color:#a8ff58">version</span>=<span style="color:#ffd500">"1.0"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">encoding</span>=<span style="color:#ffd500">"utf-8"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">?</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;xml&nbsp;ISO-8859-1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">?xml</span>&nbsp;<span style="color:#a8ff58">version</span>=<span style="color:#ffd500">"1.0"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">encoding</span>=<span style="color:#ffd500">"iso-8859-1"</span><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58">?</span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<h4>XHTML ドキュメントタイプ</h4>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;html</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;5</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;1.1</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.1//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;strict</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Strict//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;frameset</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Frameset//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;mobile</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//WAPFORUM//DTD&nbsp;XHTML&nbsp;Mobile&nbsp;1.2//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;basic</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;Basic&nbsp;1.1//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;transitional</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;XHTML&nbsp;1.0&nbsp;Transitional//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<h4>HTML 4 ドキュメントタイプ</h4>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;strict</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/strict.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;frameset</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01&nbsp;Frameset//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/frameset.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">doctype&nbsp;transitional</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#f0f0f0">&lt;</span><span style="color:#ff3399">!DOCTYPE</span>&nbsp;<span style="color:#a8ff58">html</span>&nbsp;<span style="color:#a8ff58">PUBLIC</span>&nbsp;<span style="color:#ffd500">"-//W3C//DTD&nbsp;HTML&nbsp;4.01&nbsp;Transitional//EN"</span><span style="color:#a8ff58"></span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#a8ff58"></span>&nbsp;<span style="color:#ffd500">"http://www.w3.org/TR/html4/loose.dtd"</span><span style="color:#a8ff58"></span><span style="color:#f0f0f0">&gt;</span></div></div></td></tr></table></div>
+
+
+<h3>コメント</h3>
+
+<p>Slimのコメントには変換後出力されるコメントとされないコメントの2種類があります。<br></p>
+
+<h4>HTMLに記述されないコメント</h4>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/&nbsp;このコメントは変換後表示されない</span></div></div></td></tr></table></div>
+
+
+<h4>HTMLに残すコメント</h4>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/!&nbsp;このコメントは変換後HTMLコメントになる</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&lt;!--&nbsp;このコメントは変換後HTMLコメントになる&nbsp;--&gt;</span></div></div></td></tr></table></div>
+
+
+<p></small></p>
+
+<h2>参照</h2>
+
+<p><small>
+<a href="http://morizyun.github.io/blog/beginner-rails-tutorial-haml/">http://morizyun.github.io/blog/beginner-rails-tutorial-haml/</a>
+<a href="http://qiita.com/watak676/items/525ad3d8a1297e3244e3">http://qiita.com/watak676/items/525ad3d8a1297e3244e3</a>
+<a href="http://qiita.com/yterajima/items/53fd0387279510ff082a">http://qiita.com/yterajima/items/53fd0387279510ff082a</a>
+<a href="https://github.com/slim-template/slim/blob/master/README.jp.md">https://github.com/slim-template/slim/blob/master/README.jp.md</a></p>
+
+<p></small></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -651,7 +876,7 @@ showの部分はちょっと迷いましたけど、</p>
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2017 - Jo -
+  Copyright &copy; 2018 - Jo -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
 </p>
 

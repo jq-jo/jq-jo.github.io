@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2017-12-27T19:18:23+09:00</updated>
+  <updated>2018-01-11T14:48:42+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,312 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[オブジェクトモデル]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/01/11/object-model/"/>
+    <updated>2018-01-11T12:02:58+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/01/11/object-model</id>
+    <content type="html"><![CDATA[<h2>オープンクラス</h2>
+
+<p>下記のメソッドは文字列からアルファベットとスペース以外を取り除くメソッド</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">to_alphanumeric</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">s</span><span class="o">.</span><span class="n">gsub</span> <span class="sr">/[^\w\s]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>オープンクラスを使えば、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">String</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">to_alphanumeric</span>
+</span><span class='line'>    <span class="nb">gsub</span> <span class="sr">/[^\w\s]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こう書くこともできる。<br/>
+標準クラスの<code>String</code>を書き換える。すると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;!a #b+c&quot;</span><span class="o">.</span><span class="n">to_alphanumeric</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;a bc&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに適用される。</p>
+
+<h2>クラス定義</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;my_method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method2</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;my_method2&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>class C</code>を定義してまた<code>class C</code>をさらに定義するとどうなるだろう。<br/>
+<code>class C</code>を上書きすると思ったが実際叩いてみたら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
+</span><span class='line'><span class="n">my_method</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method2</span>
+</span><span class='line'><span class="n">my_method2</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上書きじゃなく、<code>class C</code>に追加する形になる。</p>
+
+<h2>定数</h2>
+
+<p>定数はディレクトリとファイルのようにパスで呼び出すことができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M</span>
+</span><span class='line'>  <span class="no">MyConstant</span> <span class="o">=</span> <span class="s2">&quot;ABCDE&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>    <span class="no">MyConstant</span> <span class="o">=</span> <span class="s2">&quot;12345&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">M</span><span class="o">::</span><span class="no">MyConstant</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;ABCDE&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">M</span><span class="o">::</span><span class="n">C</span><span class="o">::</span><span class="no">MyConstant</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;12345&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>クラスオブジェクト</h2>
+
+<p>クラスオブジェクトをみてみるため、<code>"hello"</code>からたどり着いてみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;hello&quot;</span><span class="o">.</span><span class="n">class</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="nb">String</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">String</span><span class="o">.</span><span class="n">class</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Class</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Class</span><span class="o">.</span><span class="n">instance_methods</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:allocate</span><span class="p">,</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">:superclass</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">String</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Object</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">BasicObject</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">BasicObject</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Class</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Module</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Module</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そうなんだ！と思いながら１つ気になる点がある。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Object</span><span class="o">.</span><span class="n">class</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">Class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Object</code>の<code>class</code>は<code>Class</code>。<br/>
+でも、<code>Class</code>の<code>superclass</code>は<code>module</code>であり、<code>module</code>の<code>superclass</code>は<code>Object</code>。<br/>
+では<code>Class</code>の上位classの<code>Object</code>は<code>Class</code>？
+ちゃんと理解ができていない。。これは今度深く調べてみよう。</p>
+
+<h2>self</h2>
+
+<h4>class定義の時のself</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="nb">self</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="n">C</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="nb">self</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;CC:0x007ffbe8a67e08&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>method</code>内での<code>self</code>はオブジェクトを指す。<code>method</code>外での<code>self</code>はクラスを指す。</p>
+
+<h4>privateキーワードのself</h4>
+
+<p>privateメソッドのルール：「明示的なレシーバーをつけて呼び出せない」
+下記は明示的なselfをつけているのでエラーとなる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
+</span><span class='line'>    <span class="nb">self</span><span class="o">.</span><span class="n">private_method</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;ABCDE&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_method</span>
+</span><span class='line'><span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="sb">`private_method&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>selfを削除すると動作するようになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
+</span><span class='line'>    <span class="n">private_method</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;ABCDE&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_method</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">ABCDE</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参照</h2>
+
+<p>本「メタプログラミングRuby」第1章</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rubyのblock, Proc, Lambda]]></title>
@@ -4267,456 +4573,6 @@ bowerはツイッターが作ったフロントエンドのパッケージを管
 <p><a href="http://qiita.com/tsuuuuu_san/items/f29836c78e3eaffc4d68">npmの使い方</a><br/>
 <a href="http://qiita.com/megane42/items/2ab6ffd866c3f2fda066#%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E7%94%A8js-%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E7%AE%A1%E7%90%86%E3%83%84%E3%83%BC%E3%83%ABbower">npm とか bower とか一体何なんだよ！Javascript 界隈の文脈を理解しよう</a><br/>
 <a href="http://qiita.com/morrr/items/c16ae12272484a849737">Bower/bower-rails チートシート</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[VuejsにおけるDrag&Drop]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/05/18/vuejs-dnd/"/>
-    <updated>2017-05-18T10:20:28+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/05/18/vuejs-dnd</id>
-    <content type="html"><![CDATA[<h2>Rails5.1.1でのVuejs</h2>
-
-<h3>1. HTML5を利用したDrag&amp;Drop</h3>
-
-<p>Rails5.1.1の環境で実装してみた。ビューとJS側はただ宣言と登録だけして全てのコードは<code>.vue</code>ファイルに書いておいた。
-- ビューとJS側</p>
-
-<p><sub>index.html.slim</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#todo</span>
-</span><span class='line'>  <span class="nt">todo-dnd</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><sub>todo.js</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">TodoDnd</span> <span class="nx">from</span> <span class="s1">&#39;./todo-dnd.vue&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-dnd&#39;</span><span class="p">,</span> <span class="nx">TodoDnd</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>vueファイル</li>
-</ul>
-
-
-<p><sub>todo-dnd.vue</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;mainDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span> <span class="nx">draggable</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="err">@</span><span class="nx">dragstart</span><span class="o">=</span><span class="s2">&quot;dragStart(list, $event)&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;checkbox&quot;</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;list.todoDone&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">label</span> <span class="nx">v</span><span class="o">-</span><span class="nx">show</span><span class="o">=</span><span class="s2">&quot;!list.todoDone&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/label&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">label</span> <span class="nx">v</span><span class="o">-</span><span class="nx">show</span><span class="o">=</span><span class="s2">&quot;list.todoDone&quot;</span><span class="o">&gt;&lt;</span><span class="nx">s</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/s&gt;&lt;/label&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">textarea</span> <span class="nx">cols</span><span class="o">=</span><span class="s2">&quot;50&quot;</span> <span class="nx">rows</span><span class="o">=</span><span class="s2">&quot;10&quot;</span> <span class="err">@</span><span class="nx">dragover</span><span class="o">=</span><span class="s2">&quot;dragOver($event)&quot;</span> <span class="err">@</span><span class="nx">dragleave</span><span class="o">=</span><span class="s2">&quot;dragLeave($event)&quot;</span> <span class="err">@</span><span class="nx">dragover</span><span class="p">.</span><span class="nx">prevent</span> <span class="err">@</span><span class="nx">drop</span><span class="o">=</span><span class="s2">&quot;drop($event)&quot;</span><span class="o">&gt;&lt;</span><span class="err">/textarea&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">v</span><span class="o">-</span><span class="nx">on</span><span class="o">:</span><span class="nx">click</span><span class="o">=</span><span class="s2">&quot;afterSend&quot;</span><span class="o">&gt;</span><span class="err">送信</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">lists</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ruby&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Ruby!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">},</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Rails!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">},</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Vue.js&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Vue.js!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">}</span>
-</span><span class='line'>      <span class="p">],</span>
-</span><span class='line'>      <span class="nx">listIndex</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">dragContent</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">props</span><span class="o">:</span> <span class="p">[],</span>
-</span><span class='line'>  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">dragStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">content</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">listIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lists</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">dragOver</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">dragLeave</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">drop</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">afterSend</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">lists</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">listIndex</span><span class="p">].</span><span class="nx">todoDone</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">scoped</span><span class="o">&gt;</span>
-</span><span class='line'><span class="p">.</span><span class="nx">mainDiv</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">width</span><span class="o">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">float</span><span class="o">:</span> <span class="nx">left</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">width</span><span class="o">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">margin</span><span class="o">-</span><span class="nx">right</span><span class="o">:</span> <span class="mi">100</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">ul</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">width</span><span class="o">:</span> <span class="mi">300</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">black</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">li</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">black</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">margin</span><span class="o">-</span><span class="nx">top</span><span class="o">:</span> <span class="mi">5</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Vuejsで提供してくれるEventの一部</strong></p>
-
-<blockquote><p>@click<br>
-@submit<br>
-@keyup<br>
-@mousedown<br>
-@mousemove<br>
-@mouseup<br>
-@mouseleave<br>
-@touchstart<br>
-@touchmove<br>
-@touchend<br>
-@dragstart<br>
-@dragenter<br>
-@dragleave<br>
-@dragover<br>
-@dragend</p></blockquote>
-
-<p>この中でdrag&amp;dropに関するEventもあるのでそれらを活用してVuejsとHTML5を連携する。
-テンプレート側で、
-Dragする対象に<code>draggable="true"</code>にしてDragが可能になるようにする。あと<code>@dragstart</code>をかけてdragが始まったときのEventを処理する。
-Dropされる対象に<code>@dragover</code>,<code>@dragleave</code>,<code>@drop</code>をかけてそれぞれの必要な処理をさせる。</p>
-
-<h2>2. VueDraggableを利用したDrag&amp;Drop</h2>
-
-<p>ビューとJS側はさっきのやつと同じようになるのでvueファイルだけ書く。
-VueDraggableを使うためには二つの方法がある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">draggable</span> <span class="nx">from</span> <span class="s1">&#39;vuedraggable&#39;</span>
-</span><span class='line'><span class="p">...</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">components</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">draggable</span><span class="p">,</span>
-</span><span class='line'>          <span class="p">...</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに<code>import</code>をするか、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">draggable</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vuedraggable&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>require</code>をする。
-今回は前者の<code>import</code>の方法を使う。<code>import</code>をするには<code>npm</code>や<code>bower</code>でインストールをする。今回はnpmで。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vuedraggable</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>vueファイル</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Simple</span> <span class="nx">DnD</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span> <span class="err">@</span><span class="nx">start</span><span class="o">=</span><span class="s2">&quot;drag=true&quot;</span> <span class="err">@</span><span class="nx">end</span><span class="o">=</span><span class="s2">&quot;drag=false&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">hr</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div2&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Two</span> <span class="nx">Lists</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;twoListsDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;twoListsDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists2&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists2&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">hr</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">List</span> <span class="nx">clone</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;listCloneDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:{ name:&#39;people&#39;,  pull:&#39;clone&#39;, put:false }}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;(list, index) in lists&quot;</span> <span class="o">:</span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;listCloneDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists2&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;(list, index) in lists2&quot;</span> <span class="o">:</span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">draggable</span> <span class="nx">from</span> <span class="s1">&#39;vuedraggable&#39;</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">components</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">draggable</span><span class="p">,</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">lists</span><span class="o">:</span> <span class="p">[{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Ruby&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Rails&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Vuejs&#39;</span><span class="p">}],</span>
-</span><span class='line'>      <span class="nx">lists2</span><span class="o">:</span> <span class="p">[{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Java&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Swift&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Objective-C&#39;</span><span class="p">}],</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">ul</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">width</span><span class="o">:</span> <span class="mi">200</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">twoListsDiv</span><span class="p">,</span> <span class="p">.</span><span class="nx">listCloneDiv</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">float</span><span class="o">:</span> <span class="nx">left</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">div2</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">overflow</span><span class="o">:</span> <span class="nx">hidden</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>VueDraggableでは<code>draggable</code>というタグを使う。このタグを使っていろんなDnDができる。<code>options</code>を使って同じグループに結んだらDnDを簡単に実装することができるし、<code>pull</code>とか<code>put</code>とかでDnDのOptionを決めることができる。</p>
-
-<h2>参考</h2>
-
-<p><a href="http://qiita.com/akifo/items/a13b76dd94348114111f">Vue.jsのリストレンダリングとhtml5のドラッグ＆ドロップの実装</a><br/>
-<a href="https://www.html5rocks.com/ja/tutorials/dnd/basics/">ネイティブ HTML5 ドラッグ＆ドロップ</a><br/>
-<a href="http://uraway.hatenablog.com/entry/2015/11/30/require_is_not_defined%E3%82%92%E8%A7%A3%E6%B6%88%E3%81%97%E3%81%A6require%E3%82%92%E4%BD%BF%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B">require is not definedを解消してrequireを使えるようにする</a></p>
 ]]></content>
   </entry>
   
