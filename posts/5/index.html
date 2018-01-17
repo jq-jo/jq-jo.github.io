@@ -9,8 +9,9 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="アプリを開発するとき、ビルドを分けて開発することになるので、ビルド環境を分ける方法についてまとめてみた。 AndroidStudio AndroidStudioの場合はモジュールのbuild.gradleで設定ができる。
-最初プロジェクトを作ってbuild. &hellip;">
+  <meta name="description" content="XCode XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。
+◎ Configurationsを分ける方法
+まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +78,89 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/11/30/make-environment-xcode/">ビルド環境設定(XCode)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-11-30T12:23:41+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:23 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>XCode</h2>
+
+<p>XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。<br><br>
+◎ Configurationsを分ける方法<br><br>
+まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。ReleaseとDebugがDefaultされてあるのでその中にStagingを入れてみる。<br>
+<img src="https://monosnap.com/file/Q3O8utFKCtm5zg1p0Z3GoWfu4rFUco.png" alt="Alt text" />
+<code>+</code>を押し、DebugかReleaseをduplicateして名前を変える。
+<img src="https://monosnap.com/file/aFsMeAhXPgkctvXCw03jPw61GpWSpg.png" alt="Alt text" />
+続いてTargetsのBuildSettingsの<code>+</code>を押し、User-DefinedにBUNDLE_DISPLAY_NAME_PREFIXとBUNDLE_IDENTIFIER_SUFFIXを追加する。そしてActiveConpilationConditionsも下のように変える。BUNDLE_DISPLAY_NAME_PREFIXはアプリ名を分けるために追加、BUNDLE_IDENTIFIER_SUFFIXはアプリのBundleIdをそれぞれ分けるために追加する。また、ActiveConpilationConditionsはそれぞれのビルドの機能を分岐させるために追加する。
+<img src="https://monosnap.com/file/JK5RqnvNu5iG0jEU35kC6anLKbHFow.png" alt="Alt text" />
+<img src="https://monosnap.com/file/8WwygchOcTeNfveXhUyVHMCJj9DMsH.png" alt="Alt text" />
+次はschemeを分けて管理する。左上のschemeのところで<code>New Scheme</code>を押してDebugとStagingのschemeを追加する。また、<code>Edit Scheme</code>でRelease,Debug,Stagingのそれぞれの設定をする。
+<img src="https://monosnap.com/file/DdgdmUzq2UVIa30kWZiptqU0KKSvy5.png" alt="Alt text" />
+<img src="https://monosnap.com/file/4eeSZVYzL1r3c852b7yzzeYBxSWOKS.png" alt="Alt text" />
+そこまでできたらTargetsのinfoでBundle identifierとBundle nameを変更する。Bundle identifierは$(PRODUCT_BUNDLE_IDENTIFIER)の後ろに$(BUNDLE_IDENTIFIER_SUFFIX)を、Bundle nameは$(PRODUCT_NAME)の前に$(BUNDLE_DISPLAY_NAME_PREFIX)を入れる。
+<img src="https://monosnap.com/file/hZBoQgZnVpl9OVgYINvjgOOubUTsoH.png" alt="Alt text" />
+そうすれば下のようにGeneralで変更されたのを確認できる。
+<img src="https://monosnap.com/file/vdIoWGmaDrrt8nGg5rI1uMkdodxCJa.png" alt="Alt text" />
+それぞれのビルドに機能を分岐させる場合は下のように<code>#if</code>を使う。#ifのところにさっきのActiveConpilationConditionsに設定したのを入れる。
+<img src="https://monosnap.com/file/lTp2TdWE3BsKrapycZtPep3lJoEEWl.png" alt="Alt text" />
+ビルド別にビルドしてみると、<br></p>
+
+<h5>Release</h5>
+
+<p><img src="https://monosnap.com/file/QkGImbr37gD8Y7JyAvxxpi52zoHuPV.png" alt="Alt text" /></p>
+
+<h5>Debug</h5>
+
+<p><img src="https://monosnap.com/file/KlSkLEKfDVMXsWl7MyN3XzsPIbrVvL.png" alt="Alt text" /></p>
+
+<h5>Staging</h5>
+
+<p><img src="https://monosnap.com/file/raVMMgsr3Gvy02ih0hUZy86pxPZIkC.png" alt="Alt text" />
+それぞれ違うソースコードが実行されたことをみることができる。<br>
+インストールされたデバイスをみたら、
+<img src="https://monosnap.com/file/MKAP87DCtdgFOg0kcTQo3IJqS7r4cM.png" alt="Alt text" />
+三つのアプリがインストールされる。<br><br>
+◎ Targetを分ける方法<br><br>
+今のTargetをduplicateしてもう一つのTargetを作る。もちろん<code>+</code>で追加しても良いが、同じソースコードを使うならばduplicateでも全然構わない。作ったら名前を変更し、また自動にinfo.plistファイルも生成されるのでそれのファイル名も変更。その後にGeneralでinfo.plistを選んで設定する。
+<img src="https://monosnap.com/file/lM4SmNEhPp2AIL61Z6rKJOmyEGGq3H.png" alt="Alt text" />
+そしてBuild SettingsでProduct Bundle Identifierを変更すればする。
+<img src="https://monosnap.com/file/hBfhNcDfOoPxGT2mrNAaLe5jCbBbwj.png" alt="Alt text" />
+さっきと同じようにschemeを追加する。
+<img src="https://monosnap.com/file/78PpR1UeYXfOGLrywsrJP0fr6b7E5M.png" alt="Alt text" />
+ActiveConpilationConditionsをカスタマイズするが、Targetを間違わないよう気をつける。
+<img src="https://monosnap.com/file/yq1WCEKKQIKD8NcEFOCkblOp1ypMjV.png" alt="Alt text" />
+さっきの分岐のうえにさらに分岐してみる。
+<img src="https://monosnap.com/file/Vqy7Sz343KYnnO1WokdGwBafGhTqUP.png" alt="Alt text" />
+すると、新たのプロジェクトのRelease,Debug,Stagingをそれぞれ使うことができる。
+<img src="https://monosnap.com/file/E7uYaDWIxb8G3meokqY7V0JffVggzP.png" alt="Alt text" />
+<img src="https://monosnap.com/file/ia7prDT8OLMrKf9jHhd637uHXBgoJ6.png" alt="Alt text" />
+<img src="https://monosnap.com/file/mHxnMnR7C8ikmFrdsY6GYEUHcvoczK.png" alt="Alt text" />
+そして、デバイスで確認してみるとまた三つが増えて六つもアプリがインストールされたのを確認できる。
+<img src="https://monosnap.com/file/3v0ZtxQX4GRtZmgy7DGF5EhmKlBjal.png" alt="Alt text" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1477,7 +1561,7 @@ version.rbは単純にGemのバージョン管理に必要なファイルです�
 <div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">def</span>&nbsp;self.exec</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#4be6fa">puts</span>&nbsp;<span style="color:#ffd500">&ldquo;Hello&nbsp;System-Team!&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
 moduleの中にこれを入れます。上記のメソッドは例えなので実際に実行したいメソッドを入れたら良いです。
 後はディレクトリの中にあるhello_system_team.gemspecの設定を変更します。<br>
-<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#111;&#x3a;&#x66;&#97;&#110;&#x74;&#x61;&#x73;&#116;&#105;&#99;&#106;&#x79;&#99;&#64;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;">&#x66;&#x61;&#x6e;&#116;&#97;&#115;&#116;&#x69;&#x63;&#x6a;&#x79;&#x63;&#64;&#103;&#x6d;&#x61;&#105;&#x6c;&#x2e;&#x63;&#x6f;&#x6d;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">#&nbsp;coding:&nbsp;utf-8</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">lib&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;File.expand_path(<span style="color:#ffd500">&lsquo;../lib&rsquo;</span>,&nbsp;<strong>FILE</strong>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">$LOAD_PATH.unshift(lib)&nbsp;<span style="color:#ff3399">unless</span>&nbsp;$LOAD_PATH.include?(lib)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">require</span>&nbsp;<span style="color:#ffd500">&lsquo;hello_system_team/version&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Gem::Specification.<span style="color:#ff3399">new</span>&nbsp;<span style="color:#ff3399">do</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;hello_system_team&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;HelloSystemTeam::VERSION</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.authors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;jo&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;<a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#102;&#x61;&#x6e;&#116;&#97;&#115;&#116;&#105;&#x63;&#x6a;&#x79;&#x63;&#x40;&#x67;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#109;">&#102;&#97;&#110;&#x74;&#x61;&#x73;&#x74;&#105;&#99;&#x6a;&#x79;&#x63;&#64;&#103;&#x6d;&#97;&#105;&#108;&#46;&#99;&#x6f;&#x6d;</a>&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.summary&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;short&nbsp;summary,&nbsp;because&nbsp;Rubygems&nbsp;requires&nbsp;one.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.description&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;%q{TODO:&nbsp;Write&nbsp;a&nbsp;longer&nbsp;description&nbsp;<span style="color:#ff3399">or</span>&nbsp;delete&nbsp;this&nbsp;line.}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.homepage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Put&nbsp;your&nbsp;gem&rsquo;s&nbsp;website&nbsp;or&nbsp;public&nbsp;repo&nbsp;URL&nbsp;here.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;MIT&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;Prevent&nbsp;pushing&nbsp;this&nbsp;gem&nbsp;to&nbsp;RubyGems.org.&nbsp;To&nbsp;allow&nbsp;pushes&nbsp;either&nbsp;set&nbsp;the&nbsp;&lsquo;allowed_push_host&rsquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#999999">#&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;a&nbsp;single&nbsp;host&nbsp;or&nbsp;delete&nbsp;this&nbsp;section&nbsp;to&nbsp;allow&nbsp;pushing&nbsp;to&nbsp;any&nbsp;host.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;spec.respond_to?(:metadata)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;spec.metadata[<span style="color:#ffd500">&lsquo;allowed_push_host&rsquo;</span>]&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;TODO:&nbsp;Set&nbsp;to&nbsp;&lsquo;<a href="http://mygemserver.com">http://mygemserver.com</a>&rsquo;&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">else</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">raise</span>&nbsp;<span style="color:#ffd500">&ldquo;RubyGems&nbsp;2.0&nbsp;or&nbsp;newer&nbsp;is&nbsp;required&nbsp;to&nbsp;protect&nbsp;against&nbsp;public&nbsp;gem&nbsp;pushes.&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<code>git&amp;nbsp;ls&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;files&amp;nbsp;&lt;span style="color:#0086b3"&gt;&lt;/span&gt;&lt;span style="color:#ff3399"&gt;-&lt;/span&gt;z</code>.split(<span style="color:#ffd500">&ldquo;\x0&rdquo;</span>).reject&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;f.match(%r{^(test<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>spec<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>features)<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.bindir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ffd500">&ldquo;exe&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.executables&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;spec.files.grep(%r{^exe<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>})&nbsp;{&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>f<span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;File.basename(f)&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.require_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;[<span style="color:#ffd500">&ldquo;lib&rdquo;</span>]</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;bundler&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;1.12&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rake&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;10.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;spec.add_development_dependency&nbsp;<span style="color:#ffd500">&ldquo;rspec&rdquo;</span>,&nbsp;<span style="color:#ffd500">&ldquo;~&gt;&nbsp;3.0&rdquo;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right; margin-top:-13px; margin-right:5px; font-size:9px; font-style:italic"></td></tr></table></div>
 正しく変更できない場合はエラーが出てきます。僕の場合はsummary, description, homepage, metadataでエラーが出てきました。（泣）<br><br>
 そこまでできると、実行してみましょう。irbで実行してみたら下のようにうまくできます。<br>
 でも、複雑なGemになってくるとirbだけでは難しくなってきますのでその時ちゃんとテストを行うのが良いです。<br>
@@ -1586,132 +1670,6 @@ Tabbar Itemを編集して名前やImageも変えることができます。右�
 こういうふうに変わるのを見ることができます。<br><br><br></p>
 
 <p>個人的な意見では、Tabbar Controllerはそれぞれの機能を持てる画面を使用するNativeアプリにもっと合う気がします。Webviewを使うHybridアプリにはNativeアプリに使うことよりは効率性が高くないんじゃないかなと思います。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/08/31/Hybrid-Native-Responsive/">Hybrid, Native, Responsive</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-08-31T16:02:03+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>4:02 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><small></p>
-
-<h1>Mobile Applicationの種類</h1>
-
-<p><img src="/images/threeApps.jpg"><br>
-1. Native Application<br>
-2. Hybrid Application<br>
-3. Responsive Web Application<br></p>
-
-<h2>Native Application</h2>
-
-<p>Native Appの開発でアプリはios, androidなどの特定のMobile Platformに合わせて作成することになり、一般的にはPlatform会社の開発道具を使用して作られます。他のPlatformにはコードの再使用はできません。<br><br></p>
-
-<h4>メリット</h4>
-
-<p>• 性能が高い（特にゲームの場合）<br>
-<small>- グラフィックユーザーインターフェース、速度など</small><br>
-• デバイスの全ての機能を使える（センサー、カメラ、連絡先など）<br>
-• Appleのアップストア、GooglePlayなどの公開アップストアを通して配布<br></p>
-
-<h4>デメリット</h4>
-
-<p>• 開発者不足<br>
-• Platform別にそれぞれアプリを作るため費用を使う<br>
-• Platform別にコードベースを管理するため費用と時間を使う<br>
-• 長い開発期間<br>
-• 開発のかかる時間で各Platformのバージョンがそれぞれになる可能性がある<br>
-• 各アップストアの承認手順を待たなきゃいけないのでアプリの配布が遅くなる可能性がある<br></p>
-
-<h4>開発道具</h4>
-
-<p>• Apple: XCode<br>
-• Android: Android Studio, eclipse<br></p>
-
-<h2>Responsive</h2>
-
-<p>HTML 5, CSS, JSなどを使用して作るWeb Application。デバイスのブラウザーを通して接近できます。デバイスの機能を使用することが難しいです。<br></p>
-
-<h4>メリット</h4>
-
-<p>• 既存Web開発者を活用して作れる<br>
-• 費用が一番安い<br>
-• 一つのコードベースだけ管理する<br>
-• 早く編集、アップデートや配布が可能<br></p>
-
-<h4>デメリット</h4>
-
-<p>• インターフェースが標準Native Appと違う可能性がある<br>
-• マルチメディアの性能がよくない<br>
-• デバイスの機能を使うことが難しい<br></p>
-
-<h4>開発道具</h4>
-
-<p>HTML 5, JS, CSSを使ってWebを作ることに使用される全ての開発道具はResponsive Web Applicationを作ることができます。<br>
-• AngularJS - Googleが管理しているopen source web application framework<br>
-• Ember.js - open source javascript web application framework<br>
-• React - facebookが管理しているopen source javascript library<br>
-• JQuery - javascript library<br>
-• Bootstrap - Responsiveを優先するCSS framework<br></p>
-
-<h2>Hybrid Application</h2>
-
-<p>Hybrid ApplicationはResponsive AppをMobile Platformで実行するAppになります。ウェブ標準を使用するが最終アプリはデバイスでnative appで実行されます。Native AppとResponsive Appのメリットだけ合わせるように誕生した。<br></p>
-
-<h4>メリット</h4>
-
-<p>• ウェブ標準を使用して作る（APIやデバイスの機能に接近するためコーディングが必要<br>
-• 既存ウェブ開発者を活用して開発可能<br>
-• 早く編集、アップデートや配布が可能<br>
-• 各PlatformでNative Appで実行する<br></p>
-
-<h4>デメリット</h4>
-
-<p>• インターフェースが標準Native Appと違う可能性がある<br>
-• Native Appよりは性能がよくない<br>
-• 一般的にデバイスの全ての機能が使えるが新たな機能は少し時間がかかる<br>
-• Platformによってそれぞれ違うコードベースにしなきゃいけない<br></p>
-
-<h4>開発道具</h4>
-
-<p>• Apache Cordova - HTML 5, CSS, javascriptを使用しているResponsive Appを基盤にしてNative Appをbuildするopen source platform<br>
-• Adobe PhoneGap - Adobeが作ったApache Cordovaの変形<br>
-• Alpha Anywhere - Responsive Appを作ってそれをNative Appに配布するようにしてくれる開発環境<br>
-• Ionic Framework - AngularJSやCordovaと連携してResponsive Appを基盤にしてNative Appをbuildするユーザーインターフェース中心のframework<br></p>
-
-<h1>b#まとめ</h1>
-
-<p><img src="/images/chart_apps.png"></p>
-
-<p></small></p>
-
-<h2>参照</h2>
-
-<p><small>
-<a href="http://www.itworld.co.kr/news/95791">http://www.itworld.co.kr/news/95791</a></p>
-
-<p></small></p>
 </div>
   
   

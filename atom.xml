@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-01-11T14:48:42+09:00</updated>
+  <updated>2018-01-17T19:44:07+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,297 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[メソッド]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/01/17/method/"/>
+    <updated>2018-01-17T19:40:19+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/01/17/method</id>
+    <content type="html"><![CDATA[<h2>動的メソッド</h2>
+
+<h4>メソッドを呼び出す方法</h4>
+
+<ul>
+<li>ドットを使う</li>
+<li>send()を使う
+
+<ul>
+<li>send()メソッドの第一引数は呼び出すメソッド名 => 文字列またはシンボル</li>
+<li>その他の引数はそのままメソッドに渡される</li>
+</ul>
+</li>
+</ul>
+
+
+<p>send()を使えばコードの実行時に呼び出すメソッドを直前に決められる。なので動的な処理が可能になる。これを<code>動的ディスバッチ</code>と呼ぶ。</p>
+
+<h4>プライバシー問題</h4>
+
+<p>send()メソッドの問題は<code>private</code>メソッドも呼ばれるということだ。</p>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">private_method</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="s1">&#39;private_method&#39;</span> <span class="n">called</span> <span class="k">for</span> <span class="c1">#&lt;C:0x007f8149e5c8e8&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:private_method</span><span class="p">)</span>
+</span><span class='line'><span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>プライバシーの尊重のため、<code>public_send()</code>を使う方法もある。</p>
+
+<ul>
+<li>例２</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called public method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_send</span><span class="p">(</span><span class="ss">:public_method</span><span class="p">)</span>
+</span><span class='line'><span class="s2">&quot;called public method&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_send</span><span class="p">(</span><span class="ss">:private_method</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="s1">&#39;private_method&#39;</span> <span class="n">called</span> <span class="k">for</span> <span class="c1">#&lt;C:0x007f8149e5c8e8&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>メソッドを動的に定義</h4>
+
+<ul>
+<li>define_method()</li>
+</ul>
+
+
+<p>Module#define_method()を使えば、メソッドをその場で定義できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span> <span class="o">|</span><span class="n">my_arg</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">my_arg</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">6</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>define_method</code>はClassの中で実行され、<code>my_method()</code>が<code>C</code>クラスのインスタンスメソッドとして定義される。実行時にメソッドを定義するこの技術を<code>動的メソッド</code>と呼ぶ。</p>
+
+<h2>method_missing()</h2>
+
+<h4>method_missing()のオーバーライド</h4>
+
+<p><code>method_missing()</code>メソッドは<code>BasicObject</code>のインスタンスメソッドだ。つまり、<code>BasicObject</code>を継承している<code>Object</code>を継承するオブジェクトは<code>method_missing()</code>を持っているということになり、もちろんオーバーライドもでき、存在しないメソッドに対するハンドリングもできるということだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>ゴーストメソッド</h4>
+
+<p>同じようなメソッドをたくさん定義しなければならないとき、いちいち定義するより、method_missing()を呼び出す方がもっと楽かもしれない。method_missing()での処理は呼び出し側からは通常の呼び出しのように見える。しかし、レシーバに対応するメソッドは見当たらない。これは<code>ゴーストメソッド</code>と呼ぶ。上記の例では<code>hello()</code>がゴーストメソッドなるのだ。</p>
+
+<h2>もっとmethod_missing()</h2>
+
+<h4>メソッド名が衝突したら</h4>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="ss">ArgumentError</span><span class="p">:</span> <span class="n">wrong</span> <span class="n">number</span> <span class="n">of</span> <span class="n">arguments</span> <span class="p">(</span><span class="n">given</span> <span class="mi">2</span><span class="p">,</span> <span class="n">expected</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードでは</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とプリントされると予想したけど、プリントされず<code>ArgumentError</code>になってしまった。<br/>
+これの問題は<code>Object</code>から継承されたメソッドの中で<code>display</code>というメソッドがあり、<code>method_missing()</code>が呼ばれなかったからだ。<br/>
+これはは必要ないメソッドを全部削除することで対応できる。メソッドをすべて削除することを<code>ブランクスレート</code>と呼ぶ。</p>
+
+<ul>
+<li>例２</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="nb">instance_methods</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">undef_method</span> <span class="n">m</span> <span class="k">unless</span> <span class="n">m</span><span class="o">.</span><span class="n">to_s</span> <span class="o">=~</span> <span class="sr">/__|method_missing/</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">display</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードは予想通り<code>method_missing()</code>を呼び出すことができる。</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>メソッドは<code>send()</code>でも呼び出せる</li>
+<li><code>send()</code>は<code>private</code>メソッドも呼び出せるため、<code>public_send()</code>を使うこともできる</li>
+<li><code>define_method()</code>でメソッドを動的に定義できる</li>
+<li><code>method_missing()</code>を利用すると存在しないメソッド、ゴーストメソッドに対するハンドリングや処理ができる</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[オブジェクトモデル]]></title>
@@ -4381,198 +4672,6 @@ Rails5.1でサポートする<code>React</code>,<code>Vue.js</code>,<code>Angula
 
 <p><a href="http://qiita.com/necojackarc/items/afa674ab10aafa9784eb">WebPackを使ってRailsからJavaScriptを楽に良い感じに分離する</a><br/>
 <a href="https://github.com/rails/webpacker">webpacker</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[[JS] Bower, Npmについて]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/05/24/bower-and-npm/"/>
-    <updated>2017-05-24T18:16:33+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/05/24/bower-and-npm</id>
-    <content type="html"><![CDATA[<p>bowerとnpmは両方ともパッケージが管理できるツール。<br>
-npmはNode Package ModulesのことでNode.jsのライブラリやパッケージをインストールし、管理できる。<br>
-bowerはツイッターが作ったフロントエンドのパッケージを管理ツールである。</p>
-
-<h2>NPM(Node Package Modules)</h2>
-
-<h3>インストール</h3>
-
-<p>npmはNode.jsをインストールすると自動にインストールされる。</p>
-
-<h3>使い方</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># 構成設定ファイルである package.json を作成する
-</span><span class='line'>$ npm init
-</span><span class='line'>
-</span><span class='line'># プロジェクトのみインストール&アンインストール
-</span><span class='line'>$ npm install &lt;package&gt; --save
-</span><span class='line'>$ npm uninstall &lt;package&gt; --save
-</span><span class='line'>
-</span><span class='line'># グローバルインストール&アンインストール
-</span><span class='line'>$ npm install -g &lt;package&gt;
-</span><span class='line'>$ npm uninstall -g &lt;package&gt;
-</span><span class='line'>
-</span><span class='line'># package.jsonに記載されているパッケージをインストール
-</span><span class='line'>$ npm install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに<code>--save</code>をつけるとそのパッケージが依存している全てのパッケージも一気にインストールされる。</p>
-
-<h3>Railsでの使い方</h3>
-
-<ul>
-<li>Railsの設定ファイル変更<br/>
-<sub>config/initializers/assets.rb</sub></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Rails.application.config.assets.paths &lt;&lt; Rails.root.join('node_modules')</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>assetsで参照する<br/>
-<code>require</code>や<code>import</code>を通して使うことができる</li>
-</ul>
-
-
-<h2>Bower</h2>
-
-<h3>インストール</h3>
-
-<p>bowerはNode.jsのパッケージなのでnpmでインストールする。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># node.jsのインストール
-</span><span class='line'>$ brew install node
-</span><span class='line'>
-</span><span class='line'># bowerのインストール
-</span><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>使い方</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># 構成設定ファイルである bower.json を作成する
-</span><span class='line'>$ bower init
-</span><span class='line'>
-</span><span class='line'># ライブラリを検索する
-</span><span class='line'>$ bower search &lt;package&gt;
-</span><span class='line'>
-</span><span class='line'># パッケージを追加し、かつbower.jsonに記録する
-</span><span class='line'>$ bower install &lt;package&gt; --save
-</span><span class='line'>
-</span><span class='line'># '#'をつけるとバージョンを指定してパッケージを追加できる
-</span><span class='line'>$ bower install &lt;package&gt;#1.1.1 --save
-</span><span class='line'>
-</span><span class='line'># bower.jsonに記録されたパッケージをインストールする
-</span><span class='line'>$ bower install
-</span><span class='line'>
-</span><span class='line'># パッケージを削除する
-</span><span class='line'>$ bower uninstall &lt;package&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>構成設定ファイル</h3>
-
-<ul>
-<li>.bowerrc
-
-<ul>
-<li>directory属性設定でパッケージのインストールパス(bower_components)を指定する</li>
-<li>手動でbowerを使うなら<code>.bowerrc</code>を手動で作らなきゃいけない</li>
-</ul>
-</li>
-<li>bower.json
-
-<ul>
-<li>依存性及び開発バージョン情報などを表す</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>bower-rails</h2>
-
-<h3>インストール</h3>
-
-<ul>
-<li>gemfileに追加</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'bower-rails'</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>bundle install</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle install</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>使い方</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># bowerを初期化
-</span><span class='line'>$ rails g bower_rails:initialize
-</span><span class='line'>
-</span><span class='line'># Bowerfileに欲しいアセットを任意に追加
-</span><span class='line'>asset '&lt;package name&gt;', '&lt;package version&gt;'
-</span><span class='line'>
-</span><span class='line'># bowerをインストール
-</span><span class='line'>$ rake bower:install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>あとはインストールされたパッケージを<code>require</code>でロードして使う。</p>
-
-<h2>参考</h2>
-
-<p><a href="http://qiita.com/tsuuuuu_san/items/f29836c78e3eaffc4d68">npmの使い方</a><br/>
-<a href="http://qiita.com/megane42/items/2ab6ffd866c3f2fda066#%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E7%94%A8js-%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E7%AE%A1%E7%90%86%E3%83%84%E3%83%BC%E3%83%ABbower">npm とか bower とか一体何なんだよ！Javascript 界隈の文脈を理解しよう</a><br/>
-<a href="http://qiita.com/morrr/items/c16ae12272484a849737">Bower/bower-rails チートシート</a></p>
 ]]></content>
   </entry>
   

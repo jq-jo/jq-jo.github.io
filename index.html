@@ -9,16 +9,9 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="オープンクラス 下記のメソッドは文字列からアルファベットとスペース以外を取り除くメソッド 1
-2
-3
-def to_alphanumeric(s) s.gsub /[^\w\s]/, &#39;&#39;
-end オープンクラスを使えば、 1
-2
-3
-4
-5
-class String def &hellip;">
+  <meta name="description" content="動的メソッド メソッドを呼び出す方法 ドットを使う
+send()を使う send()メソッドの第一引数は呼び出すメソッド名 => 文字列またはシンボル
+その他の引数はそのままメソッドに渡される send()を使えばコードの実行時に呼び出すメソッドを直前に決められる。なので動的な処理が可能になる。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -85,6 +78,318 @@ class String def &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/17/method/">メソッド</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-01-17T19:40:19+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:40 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>動的メソッド</h2>
+
+<h4>メソッドを呼び出す方法</h4>
+
+<ul>
+<li>ドットを使う</li>
+<li>send()を使う
+
+<ul>
+<li>send()メソッドの第一引数は呼び出すメソッド名 => 文字列またはシンボル</li>
+<li>その他の引数はそのままメソッドに渡される</li>
+</ul>
+</li>
+</ul>
+
+
+<p>send()を使えばコードの実行時に呼び出すメソッドを直前に決められる。なので動的な処理が可能になる。これを<code>動的ディスバッチ</code>と呼ぶ。</p>
+
+<h4>プライバシー問題</h4>
+
+<p>send()メソッドの問題は<code>private</code>メソッドも呼ばれるということだ。</p>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">private_method</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="s1">&#39;private_method&#39;</span> <span class="n">called</span> <span class="k">for</span> <span class="c1">#&lt;C:0x007f8149e5c8e8&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:private_method</span><span class="p">)</span>
+</span><span class='line'><span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>プライバシーの尊重のため、<code>public_send()</code>を使う方法もある。</p>
+
+<ul>
+<li>例２</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called public method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;called private method&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_send</span><span class="p">(</span><span class="ss">:public_method</span><span class="p">)</span>
+</span><span class='line'><span class="s2">&quot;called public method&quot;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_send</span><span class="p">(</span><span class="ss">:private_method</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="s1">&#39;private_method&#39;</span> <span class="n">called</span> <span class="k">for</span> <span class="c1">#&lt;C:0x007f8149e5c8e8&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>メソッドを動的に定義</h4>
+
+<ul>
+<li>define_method()</li>
+</ul>
+
+
+<p>Module#define_method()を使えば、メソッドをその場で定義できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span> <span class="o">|</span><span class="n">my_arg</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">my_arg</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">6</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>define_method</code>はClassの中で実行され、<code>my_method()</code>が<code>C</code>クラスのインスタンスメソッドとして定義される。実行時にメソッドを定義するこの技術を<code>動的メソッド</code>と呼ぶ。</p>
+
+<h2>method_missing()</h2>
+
+<h4>method_missing()のオーバーライド</h4>
+
+<p><code>method_missing()</code>メソッドは<code>BasicObject</code>のインスタンスメソッドだ。つまり、<code>BasicObject</code>を継承している<code>Object</code>を継承するオブジェクトは<code>method_missing()</code>を持っているということになり、もちろんオーバーライドもでき、存在しないメソッドに対するハンドリングもできるということだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">hello</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>ゴーストメソッド</h4>
+
+<p>同じようなメソッドをたくさん定義しなければならないとき、いちいち定義するより、method_missing()を呼び出す方がもっと楽かもしれない。method_missing()での処理は呼び出し側からは通常の呼び出しのように見える。しかし、レシーバに対応するメソッドは見当たらない。これは<code>ゴーストメソッド</code>と呼ぶ。上記の例では<code>hello()</code>がゴーストメソッドなるのだ。</p>
+
+<h2>もっとmethod_missing()</h2>
+
+<h4>メソッド名が衝突したら</h4>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="ss">ArgumentError</span><span class="p">:</span> <span class="n">wrong</span> <span class="n">number</span> <span class="n">of</span> <span class="n">arguments</span> <span class="p">(</span><span class="n">given</span> <span class="mi">2</span><span class="p">,</span> <span class="n">expected</span> <span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">1</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードでは</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とプリントされると予想したけど、プリントされず<code>ArgumentError</code>になってしまった。<br/>
+これの問題は<code>Object</code>から継承されたメソッドの中で<code>display</code>というメソッドがあり、<code>method_missing()</code>が呼ばれなかったからだ。<br/>
+これはは必要ないメソッドを全部削除することで対応できる。メソッドをすべて削除することを<code>ブランクスレート</code>と呼ぶ。</p>
+
+<ul>
+<li>例２</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="nb">instance_methods</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">undef_method</span> <span class="n">m</span> <span class="k">unless</span> <span class="n">m</span><span class="o">.</span><span class="n">to_s</span> <span class="o">=~</span> <span class="sr">/__|method_missing/</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)を呼びました&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;(ブロックを渡した)&quot;</span> <span class="k">if</span> <span class="nb">block_given?</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1"># block</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">display</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードは予想通り<code>method_missing()</code>を呼び出すことができる。</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>メソッドは<code>send()</code>でも呼び出せる</li>
+<li><code>send()</code>は<code>private</code>メソッドも呼び出せるため、<code>public_send()</code>を使うこともできる</li>
+<li><code>define_method()</code>でメソッドを動的に定義できる</li>
+<li><code>method_missing()</code>を利用すると存在しないメソッド、ゴーストメソッドに対するハンドリングや処理ができる</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2232,376 +2537,6 @@ Railsで提供しているライブラリ<code>ActiveRecord::Callbacks</code>と
 </li>
 </ul>
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/10/04/oj-gem/">OJ Gem</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-10-04T10:24:30+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:24 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>はじめ</h3>
-
-<p>ウェブサービスをやっていく中にはAPIを取得することが多い。今みている<code>mastodon</code>では<code>OJ</code>という<code>Json parser</code>を使っていたので調べてみた。</p>
-
-<h3>インストール</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem install oj</span></code></pre></td></tr></table></div></figure>
-
-
-<p>or</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># in Gemfile
-</span><span class='line'>gem 'oj'</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>使い方</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'oj'
-</span><span class='line'>
-</span><span class='line'>h = { 'one' =&gt; 1, 'array' =&gt; [ true, false ] }
-</span><span class='line'>json = Oj.dump(h)
-</span><span class='line'>
-</span><span class='line'># json =
-</span><span class='line'># {
-</span><span class='line'>#   "one":1,
-</span><span class='line'>#   "array":[
-</span><span class='line'>#     true,
-</span><span class='line'>#     false
-</span><span class='line'>#   ]
-</span><span class='line'># }
-</span><span class='line'>
-</span><span class='line'>h2 = Oj.load(json)
-</span><span class='line'>puts "Same? #{h == h2}"
-</span><span class='line'># true</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>他のParserとの比較</h3>
-
-<ul>
-<li><a href="https://github.com/evanphx/benchmark-ips">benchmark-ips</a>でベンチマークを取る</li>
-<li>比較対象
-
-<ul>
-<li>JSON</li>
-<li>yajl</li>
-<li>oj</li>
-</ul>
-</li>
-</ul>
-
-
-<p>まずロカールにapiのコントローラーをよいする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">json</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="ss">test1</span><span class="p">:</span> <span class="s1">&#39;test1&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test2</span><span class="p">:</span> <span class="s1">&#39;test2&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test3</span><span class="p">:</span> <span class="s1">&#39;test3&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test4</span><span class="p">:</span> <span class="s1">&#39;test4&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test5</span><span class="p">:</span> <span class="s1">&#39;test5&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test6</span><span class="p">:</span> <span class="s1">&#39;test6&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test7</span><span class="p">:</span> <span class="s1">&#39;test7&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test8</span><span class="p">:</span> <span class="s1">&#39;test8&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test9</span><span class="p">:</span> <span class="s1">&#39;test9&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test10</span><span class="p">:</span> <span class="s1">&#39;test10&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="n">json</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>それから比較するコードを書く。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">JsonCompare</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;yajl&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;oj&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;benchmark/ips&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">compare</span>
-</span><span class='line'>    <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span> <span class="s2">&quot;http://localhost:3000/api/json_compare&quot;</span>
-</span><span class='line'>    <span class="n">response</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">get</span> <span class="n">uri</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="no">Benchmark</span><span class="o">.</span><span class="n">ips</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;JSON.parse&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Yajl&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Yajl</span><span class="o">::</span><span class="no">Parser</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Oj&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">compare!</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>結果</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">9</span><span class="o">.</span><span class="mi">786</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                <span class="no">Yajl</span>    <span class="mi">10</span><span class="o">.</span><span class="mi">364</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">17</span><span class="o">.</span><span class="mo">00</span><span class="mi">9</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">99</span><span class="o">.</span><span class="mo">053</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">2</span><span class="sx">%) i/s -    499.086k in   5.043910s</span>
-</span><span class='line'><span class="sx">                Yajl    107.150k (± 3.4%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">538</span><span class="o">.</span><span class="mi">928</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">036016</span><span class="n">s</span>
-</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">183</span><span class="o">.</span><span class="mi">400</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">918</span><span class="o">.</span><span class="mi">486</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">012</span><span class="mi">844</span><span class="n">s</span>
-</span><span class='line'>
-</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
-</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>   <span class="mi">183399</span><span class="o">.</span><span class="mi">8</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
-</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>   <span class="mi">107149</span><span class="o">.</span><span class="mi">6</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">71</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>    <span class="mi">99053</span><span class="o">.</span><span class="mi">1</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">85</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdef3b04440</span>
-</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
-</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef8c3cbf0 @iterations=499086, @label=&quot;JSON.parse&quot;, @measurement_cycle=9786, @microseconds=5043910.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef8c3cc68 @error=3164, @mean=99053.0983205518&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef7a234a0 @iterations=538928, @label=&quot;Yajl&quot;, @measurement_cycle=10364, @microseconds=5036016.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef7a23568 @error=3672, @mean=107149.64088869188&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef89e6c98 @iterations=918486, @label=&quot;Oj&quot;, @measurement_cycle=17009, @microseconds=5012844.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef89e6d10 @error=5584, @mean=183399.80361005384&gt;&gt;]&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>OJ</code>が<code>Yajl</code>よりは1.7倍、<code>JSON</code>よりは1.8倍速かった。<br/>
-<code>String</code>じゃなくてモデルにしたらどうなるだろう。<br/>
-apiコントローラーのコードを変えてみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@users</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに<code>User.count</code>は<code>100</code>。<br/>
-さっきの比較コードを実行してみると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>   <span class="mi">253</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                <span class="no">Yajl</span>   <span class="mi">259</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                  <span class="no">Oj</span>   <span class="mi">387</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>      <span class="mi">2</span><span class="o">.</span><span class="mi">529</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">4</span><span class="sx">%) i/s -     12.650k in   5.007160s</span>
-</span><span class='line'><span class="sx">                Yajl      2.612k (± 2.6%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">13</span><span class="o">.</span><span class="mi">209</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">061015</span><span class="n">s</span>
-</span><span class='line'>                  <span class="no">Oj</span>      <span class="mi">3</span><span class="o">.</span><span class="mi">952</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">6</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">20</span><span class="o">.</span><span class="mi">124</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mi">098328</span><span class="n">s</span>
-</span><span class='line'>
-</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
-</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>     <span class="mi">3952</span><span class="o">.</span><span class="mi">4</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
-</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>     <span class="mi">2611</span><span class="o">.</span><span class="mi">7</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">51</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>     <span class="mi">2529</span><span class="o">.</span><span class="mi">5</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">56</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdf594c4678</span>
-</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
-</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5da291a0 @iterations=12650, @label=&quot;JSON.parse&quot;, @measurement_cycle=253, @microseconds=5007160.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5da29268 @error=87, @mean=2529.463823054468&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5a59b8c0 @iterations=13209, @label=&quot;Yajl&quot;, @measurement_cycle=259, @microseconds=5061015.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5a59ba28 @error=67, @mean=2611.693591724044&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5d821510 @iterations=20124, @label=&quot;Oj&quot;, @measurement_cycle=387, @microseconds=5098328.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5d821588 @error=141, @mean=3952.373849831794&gt;&gt;]&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>OJ</code>が<code>Yajl</code>、<code>JSON</code>より1.5倍速いことがわかる。</p>
-
-<h3>まとめ</h3>
-
-<p>単純に速度のパフォーマンス側をみると<code>OJ</code>を使った方が良さそう！</p>
-
-<h2>追記</h2>
-
-<h3>mastodonでのOJの使い方</h3>
-
-<ul>
-<li>emoji.jsonの変換</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/lib/emoji.rb</span>
-</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="s1">&#39;emoji.json&#39;</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>serviceクラスでのpayload作成</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/services/batched_remove_status_service.rb</span>
-</span><span class='line'><span class="vi">@json_payloads</span> <span class="o">=</span> <span class="n">statuses</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span><span class="o">.</span><span class="n">to_h</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/fan_out_on_write_service.rb</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">:status</span><span class="p">)</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="vi">@payload</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/notify_service.rb</span>
-</span><span class='line'><span class="no">Redis</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;timeline:</span><span class="si">#{</span><span class="vi">@recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:notification</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="vi">@notification</span><span class="p">,</span> <span class="vi">@recipient</span><span class="p">,</span> <span class="ss">:notification</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/remove_status_service.rb</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>reactコンポーネントへのprops</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="c">// app/views/home/index.html.haml</span>
-</span><span class='line'><span class="nc">.app-holder</span><span class="nf">#mastodon</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
-</span><span class='line'>
-</span><span class='line'><span class="c">// app/views/about/show.html.haml</span>
-</span><span class='line'><span class="nf">#mastodon-timeline</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="http://blog.toshimaru.net/json-parser-benchmark/">RubyのJSONパーサーのパース速度比較</a><br/>
-<a href="https://github.com/ohler55/oj">OJ Github</a></p>
 </div>
   
   
