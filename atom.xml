@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-01-17T19:44:07+09:00</updated>
+  <updated>2018-01-18T10:19:38+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -239,7 +239,7 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">hello</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">display</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="err">を呼びました</span>
 </span><span class='line'><span class="p">(</span><span class="err">ブロックを渡した</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
