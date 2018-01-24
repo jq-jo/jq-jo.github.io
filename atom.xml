@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-01-18T10:19:38+09:00</updated>
+  <updated>2018-01-24T19:15:37+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,237 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ブロック]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/01/24/block/"/>
+    <updated>2018-01-24T19:13:49+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/01/24/block</id>
+    <content type="html"><![CDATA[<ul>
+<li><a href="https://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/">Rubyのblock, Proc, Lambda</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[スコープ]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/01/24/scope/"/>
+    <updated>2018-01-24T19:11:25+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/01/24/scope</id>
+    <content type="html"><![CDATA[<h2>スコープ</h2>
+
+<h3>スコープとは</h3>
+
+<p>スコープは範囲、またはエリアなどで定義できる。つまり、プログラミングでのスコープはどこまで参照できるかを決める範囲を指してスコープと呼ぶ。</p>
+
+<h3>スコープの変更</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="n">v2</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="n">v3</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>    <span class="nb">local_variables</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="nb">local_variables</span> <span class="c1"># =&gt; [:v1, :obj]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このスコープの移動を追っていると、<br/>
+まず、<code>v1</code>が定義されたトップレベルのスコープだ。次に、<code>MyClass</code>が定義されたスコープだ。<br/>
+Rubyの「内部スコープ」から「外部スコープ」を参照する「入れ子構造」が存在しないため、スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される。なので、<code>my_method</code>が呼び出されるとさらに新しいスコープがオープンされて終わったらスコープは削除され、トップレベルのスコープに戻る。そこでまた<code>my_method</code>を呼び出すと新しいスコープをオープンして、新しい<code>v3</code>を定義する。（ここで定義された<code>v3</code>は先の<code>v3</code>とは関係ない）</p>
+
+<h3>スコープゲート</h3>
+
+<p>プログラムがスコープを切り替えて、新しいスコープをオープンする場所は３つある。</p>
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+
+
+<h3>スコープのフラット化</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="c1"># my_varを表示したい。。</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="c1"># my_varを表示したい！</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードでクラスとメソッドでトップレベルのロカール変数の<code>my_var</code>を使いたい場合、どうすればいいのか。今までの説明だったらスコープがそれぞれ違くて使えないけど。
+さっき言った通り、スコープゲートは３つがある。<br/>
+つまり、スコープゲート以外にはスコープ関係なくトップレベルのローカル変数を使えるということになるのだ。<br/>
+<code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばクロージャで<code>my_var</code>を取得できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はクラスの中で表示できる！&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はメドッドの中で表示できる！&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はクラスの中で表示できる！</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はメドッドの中で表示できる！</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに書くと、無事出力される。</p>
+
+<h3>気になる点</h3>
+
+<p>そうしたら<code>define_method</code>にブロックを渡したらどうなるだろう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt; LocalJumpError: no block given (yield)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>エラーになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>def</code>でメソッドを定義する時は問題なく動く。<br/>
+<code>define_method</code>でブロックが使える方法とは何があるのかな。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_lambda</span> <span class="o">=</span> <span class="nb">lambda</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_lambda</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_proc</span> <span class="o">=</span> <span class="nb">proc</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_proc</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lambda</code>と<code>proc</code>を使うと<code>define_method</code>にブロックを渡せる。</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>どこまで参照できるかを決める範囲をスコープと呼ぶ</li>
+<li>スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される</li>
+<li>スコープゲートは３つがある
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+</li>
+<li><code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばスコープのフラット化ができる</li>
+<li><code>define_method</code>にもブロックが渡せる</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[メソッド]]></title>
@@ -4305,373 +4536,6 @@ capybaraはいろんなDSLを提供している。<br/>
 
 <p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
 <a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA['vue-resource'とES6を使ってTodoを作成]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/06/21/vue-resource-and-es6/"/>
-    <updated>2017-06-21T14:17:17+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/06/21/vue-resource-and-es6</id>
-    <content type="html"><![CDATA[<h2>環境</h2>
-
-<ul>
-<li>Rails
-
-<ul>
-<li>5.1.1</li>
-</ul>
-</li>
-<li>Vue.js
-
-<ul>
-<li>2.3.4</li>
-</ul>
-</li>
-</ul>
-
-
-<h2>ES6について</h2>
-
-<p>Railsで<code>webpacker</code>を使って<code>Vue.js</code>を設置した場合、いろんなライブラリがdefaultでインストールされる。その中で<code>babel-loader</code>というライブラリがある。<br/>
-<code>Package.json</code>を確認してみると、</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "name": "todo_example",
-</span><span class='line'>  "private": true,
-</span><span class='line'>  "dependencies": {
-</span><span class='line'>    "autoprefixer": "^7.1.1",
-</span><span class='line'>    "babel-core": "^6.25.0",
-</span><span class='line'>    "babel-loader": "7.x",
-</span><span class='line'>    "babel-plugin-syntax-dynamic-import": "^6.18.0",
-</span><span class='line'>    "babel-plugin-transform-class-properties": "^6.24.1",
-</span><span class='line'>    "babel-polyfill": "^6.23.0",
-</span><span class='line'>    "babel-preset-env": "^1.5.2",
-</span><span class='line'>    "coffee-loader": "^0.7.3",
-</span><span class='line'>    "coffee-script": "^1.12.6",
-</span><span class='line'>    "compression-webpack-plugin": "^0.4.0",
-</span><span class='line'>    "css-loader": "^0.28.4",
-</span><span class='line'>    "extract-text-webpack-plugin": "^2.1.2",
-</span><span class='line'>    "file-loader": "^0.11.2",
-</span><span class='line'>    "glob": "^7.1.2",
-</span><span class='line'>    "js-yaml": "^3.8.4",
-</span><span class='line'>    "node-sass": "^4.5.3",
-</span><span class='line'>    "path-complete-extname": "^0.1.0",
-</span><span class='line'>    "postcss-loader": "^2.0.6",
-</span><span class='line'>    "postcss-smart-import": "^0.7.4",
-</span><span class='line'>    "precss": "^1.4.0",
-</span><span class='line'>    "rails-erb-loader": "^5.0.2",
-</span><span class='line'>    "resolve-url-loader": "^2.0.3",
-</span><span class='line'>    "sass-loader": "^6.0.6",
-</span><span class='line'>    "style-loader": "^0.18.2",
-</span><span class='line'>    "vue": "^2.3.4",
-</span><span class='line'>    "vue-loader": "^12.2.1",
-</span><span class='line'>    "vue-template-compiler": "^2.3.4",
-</span><span class='line'>    "webpack": "^2.6.1",
-</span><span class='line'>    "webpack-manifest-plugin": "^1.1.0",
-</span><span class='line'>    "webpack-merge": "^4.1.0"
-</span><span class='line'>  },
-</span><span class='line'>  "devDependencies": {
-</span><span class='line'>    "webpack-dev-server": "^2.4.5"
-</span><span class='line'>  }
-</span><span class='line'>}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>babel-loader</code>が置いてることが確認できる。<br/>
-この<code>babel-loader</code>を<code>config/webpack/loaders</code>にある<code>babel.js</code>で読み込んでES6をトランスパイルしてくれる。<br/>
-safariはまだES6をサポートしてくれないのでsafariで試してみる。<br/>
-まず下記のように<code>babel.js</code>のloaderに<code>babel-loader</code>を指定したときは</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js(\.erb)?$/</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">loader</span><span class="o">:</span> <span class="s1">&#39;babel-loader&#39;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://monosnap.com/file/5dFAfN76F8Gyw7IuTFQNfSrr6ZoDtT.png" alt="" /><br/>
-画像のように正しくリストが表示されてる。
-しかし、loaderのところを一回消してみると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js(\.erb)?$/</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
-</span><span class='line'>  <span class="c1">// loader: &#39;babel-loader&#39;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://monosnap.com/file/9jb4l1lepTcOI5ptvKmhPNxPEp56j3.png" alt="" /><br/>
-JSをES6で書いたので何も表示されてないことを確認できる。</p>
-
-<p>もう一つ試してみる。<br/>
-ES6的な<code>class</code>を定義してVueコンポーネントでそのclassの関数を呼び出してみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">TodoLog</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">log</span><span class="p">){</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="nx">log</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">printLog</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>シンプルにこういう<code>class</code>を定義してVueコンポーネントのmountedで呼び出すと</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="kr">const</span> <span class="nx">todoLog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TodoLog</span><span class="p">(</span><span class="s1">&#39;constructor is called.&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nx">todoLog</span><span class="p">.</span><span class="nx">printLog</span><span class="p">()</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://monosnap.com/file/4j9PEqb3y5bfDYqS5Lxb5lYz4BECYQ.png" alt="" />
-<code>TodoLog</code>の<code>prinLog</code>という関数が呼び出されてブラウザにlogが出力されたのが確認できる。</p>
-
-<h2>アロー関数</h2>
-
-<p>vueでアロー関数を使うときは注意しなきゃいけないことがある。<br/>
-アロー関数は既存のメソッドと違って<code>this</code>が変わる。関数自体が親コンテキストにバインディングされているためVueインスタンスにはならない。<br/>
-<code>this</code>でVueのコンポーネントを呼ぶ処理をしたいならアロー関数は使ってはならない。<br/>
-Vueのコンポーネントの<code>mounted</code>をアロー関数を例にして試してみると既存の<code>function()</code>だとちゃんとVueコンポーネントが出力されるが</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="err">#</span> <span class="k">this</span><span class="err">を出力してみる</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="p">},</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://monosnap.com/file/w5TNtJJyOD1df9QSW8GUKQrRfDjtFv.png" alt="" /><br/>
-アロー関数を使った場合はVueコンポーネントが出力されないし、$httpもエラーを出す。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">mounted</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;TodoList is mounted.&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="err">#</span> <span class="k">this</span><span class="err">を出力してみる</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="p">},</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="https://monosnap.com/file/BBMdNQEuwTaa79wuIoznthJdxSIVQD.png" alt="" /></p>
-
-<h2>vue-resource</h2>
-
-<h3>install</h3>
-
-<p>まずnpmで<code>vue-resource</code>をインストールする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">resource</span> <span class="o">--</span><span class="nx">save</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>yarnを使ってもOK。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">yarn</span> <span class="nx">add</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">resource</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>使い方</h3>
-
-<p>それから<code>js</code>で<code>import</code>して使う。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.min&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">VueResource</span> <span class="nx">from</span> <span class="s1">&#39;vue-resource/dist/vue-resource.min&#39;</span>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">VueResource</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span>
-</span><span class='line'><span class="k">this</span><span class="p">.</span><span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;何かのurl&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">that</span><span class="p">.</span><span class="nx">todos</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
-</span><span class='line'><span class="p">},</span> <span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>  <span class="c1">// error callback</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="https://codingexplained.com/coding/front-end/vue-js/using-es6-arrow-functions-vue-js">Using ES6 arrow functions in Vue.js</a><br/>
-<a href="https://liginc.co.jp/266587">ES6の新機能「class構文」 – 基礎編 –</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Webpacker]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/06/14/webpacker/"/>
-    <updated>2017-06-14T15:51:37+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/06/14/webpacker</id>
-    <content type="html"><![CDATA[<h2>Webpackとは</h2>
-
-<p>最近、フロントエンドの規模が段々大きくなり、Javascriptのコード量が多くなって、コードのメンテナンスのためにモジュール化して管理する場合が多い。また、いろんなJSのフレームワークやNodeのライブラリを使うようになる。でもJSは基本的にこういうモジュール間の<code>import/include</code>をサポートしてくれないのでモジュールを管理するツールが必要になる。それのために出てきたものがモジュールバンドリングだ。モジュール間の依存性を理解し、それを元にうまく動ける静的アセットを作ることがモジュールバンドリングであり、それを実行するものがモジュールバンドラーだ。もちろん<code>Webpack</code>は唯一のモジュールバンドラーではない。既に<code>RequireJS</code>,<code>Browserify</code>などのモジュールバンドラーがあるけど、最近のフロントエンドには<code>Webpack</code>が主流になっている。</p>
-
-<h2>RailsでのWebpack</h2>
-
-<p>Rails5.1では<code>Webpack</code>を通して<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>などのフレームワークがサポートされ、さらに簡単に使えるようになった。webpackerを使えばプロジェクトにJSのフレームワークやライブラリを簡単に入れることができるし、Webpackのconfigを設定してBabelを使ってトランスパイルすることももちろんできる。</p>
-
-<h2>webpackerの使い方</h2>
-
-<h3>インストール</h3>
-
-<p>Rails5.1には</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように後ろに<code>--webpack</code>をつけてプロジェクト作成の時インストールするか普通にgemfileに入れて<code>bundle install</code>をしてから<code>./bin/rails webpacker:install</code>をすることでwebpackerを入れることができる。<br/>
-Rails5.1でサポートする<code>React</code>,<code>Vue.js</code>,<code>Angular</code>,<code>Elm</code>を指定したい時は</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails new myapp --webpack=react
-</span><span class='line'>$ rails new myapp --webpack=angular
-</span><span class='line'>$ rails new myapp --webpack=vue
-</span><span class='line'>$ rails new myapp --webpack=elm</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように指定する。</p>
-
-<h3>webpack-dev-server</h3>
-
-<p>通常のwebpackコマンドも<code>--watch</code>または<code>-w</code>オプションつきで実行することによりファイルの変更を検知して自動でリビルドを行うことが可能だが、webpack-dev-serverはそれに加えて、ブラウザも自動的にリロードしてくれる（Automatic Refresh）。<br/>
-ブラウザ全体のリロードではなく、編集したモジュールのみを更新する<code>Hot Module Replacement</code>という仕組みが使える。<br/>
-といった機能を備えているため、ローカルで開発するには<code>webpack-dev-server</code>を使う方が便利。<br/>
-それに、rails serverも同時に動かしているならば<code>foreman</code>というgemを使ったら便利。<a href="https://github.com/rails/webpacker">webpackerのgithubページ</a>にもそれを書いてある。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install foreman</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># Procfile
-</span><span class='line'>web: bundle exec rails s
-</span><span class='line'>webpacker: ./bin/webpack-dev-server</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ foreman start</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>ブラウザに表示</h3>
-
-<p>ビューに</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;%= javascript_pack_tag 'app' %&gt;
-</span><span class='line'>&lt;%= stylesheet_pack_tag 'app' %&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように入れて使う。</p>
-
-<h2>参考</h2>
-
-<p><a href="http://qiita.com/necojackarc/items/afa674ab10aafa9784eb">WebPackを使ってRailsからJavaScriptを楽に良い感じに分離する</a><br/>
-<a href="https://github.com/rails/webpacker">webpacker</a></p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>スコープ - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="スコープ スコープとは スコープは範囲、またはエリアなどで定義できる。つまり、プログラミングでのスコープはどこまで参照できるかを決める範囲を指してスコープと呼ぶ。 スコープの変更 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+v1 = 1 class &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2018/01/24/scope">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">スコープ</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-01-24T19:11:25+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:11 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>スコープ</h2>
+
+<h3>スコープとは</h3>
+
+<p>スコープは範囲、またはエリアなどで定義できる。つまり、プログラミングでのスコープはどこまで参照できるかを決める範囲を指してスコープと呼ぶ。</p>
+
+<h3>スコープの変更</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="n">v2</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="n">v3</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>    <span class="nb">local_variables</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="nb">local_variables</span> <span class="c1"># =&gt; [:v1, :obj]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このスコープの移動を追っていると、<br/>
+まず、<code>v1</code>が定義されたトップレベルのスコープだ。次に、<code>MyClass</code>が定義されたスコープだ。<br/>
+Rubyの「内部スコープ」から「外部スコープ」を参照する「入れ子構造」が存在しないため、スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される。なので、<code>my_method</code>が呼び出されるとさらに新しいスコープがオープンされて終わったらスコープは削除され、トップレベルのスコープに戻る。そこでまた<code>my_method</code>を呼び出すと新しいスコープをオープンして、新しい<code>v3</code>を定義する。（ここで定義された<code>v3</code>は先の<code>v3</code>とは関係ない）</p>
+
+<h3>スコープゲート</h3>
+
+<p>プログラムがスコープを切り替えて、新しいスコープをオープンする場所は３つある。</p>
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+
+
+<h3>スコープのフラット化</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="c1"># my_varを表示したい。。</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="c1"># my_varを表示したい！</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードでクラスとメソッドでトップレベルのロカール変数の<code>my_var</code>を使いたい場合、どうすればいいのか。今までの説明だったらスコープがそれぞれ違くて使えないけど。
+さっき言った通り、スコープゲートは３つがある。<br/>
+つまり、スコープゲート以外にはスコープ関係なくトップレベルのローカル変数を使えるということになるのだ。<br/>
+<code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばクロージャで<code>my_var</code>を取得できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はクラスの中で表示できる！&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はメドッドの中で表示できる！&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はクラスの中で表示できる！</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はメドッドの中で表示できる！</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに書くと、無事出力される。</p>
+
+<h3>気になる点</h3>
+
+<p>そうしたら<code>define_method</code>にブロックを渡したらどうなるだろう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt; LocalJumpError: no block given (yield)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>エラーになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>def</code>でメソッドを定義する時は問題なく動く。<br/>
+<code>define_method</code>でブロックが使える方法とは何があるのかな。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_lambda</span> <span class="o">=</span> <span class="nb">lambda</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_lambda</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_proc</span> <span class="o">=</span> <span class="nb">proc</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_proc</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lambda</code>と<code>proc</code>を使うと<code>define_method</code>にブロックを渡せる。</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>どこまで参照できるかを決める範囲をスコープと呼ぶ</li>
+<li>スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される</li>
+<li>スコープゲートは３つがある
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+</li>
+<li><code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばスコープのフラット化ができる</li>
+<li><code>define_method</code>にもブロックが渡せる</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-01-24T19:11:25+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:11 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2018/01/24/scope/" data-via="" data-counturl="http://jq-jo.github.io/blog/2018/01/24/scope/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/01/17/method/" title="Previous Post: メソッド">&laquo; メソッド</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/01/24/block/" title="Next Post: ブロック">ブロック &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

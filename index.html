@@ -9,9 +9,8 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="動的メソッド メソッドを呼び出す方法 ドットを使う
-send()を使う send()メソッドの第一引数は呼び出すメソッド名 => 文字列またはシンボル
-その他の引数はそのままメソッドに渡される send()を使えばコードの実行時に呼び出すメソッドを直前に決められる。なので動的な処理が可能になる。 &hellip;">
+  <meta name="description" content="
+Rubyのblock, Proc, Lambda ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,279 @@ send()を使う send()メソッドの第一引数は呼び出すメソッド名 
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/24/block/">ブロック</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-01-24T19:13:49+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:13 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><a href="https://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/">Rubyのblock, Proc, Lambda</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/01/24/scope/">スコープ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-01-24T19:11:25+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:11 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>スコープ</h2>
+
+<h3>スコープとは</h3>
+
+<p>スコープは範囲、またはエリアなどで定義できる。つまり、プログラミングでのスコープはどこまで参照できるかを決める範囲を指してスコープと呼ぶ。</p>
+
+<h3>スコープの変更</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="n">v2</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="n">v3</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span class='line'>    <span class="nb">local_variables</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">local_variables</span> <span class="c1"># =&gt; [:v2]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; [:v3]</span>
+</span><span class='line'><span class="nb">local_variables</span> <span class="c1"># =&gt; [:v1, :obj]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このスコープの移動を追っていると、<br/>
+まず、<code>v1</code>が定義されたトップレベルのスコープだ。次に、<code>MyClass</code>が定義されたスコープだ。<br/>
+Rubyの「内部スコープ」から「外部スコープ」を参照する「入れ子構造」が存在しないため、スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される。なので、<code>my_method</code>が呼び出されるとさらに新しいスコープがオープンされて終わったらスコープは削除され、トップレベルのスコープに戻る。そこでまた<code>my_method</code>を呼び出すと新しいスコープをオープンして、新しい<code>v3</code>を定義する。（ここで定義された<code>v3</code>は先の<code>v3</code>とは関係ない）</p>
+
+<h3>スコープゲート</h3>
+
+<p>プログラムがスコープを切り替えて、新しいスコープをオープンする場所は３つある。</p>
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+
+
+<h3>スコープのフラット化</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="c1"># my_varを表示したい。。</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="c1"># my_varを表示したい！</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコードでクラスとメソッドでトップレベルのロカール変数の<code>my_var</code>を使いたい場合、どうすればいいのか。今までの説明だったらスコープがそれぞれ違くて使えないけど。
+さっき言った通り、スコープゲートは３つがある。<br/>
+つまり、スコープゲート以外にはスコープ関係なくトップレベルのローカル変数を使えるということになるのだ。<br/>
+<code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばクロージャで<code>my_var</code>を取得できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_var</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span> <span class="o">=</span> <span class="no">Class</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はクラスの中で表示できる！&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">my_var</span><span class="si">}</span><span class="s2"> はメドッドの中で表示できる！&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はクラスの中で表示できる！</span>
+</span><span class='line'><span class="no">Success</span> <span class="err">はメドッドの中で表示できる！</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに書くと、無事出力される。</p>
+
+<h3>気になる点</h3>
+
+<p>そうしたら<code>define_method</code>にブロックを渡したらどうなるだろう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt; LocalJumpError: no block given (yield)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>エラーになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>  <span class="k">yield</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">my_method</span> <span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>def</code>でメソッドを定義する時は問題なく動く。<br/>
+<code>define_method</code>でブロックが使える方法とは何があるのかな。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_lambda</span> <span class="o">=</span> <span class="nb">lambda</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_lambda</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_proc</span> <span class="o">=</span> <span class="nb">proc</span><span class="p">{</span> <span class="nb">puts</span> <span class="s2">&quot;hello!&quot;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">define_method</span> <span class="ss">:my_method</span><span class="p">,</span> <span class="n">my_proc</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="n">hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lambda</code>と<code>proc</code>を使うと<code>define_method</code>にブロックを渡せる。</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>どこまで参照できるかを決める範囲をスコープと呼ぶ</li>
+<li>スコープはきちんと区別されている。新しいスコープに入ると、束縛も新しい束縛と交換される</li>
+<li>スコープゲートは３つがある
+
+<ul>
+<li>クラス定義（class）</li>
+<li>モジュール定義（module）</li>
+<li>メソッド呼び出し（def）</li>
+</ul>
+</li>
+<li><code>class</code>、<code>def</code>の代わりに<code>Class.new</code>、<code>define_method</code>を使えばスコープのフラット化ができる</li>
+<li><code>define_method</code>にもブロックが渡せる</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2422,117 +2694,6 @@ Railsで提供しているライブラリ<code>ActiveRecord::Callbacks</code>と
 
 <ul>
 <li>新しくアップデートされたターゲットユーザーの<code>locked</code>が<code>true</code>になっている場合は<code>follow</code>をキャンセルして再開<code>FollowService</code>を呼び出す。</li>
-</ul>
-</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/11/08/mastodon-follow/">Mastodon把握 - ②</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-11-08T17:50:45+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>5:50 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>フォロー</h2>
-
-<ul>
-<li><p><strong>Flow</strong><br/>
-色んな細かい処理を行なっているが大きい処理を見てみると下記のようになる。</p>
-
-<ol>
-<li>フォロー情報の保存</li>
-<li>プッシュ通知</li>
-<li>購読の処理</li>
-</ol>
-</li>
-</ul>
-
-
-<p><br></p>
-
-<ul>
-<li>処理Flow</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/vGLBLfDyD4s5COvelDp8MYZui5pXKj.png" alt="Alt text" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/10/18/mastodon-post/">Mastodon把握 - ①</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-10-18T10:26:33+09:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:26 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>投稿</h2>
-
-<ul>
-<li>処理Flow</li>
-</ul>
-
-
-<p><img src="https://monosnap.com/file/QVqhw0WIHyJTAVI3oulFPaLhES8BMv.png" alt="Alt text" /></p>
-
-<ul>
-<li>簡単な説明
-
-<ul>
-<li>Frontend側
-
-<ul>
-<li>JSは細かくコンポーネント化になっていてそれのConnectのために<code>react-redux</code>というライブラリを利用</li>
-</ul>
-</li>
-<li>Backend側
-
-<ul>
-<li>アーキテクチャとしてServiceクラスを主に使っている</li>
-<li>それ以外には<code>app</code>の中に<code>lib</code>フォルダーを置き、処理のためのクラスを管理している</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
