@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-01-24T19:15:37+09:00</updated>
+  <updated>2018-01-24T19:16:58+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -20,6 +20,7 @@
     <id>http://jq-jo.github.io/blog/2018/01/24/block</id>
     <content type="html"><![CDATA[<ul>
 <li><a href="https://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/">Rubyのblock, Proc, Lambda</a></li>
+<li><a href="https://jq-jo.github.io/blog/2018/01/24/scope/">スコープ</a></li>
 </ul>
 
 ]]></content>
