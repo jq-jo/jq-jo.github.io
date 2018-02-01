@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-02-01T10:38:02+09:00</updated>
+  <updated>2018-02-01T10:40:27+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -170,7 +170,8 @@ instance_eval()に渡したブロックをコンテキスト探索機と呼ぶ�
     <id>http://jq-jo.github.io/blog/2018/01/24/block</id>
     <content type="html"><![CDATA[<ul>
 <li><a href="https://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/">Rubyのblock, Proc, Lambda</a></li>
-<li><a href="https://jq-jo.github.io/blog/2018/01/24/scope/">スコープ</a></li>
+<li><a href="https://jq-jo.github.io/blog/2018/01/24/scope/">ブロック①</a></li>
+<li><a href="https://jq-jo.github.io/blog/2018/02/01/block/">ブロック②</a></li>
 </ul>
 
 ]]></content>
