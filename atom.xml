@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-01-24T19:16:58+09:00</updated>
+  <updated>2018-02-01T10:38:02+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,156 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ブロック②]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/02/01/block/"/>
+    <updated>2018-02-01T10:34:02+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/02/01/block</id>
+    <content type="html"><![CDATA[<h2>instance_eval</h2>
+
+<h4>instance_evalとは</h4>
+
+<p>フラットスコープよりもっと簡単にコードと束縛を好きなように組み合わせる方法がある。<code>instance_eval</code>メソッドだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span>
+</span><span class='line'>    <span class="vi">@v</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="n">private_method</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="vi">@v</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">v</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">instance_eval</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@v</span> <span class="o">=</span> <span class="n">v</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="vi">@v</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; 3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ブロックはレシーバをselfとしたコンテキストで評価されるので、ブロックからレシーバのプライベートメソッドや@vなどのインスタンス変数にアクセスできる。<br/>
+instance_eval()に渡したブロックをコンテキスト探索機と呼ぶ。</p>
+
+<h4>カプセル化の破壊</h4>
+
+<p>このコンテキスト探索機を使うとカプセル化を破壊できてしまう。でもこのコンテキスト探索機が必要になる時がある。例えば、irbからオブジェクトの中身をすぐにみたいとかの場合もある。こういう場合、そのオブジェクトに入っていくには<code>instance_eval</code>が最も近道になる。<br/>
+テスト環境で何かのオブジェクトをテストする時も、データベースにアクセスするメソッドをシンプルな定数値と入れ替えることができる。</p>
+
+<h2>呼び出し可能オブジェクト</h2>
+
+<p>呼び出し可能オブジェクトに対しては前記事を書いたので、簡単にまとめてみる。<br/>
+<a href="https://jq-jo.github.io/blog/2017/12/27/block-proc-lambda/">前の記事</a><br/>
+ブロックの使用は２つに分けられる。まず、コードを保管する。それから、そのブロックを呼び出して実行する。でも、「コードを保管して、あとで呼び出す。」方式はブロックに限らない。Rubyではコードを保管できる場所が他に３つがある。</p>
+
+<ul>
+<li>Procの中。（ブロックがオブジェクトになったもの）</li>
+<li>lambdaの中。（Procの変形）</li>
+<li>メソッドの中。</li>
+</ul>
+
+
+<h4>Procオブジェクト</h4>
+
+<ul>
+<li>ブロックはオブジェクトじゃない</li>
+<li>ブロックを保管して、あとで呼び出すためにはブロックがオブジェクトになる必要がある。そのために、Rubyの標準ライブラリProcがある</li>
+<li>ブロックを評価するには、Proc#call()で呼び出す</li>
+<li>ブロックを保管して、あとで呼び出す技術を遅延評価と呼ぶ</li>
+<li>ブロックをProcに変換する方法は４つがある
+
+<ul>
+<li>Proc.new</li>
+<li>lambda()</li>
+<li>proc()</li>
+<li>&amp;修飾</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>&amp;Checkでのブロック</h2>
+
+<p>&amp;Checkにはいくつかのところでブロックを使用している。まず、モデルクラスでの<code>scope</code>にlambdaを多く使っている。<br/>
+あと、<code>SurveyGroup</code>モデルのvalidationに使っていて、そのコードは</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">with_options</span> <span class="ss">on</span><span class="p">:</span> <span class="o">[</span><span class="ss">:update</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">v</span><span class="o">.</span><span class="n">validate</span> <span class="ss">:validate_relation_participants</span>
+</span><span class='line'>  <span class="n">v</span><span class="o">.</span><span class="n">validates</span> <span class="ss">:group_id</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="k">unless</span><span class="p">:</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="n">owner</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Conceptor</span><span class="p">)</span> <span class="p">}</span> <span class="c1"># ここ</span>
+</span><span class='line'>  <span class="n">v</span><span class="o">.</span><span class="n">validates</span> <span class="ss">:not_send_from</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'>  <span class="n">v</span><span class="o">.</span><span class="n">validates</span> <span class="ss">:not_send_to</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここはProcを使わず<code>owner.is_a?(Conceptor)</code>だけ書くとエラーになるため、Procオブジェクトを使って値を渡している。<br/>
+あとは<code>VisualizeLogicService</code>で使っている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 遷移パターンを表示する</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span>
+</span><span class='line'>  <span class="n">trees</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="vi">@tree</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">node</span><span class="p">,</span> <span class="n">prefix</span><span class="o">|</span> <span class="n">trees</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">})</span> <span class="c1"># ここ</span>
+</span><span class='line'>  <span class="n">trees</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードの中の<code>print_tree</code>は<code>rubytree gem</code>からrequireされて使っていて、深くは知らないけど、そのメソッドの引数を渡すためにlambdaを使っている。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ブロック]]></title>
@@ -27,7 +177,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[スコープ]]></title>
+    <title type="html"><![CDATA[ブロック①]]></title>
     <link href="http://jq-jo.github.io/blog/2018/01/24/scope/"/>
     <updated>2018-01-24T19:11:25+09:00</updated>
     <id>http://jq-jo.github.io/blog/2018/01/24/scope</id>
@@ -4288,255 +4438,6 @@ Manage appボタンからダッシュボードを開き、Dyno formationからCo
 <p><a href="http://www.geocities.jp/m_hiroi/light/abcruby03.html">お気楽 Ruby プログラミング入門</a><br/>
 <a href="http://blog.takanabe.tokyo/2015/08/25/1323/">Rubyの関数の引数は値渡しであることの証明をする</a><br/>
 <a href="http://blog.cototoco.net/work/201406/%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%AE%E5%BC%95%E6%95%B0%EF%BC%88%E5%80%A4%E6%B8%A1%E3%81%97%E3%80%81%E5%8F%82%E7%85%A7%E6%B8%A1%E3%81%97%EF%BC%89/">メソッドの引数（値渡し、参照渡し）</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Capybara]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/07/05/capybara/"/>
-    <updated>2017-07-05T19:07:09+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/07/05/capybara</id>
-    <content type="html"><![CDATA[<p>capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。<br/>
-ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。</p>
-
-<h2>準備</h2>
-
-<p>今回のテストはrspecとcapybaraを使ってみる。</p>
-
-<h4>install</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>group :test do
-</span><span class='line'>  gem 'rspec-rails'
-</span><span class='line'>  gem 'poltergeist'
-</span><span class='line'>  gem 'capybara-screenshot'
-</span><span class='line'>  gem 'database_rewinder'
-</span><span class='line'>  gem 'factory_girl_rails'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>gemの説明をしてみると、<br/>
-poltergeistはcapybara用ドライバーである。poltergeistを使えばphantomJSが提供するブラウザでテストすることができる。それとJSの実装やスクリーンショットも撮ることもできる。<br/>
-capybara-screenshotはスクリーンショットの便利性のために使う。<br/>
-database_rewinderはdatabaseのクリーナーであり、factory_girl_railsはモデルオブジェクトを作るために入れる。</p>
-
-<ul>
-<li>rspecのinstall</li>
-</ul>
-
-
-<p>rails generate rspec:install</p>
-
-<ul>
-<li>require</li>
-</ul>
-
-
-<p><code>spec/rails_helper.rb</code>に以下のように書き込む。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rspec/rails'
-</span><span class='line'>require 'capybara/rails'
-</span><span class='line'>require 'capybara/rspec'
-</span><span class='line'>require 'capybara/poltergeist'
-</span><span class='line'>require 'database_rewinder'
-</span><span class='line'>
-</span><span class='line'># capybara
-</span><span class='line'>Capybara.app_host = "http://example.com"
-</span><span class='line'>Capybara.always_include_port = true
-</span><span class='line'>Capybara.default_max_wait_time = 5
-</span><span class='line'>
-</span><span class='line'>Capybara::Screenshot.autosave_on_failure = false
-</span><span class='line'>
-</span><span class='line'>Capybara.javascript_driver = :poltergeist
-</span><span class='line'>
-</span><span class='line'>Capybara.register_driver :poltergeist do |app|
-</span><span class='line'>  Capybara::Poltergeist::Driver.new(app, {
-</span><span class='line'>    inspector: true,
-</span><span class='line'>    js_errors: false,
-</span><span class='line'>    timeout: 1000,
-</span><span class='line'>    phantomjs_options: [
-</span><span class='line'>      '--load-images=no',
-</span><span class='line'>      '--ignore-ssl-errors=yes',
-</span><span class='line'>      '--ssl-protocol=any'
-</span><span class='line'>    ]
-</span><span class='line'>  })
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'># database_rewinder
-</span><span class='line'>RSpec.configure do |config|
-</span><span class='line'>  config.before :suite do
-</span><span class='line'>    DatabaseRewinder.clean_all
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.before(:each) do
-</span><span class='line'>    DatabaseRewinder.clean
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.before(:each, js: true) do
-</span><span class='line'>    DatabaseRewinder.strategy = :truncation
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  config.after :all do
-</span><span class='line'>    DatabaseRewinder.clean
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>PhantomJSのinstall</li>
-</ul>
-
-
-<p>poltergeistを使うためにphantomJsをインストールする。<br/>
-macだとPhantomJSは<code>brew install phantomjs</code>で簡単に入れられる。</p>
-
-<h2>簡単なテスト</h2>
-
-<p>まず、テストのため、scaffoldでmodel, controller, viewを作る。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g scaffold post title:string content:text</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そしたらこういうビューが作られる。<br/>
-<img src="https://monosnap.com/file/tj8ppXp1gaIKCLWfrTv8MtWOJX9hpK.png" alt="Alt text" /></p>
-
-<p>このページでPostを作成するテストをしてみる。<br/>
-specフォルダーにpostsのフォルダーを追加、その中に<code>index_spec.rb</code>というファイルを作成する。<br/>
-そして、そのファイルに</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
-</span><span class='line'>
-</span><span class='line'>feature 'Post一覧画面の表示' do
-</span><span class='line'>
-</span><span class='line'>  scenario 'Postが作成できること', js: true do
-</span><span class='line'>    visit posts_url
-</span><span class='line'>    expect(page).to have_css('h1', text: 'Posts')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_link('New Post')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    fill_in('post_title', with: 'Title01')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    fill_in('post_content', with: 'Content01')
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_button('Create Post')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    find('p#notice', text: 'Post was successfully created.').visible?
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>    click_link('Back')
-</span><span class='line'>    sleep 0.5
-</span><span class='line'>    screenshot_and_open_image
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうコードを入れてみる。<br/>
-capybaraはいろんなDSLを提供している。<br/>
-みたらすぐわかるくらいsimpleでわかりやすく使えるようになっている。<br/>
-ちなみに、<code>fill_in('post_title', with: 'Title01')</code>は<code>find('input[name="post[title]"]').set('Title01')</code>に変えることもできる。同じように<code>click_link</code>も<code>find('hogehoge).click</code>に変えられる。<br/>
-このテストの結果は</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Post一覧画面の表示
-</span><span class='line'>  Postが作成できること
-</span><span class='line'>
-</span><span class='line'>Finished in 4.42 seconds (files took 3.02 seconds to load)
-</span><span class='line'>1 example, 0 failures</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こうなっていて、下はスクリーンショット。<br/>
-<img src="https://monosnap.com/file/rHx38I8b2uTMxt0FRiko6tV0s79vK5.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/3b4PuPHi5P0GoxmUGeQH9YeAMhtCmg.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/D0HHkb249O7InIbj6uYGtRhpCL3WbD.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/AFoXqrbQVrCst6o5eU4YXp6EAfkdsF.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/pU9kmqZqSxEbmTOnA14Itg8YswivcT.png" alt="Alt text" /><br/>
-<img src="https://monosnap.com/file/dh0IlY7zrAWj3uqgdXnkMsF1cYzYSg.png" alt="Alt text" /></p>
-
-<h2>参考</h2>
-
-<p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
-<a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
 ]]></content>
   </entry>
   

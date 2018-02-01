@@ -9,8 +9,15 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="環境 Rails 5.1.1 Vue.js 2.3.4 ES6について Railsでwebpackerを使ってVue.jsを設置した場合、いろんなライブラリがdefaultでインストールされる。その中でbabel-loaderというライブラリがある。
-Package.jsonを確認してみると、 1 &hellip;">
+  <meta name="description" content="capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。
+ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。 準備 今回のテストはrspecとcapybaraを使ってみる。 install 1
+2
+3
+4
+5
+6
+7
+group : &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +84,276 @@ Package.jsonを確認してみると、 1 &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/07/05/capybara/">Capybara</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-07-05T19:07:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>7:07 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>capybaraはE2Eテストツールであり、ビューの単位テストができるようにしてくれる。<br/>
+ちなみに、Rails5.1からはcapybaraがデフォルトのgemに入っている。</p>
+
+<h2>準備</h2>
+
+<p>今回のテストはrspecとcapybaraを使ってみる。</p>
+
+<h4>install</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>group :test do
+</span><span class='line'>  gem 'rspec-rails'
+</span><span class='line'>  gem 'poltergeist'
+</span><span class='line'>  gem 'capybara-screenshot'
+</span><span class='line'>  gem 'database_rewinder'
+</span><span class='line'>  gem 'factory_girl_rails'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>gemの説明をしてみると、<br/>
+poltergeistはcapybara用ドライバーである。poltergeistを使えばphantomJSが提供するブラウザでテストすることができる。それとJSの実装やスクリーンショットも撮ることもできる。<br/>
+capybara-screenshotはスクリーンショットの便利性のために使う。<br/>
+database_rewinderはdatabaseのクリーナーであり、factory_girl_railsはモデルオブジェクトを作るために入れる。</p>
+
+<ul>
+<li>rspecのinstall</li>
+</ul>
+
+
+<p>rails generate rspec:install</p>
+
+<ul>
+<li>require</li>
+</ul>
+
+
+<p><code>spec/rails_helper.rb</code>に以下のように書き込む。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rspec/rails'
+</span><span class='line'>require 'capybara/rails'
+</span><span class='line'>require 'capybara/rspec'
+</span><span class='line'>require 'capybara/poltergeist'
+</span><span class='line'>require 'database_rewinder'
+</span><span class='line'>
+</span><span class='line'># capybara
+</span><span class='line'>Capybara.app_host = "http://example.com"
+</span><span class='line'>Capybara.always_include_port = true
+</span><span class='line'>Capybara.default_max_wait_time = 5
+</span><span class='line'>
+</span><span class='line'>Capybara::Screenshot.autosave_on_failure = false
+</span><span class='line'>
+</span><span class='line'>Capybara.javascript_driver = :poltergeist
+</span><span class='line'>
+</span><span class='line'>Capybara.register_driver :poltergeist do |app|
+</span><span class='line'>  Capybara::Poltergeist::Driver.new(app, {
+</span><span class='line'>    inspector: true,
+</span><span class='line'>    js_errors: false,
+</span><span class='line'>    timeout: 1000,
+</span><span class='line'>    phantomjs_options: [
+</span><span class='line'>      '--load-images=no',
+</span><span class='line'>      '--ignore-ssl-errors=yes',
+</span><span class='line'>      '--ssl-protocol=any'
+</span><span class='line'>    ]
+</span><span class='line'>  })
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># database_rewinder
+</span><span class='line'>RSpec.configure do |config|
+</span><span class='line'>  config.before :suite do
+</span><span class='line'>    DatabaseRewinder.clean_all
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each) do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.before(:each, js: true) do
+</span><span class='line'>    DatabaseRewinder.strategy = :truncation
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  config.after :all do
+</span><span class='line'>    DatabaseRewinder.clean
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>PhantomJSのinstall</li>
+</ul>
+
+
+<p>poltergeistを使うためにphantomJsをインストールする。<br/>
+macだとPhantomJSは<code>brew install phantomjs</code>で簡単に入れられる。</p>
+
+<h2>簡単なテスト</h2>
+
+<p>まず、テストのため、scaffoldでmodel, controller, viewを作る。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rails g scaffold post title:string content:text</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そしたらこういうビューが作られる。<br/>
+<img src="https://monosnap.com/file/tj8ppXp1gaIKCLWfrTv8MtWOJX9hpK.png" alt="Alt text" /></p>
+
+<p>このページでPostを作成するテストをしてみる。<br/>
+specフォルダーにpostsのフォルダーを追加、その中に<code>index_spec.rb</code>というファイルを作成する。<br/>
+そして、そのファイルに</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rails_helper'
+</span><span class='line'>
+</span><span class='line'>feature 'Post一覧画面の表示' do
+</span><span class='line'>
+</span><span class='line'>  scenario 'Postが作成できること', js: true do
+</span><span class='line'>    visit posts_url
+</span><span class='line'>    expect(page).to have_css('h1', text: 'Posts')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('New Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_title', with: 'Title01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    fill_in('post_content', with: 'Content01')
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_button('Create Post')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    find('p#notice', text: 'Post was successfully created.').visible?
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>    click_link('Back')
+</span><span class='line'>    sleep 0.5
+</span><span class='line'>    screenshot_and_open_image
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうコードを入れてみる。<br/>
+capybaraはいろんなDSLを提供している。<br/>
+みたらすぐわかるくらいsimpleでわかりやすく使えるようになっている。<br/>
+ちなみに、<code>fill_in('post_title', with: 'Title01')</code>は<code>find('input[name="post[title]"]').set('Title01')</code>に変えることもできる。同じように<code>click_link</code>も<code>find('hogehoge).click</code>に変えられる。<br/>
+このテストの結果は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Post一覧画面の表示
+</span><span class='line'>  Postが作成できること
+</span><span class='line'>
+</span><span class='line'>Finished in 4.42 seconds (files took 3.02 seconds to load)
+</span><span class='line'>1 example, 0 failures</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こうなっていて、下はスクリーンショット。<br/>
+<img src="https://monosnap.com/file/rHx38I8b2uTMxt0FRiko6tV0s79vK5.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/3b4PuPHi5P0GoxmUGeQH9YeAMhtCmg.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/D0HHkb249O7InIbj6uYGtRhpCL3WbD.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/AFoXqrbQVrCst6o5eU4YXp6EAfkdsF.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/pU9kmqZqSxEbmTOnA14Itg8YswivcT.png" alt="Alt text" /><br/>
+<img src="https://monosnap.com/file/dh0IlY7zrAWj3uqgdXnkMsF1cYzYSg.png" alt="Alt text" /></p>
+
+<h2>参考</h2>
+
+<p><a href="http://www.sahara-ja.com/posts/3">RailsでRSpec+Capybara+factory_girl+その他テスト系gemのインストール方法</a><br/>
+<a href="http://j-caw.co.jp/blog/?p=1388">Rails + Capybara + Rspecをセットアップして簡単なテストが通るまで</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2217,280 +2494,6 @@ MVCの流れに戻ってみると、コントローラーにある何かのア�
 <a href="http://udemy.benesse.co.jp/development/rails-controller.html">Rails controllerを徹底解説！知っておくべき3つの知識も紹介</a><br/>
 <a href="http://kasei-san.hatenablog.com/entry/2015/09/19/204803">
 MVCのおさらいと、RailsのMVCについて説明する</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/03/29/mixin/">Mix-in(クラスメソッド、インスタンスメソッド),concernsの使い方</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-03-29T18:28:51+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:28 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Rubyのクラスは多重継承ができない。そういう限界を解決できるようにしてくれるのが<code>Mix-in</code>という開発パタン。<br>
-モジュールを通して複数の機能を追加することができる。</p>
-
-<h3>インスタンスメソッドの場合</h3>
-
-<p>基本的にincludeするとモジュールのメソッドをインスタンスメソッドとして使用できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<h3>クラスメソッドの場合</h3>
-
-<p>モジュールのメソッドをクラスメソッドとして使用するためには</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="no">ClassMethods</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">module</span> <span class="nn">ClassMethods</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>クラスでインクルードされたら<code>self.included(base)</code>にコールバックされる。ここで引数に渡されるのはインクルードしたクラスになる。そこにモジュールをextendしたらクラスメソッドとしても使用できる。</p>
-
-<h3>concernsの使い方</h3>
-
-<p>concernsは<code>ActiveSupport::Concern</code>をextendするだけでmix-inの複雑な記述を省略できる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># なくても良い</span>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_foo</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;good job!&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">foo</span> <span class="c1"># =&gt; &quot;good job!&quot;</span>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_foo</span> <span class="c1"># =&gt; &quot;class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>concernsのメリット</strong><br/>
-複雑な依存関係を考えなくても良い。<code>Foo</code>をextendする<code>Bar</code>をHogeクラスでextendするとしたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Foo</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># なくても良い</span>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Foo&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Foo class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Bar</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Foo</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">included</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;included Bar&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">class_methods</span> <span class="k">do</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">class_method</span>
-</span><span class='line'>      <span class="k">super</span>
-</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;Bar class good job!&quot;</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Hoge</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Bar</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Hoge</span><span class="o">.</span><span class="n">class_method</span> <span class="c1"># =&gt;</span>
-</span><span class='line'><span class="c1"># &quot;included Foo&quot;</span>
-</span><span class='line'><span class="c1"># &quot;included Bar&quot;</span>
-</span><span class='line'><span class="c1"># &quot;Foo class good job!&quot;</span>
-</span><span class='line'><span class="c1"># &quot;Bar class good job!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに簡単にできる。</p>
-
-<h3>終わり</h3>
-
-<ul>
-<li>モジュールをインクルードすることでモジュールのメソッドをインスタンスメソッドとして使用できる</li>
-<li>includedメソッドを使ってextendさせたらインスタンスメソッドを使いながらクラスメソッドも使用できる</li>
-<li>concernsを使ったらもっと簡単に<code>mix-in</code>ができる</li>
-<li>concernsで複雑な依存関係をさらに簡単にまとめられる</li>
-</ul>
-
-
-<h3>参考</h3>
-
-<p><a href="http://www.techscore.com/blog/2013/03/01/rails-include%E3%81%95%E3%82%8C%E3%81%9F%E6%99%82%E3%81%AB%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%A8%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%83%A1/">Rails: includeされた時にクラスメソッドとインスタンスメソッドを同時に追加する頻出パターン</a><br/>
-<a href="http://blog.yujigraffiti.com/2015/01/rails-42module-classmethodsconcernclass.html">Rails 4.2からはmodule ClassMethodsではなくConcern#class_methodsを使おう</a><br/>
-<a href="http://qiita.com/castaneai/items/6dc121ce6ff100614f42">[Rails] ActiveSupport::Concern の存在理由</a></p>
 </div>
   
   
