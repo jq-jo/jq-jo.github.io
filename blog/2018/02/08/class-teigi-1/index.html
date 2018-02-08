@@ -1,0 +1,647 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>クラス定義① - JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="知っておくべきこと Rubyにおけるクラスとは Rubyにおけるクラス定義は「コードを実行する」ということだ。JavaやC#ではクラスを定義してもそのクラスのオブジェクトを生成して、メソッドを呼び出すまで何も起きない。しかし、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/blog/2018/02/08/class-teigi-1">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">クラス定義①</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-08T11:16:12+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>11:16 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>知っておくべきこと</h2>
+
+<h4>Rubyにおけるクラスとは</h4>
+
+<p>Rubyにおけるクラス定義は「コードを実行する」ということだ。JavaやC#ではクラスを定義してもそのクラスのオブジェクトを生成して、メソッドを呼び出すまで何も起きない。しかし、Rubyでクラスを定義するということはオブジェクトの動作を規定することではなく、コードを実行するということなのだ。</p>
+
+<h2>クラスインスタンス変数 &amp; クラス変数</h2>
+
+<h4>クラスインスタンス変数</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="vi">@my_var</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにクラスにもインスタンス変数が定義できる。ここの<code>@my_var</code>はクラス定義の中にあるのでクラスに属している。<br/>
+だからクラスのオブジェクトのインスタンス変数とは別物ということだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="vi">@my_var</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">read</span><span class="p">;</span> <span class="vi">@my_var</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">write</span><span class="p">;</span> <span class="vi">@my_var</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">read</span><span class="p">;</span> <span class="vi">@my_var</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">write</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">read</span>     <span class="c1"># =&gt; 2</span>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">read</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードには２つのインスタンス変数を定義している。どちらも<code>@my_var</code>という名前だ。しかし、それぞれ異なるスコープに定義されており、別々のオブジェクトに属している。上記のコードの<code>MyClass</code>のオブジェクトの<code>obj</code>は<code>MyClass</code>クラスのインスタンス変数の<code>@my_var</code>は呼べない。同じく<code>obj</code>の外側からも<code>obj</code>のインスタンス変数の<code>@my_var</code>が呼べないのだ。<br/>
+こういうふうにクラスが<code>self</code>となる場所に定義されているインスタンス変数を<strong>クラスインスタンス変数</strong>と呼ぶ。</p>
+
+<h4>クラス変数</h4>
+
+<p>クラス変数は<code>@@</code>をつけて定義できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="vc">@@v</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これはクラスインスタンス変数とは違う。サブクラスや通常のインスタンスメソッドからもアクセスできる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">D</span> <span class="o">&lt;</span> <span class="n">C</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span><span class="p">;</span> <span class="vc">@@v</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">D</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>しかし、クラス変数の使いには少し気をつけないといけないところがある。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vc">@@v</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="vc">@@v</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="vc">@@v</span> <span class="c1"># =&gt; 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>@@v</code>の値が変わるのはこのクラス変数がクラスではなく、クラス階層に属しているからだ。<code>@@v</code>は<code>main</code>のコンテキストに定義されているので、<code>main</code>のクラスである<code>Object</code>の全ての子系にも属しているということになり、全部同じクラス変数を共有しているからだ。</p>
+
+<h2>特異メソッド</h2>
+
+<h4>特異メソッド</h4>
+
+<p>Rubyでは、特定のオブジェクトにメソッドを追加できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">str</span> <span class="o">=</span> <span class="s2">&quot;just a regular string&quot;</span> <span class="c1"># 普通の文字列</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nc">str</span><span class="o">.</span><span class="nf">title?</span>
+</span><span class='line'>  <span class="nb">self</span><span class="o">.</span><span class="n">upcase</span> <span class="o">==</span> <span class="nb">self</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">str</span><span class="o">.</span><span class="n">title?</span>                 <span class="c1"># =&gt; false</span>
+</span><span class='line'><span class="n">str</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">grep</span><span class="p">(</span><span class="sr">/title?/</span><span class="p">)</span> <span class="c1"># =&gt; [&quot;title?&quot;]</span>
+</span><span class='line'><span class="n">str</span><span class="o">.</span><span class="n">singleton_methods</span>      <span class="c1"># =&gt; [&quot;title?&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードは<code>title?</code>メソッドを文字列<code>str</code>に追加している。<code>String</code>クラスの他のオブジェクトには影響はない。<br/>
+こうしたあるオブジェクトに特化したメソッドのことを<strong>特異メソッド</strong>と呼ぶ。</p>
+
+<h4>クラスメソッドの真実</h4>
+
+<p>クラスメソッドはクラスの特異メソッドである。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 特異メソッドの定義</span>
+</span><span class='line'><span class="k">def</span> <span class="nc">MyClass</span><span class="o">.</span><span class="nf">class_method</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># クラスメソッドの定義</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_method</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の２つの定義は同じものなのだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nc">object</span><span class="o">.</span><span class="nf">method</span>
+</span><span class='line'>  <span class="c1"># メソッドの中身</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の<code>object</code>の部分にはオブジェクトの参照、クラス名の定数、selfのいずれかが使える。つまり、クラスメソッドはselfを使った特異メソッドである。</p>
+
+<h4>クラスマクロ</h4>
+
+<p><code>Module#attr_*()</code>族のメソッドを使えば、一気にオブジェクトに対するアクセサを生成できる。<br/>
+<code>Module#attr_reader</code>は読み取り用、<code>Module#attr_writer</code>は書き込み用、<code>Module#attr_accessor</code>は読み書き両用だ。<br/>
+コードで見てみると</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">person</span> <span class="o">=</span> <span class="no">Person</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="c1"># =&gt; NoMethodError: undefined method `name&#39; for #&lt;Person:0x007f88d1cbbb58&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>NoMethodErrorが出てしまう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">name</span>
+</span><span class='line'>    <span class="vi">@name</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">person</span> <span class="o">=</span> <span class="no">Person</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span>        <span class="c1"># =&gt; nil</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Jo&#39;</span> <span class="c1"># =&gt; NoMethodError: undefined method `name=&#39; for #&lt;Person:0x007f88d1ede5e8&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>name</code>のメソッドは読み込めるが、アクセスはできない。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">name</span>
+</span><span class='line'>    <span class="vi">@name</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">name</span><span class="o">=</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name</span> <span class="o">=</span> <span class="n">str</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">person</span> <span class="o">=</span> <span class="no">Person</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span>        <span class="c1"># =&gt; nil</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Jo&#39;</span> <span class="c1"># =&gt; &quot;Jo&quot;</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span>        <span class="c1"># =&gt; &quot;Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これでインスタンス変数の<code>@name</code>にアクセスできる。<br/>
+これはこうもかける。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>  <span class="kp">attr_reader</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="kp">attr_writer</span> <span class="ss">:name</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>そして、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:name</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">greeting</span>
+</span><span class='line'>    <span class="s2">&quot;Hello, </span><span class="si">#{</span><span class="vi">@name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">person</span> <span class="o">=</span> <span class="no">Person</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Jo&#39;</span> <span class="c1"># =&gt; &quot;Jo&quot;</span>
+</span><span class='line'><span class="n">person</span><span class="o">.</span><span class="n">greeting</span>    <span class="c1"># =&gt; &quot;Hello, Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こう使える。<br/>
+このようなメソッドを<strong>クラスマクロ</strong>と呼ぶ。<br/>
+クラスマクロはキーワードのように見えるが、クラス定義の中で使えるクラスメソッドである。</p>
+
+<h2>&amp;Check</h2>
+
+<h4>&amp;Checkでのクラスメソッド</h4>
+
+<p><code>form</code>クラスでよくクラスメソッドを使っている。</p>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CandidatePanelCsvForm</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">model_name</span>
+</span><span class='line'>    <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="s2">&quot;CandidatePanelCsvForm&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>&amp;Checkでのクラスマクロ</h4>
+
+<p><code>form</code>, <code>service</code>, <code>usecase</code>などで幅広く使われている。（<code>attr_accessor</code>, <code>attr_reader</code>）</p>
+
+<ul>
+<li>例</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Csv</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">ResponseSetsService</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:filer</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">resource_owner</span><span class="p">,</span> <span class="n">survey</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@resource_owner</span> <span class="o">=</span> <span class="n">resource_owner</span>
+</span><span class='line'>      <span class="vi">@survey</span>         <span class="o">=</span> <span class="n">survey</span>
+</span><span class='line'>      <span class="vi">@survey_group</span>   <span class="o">=</span> <span class="n">survey</span><span class="o">.</span><span class="n">group</span>
+</span><span class='line'>      <span class="vi">@args</span>           <span class="o">=</span> <span class="n">args</span>
+</span><span class='line'>      <span class="vi">@filer</span>          <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Missions</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">RecipientService</span>
+</span><span class='line'>    <span class="kp">attr_reader</span> <span class="ss">:burden</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">delegate</span> <span class="ss">:commenter</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="ss">:burden</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">burden</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@burden</span> <span class="o">=</span> <span class="n">burden</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>全然関係ないけど気になるやつ</h2>
+
+<h4>delegate</h4>
+
+<p>上記のコードの中で<code>delegate</code>というのがあったけど、<code>delegate</code>は何物か気になったから調べておく。<br/>
+<code>delegate</code>は<code>has_one, through</code>と似たようなもので、<code>to</code>で指名しているオブジェクトからの関係あるモデルを呼び出せるらしい。<br/>
+上記では<code>to</code>で<code>:burden</code>を指名しているから、<code>:burden</code>の関係モデルの中の<code>commenter</code>を持ってこれる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Qualitative</span><span class="o">::</span><span class="no">SurveyGroupComment</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">notify_related_actors</span>
+</span><span class='line'>    <span class="n">recipient_service</span> <span class="o">=</span> <span class="no">Missions</span><span class="o">::</span><span class="no">RecipientService</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードでわかるように渡される<code>burden</code>は<code>Qualitative::SurveyGroupComment</code>のオブジェクトである。<br/>
+だから、<code>delegate</code>を使って<code>Qualitative::SurveyGroupComment</code>オブジェクトの関係モデルの<code>commenter</code>オブジェクトを呼び出すことができるということだ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Missions</span><span class="o">::</span><span class="no">RecipientService</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span><span class="o">.</span><span class="n">commenter</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように使える。</p>
+
+<h2>次の記事</h2>
+
+<p><strong>第4章 クラス定義</strong>の残った分量の</p>
+
+<ul>
+<li>特異クラス</li>
+<li>アラウンドエイリアス</li>
+</ul>
+
+
+<p>あと、</p>
+
+<ul>
+<li><strong>第５章「コードを記述するコード」</strong></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Jo
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-08T11:16:12+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>11:16 am</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jq-jo.github.io/blog/2018/02/08/class-teigi-1/" data-via="" data-counturl="http://jq-jo.github.io/blog/2018/02/08/class-teigi-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/02/01/block/" title="Previous Post: ブロック②">&laquo; ブロック②</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
