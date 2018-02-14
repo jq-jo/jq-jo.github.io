@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JQ Blog</title>
+  <meta name="author" content="Jo">
+
+  
+  <meta name="description" content="Grapeとは Grape gemはruby用のREST-APIフレームワークです。簡単にRESTfulなAPIを開発するための単純なDSLを提供することによって、Railsとシナトラなどの既存のWebアプリケーションフレームワークを補完するために設計されています。 Grape gemの実装 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jq-jo.github.io/posts/7">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="JQ Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">JQ Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="jq-jo.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/26/grape-gem/">Grape Gem</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-26T10:54:56+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:54 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><small></p>
+
+<h1>Grapeとは</h1>
+
+<p>Grape gemはruby用のREST-APIフレームワークです。簡単にRESTfulなAPIを開発するための単純なDSLを提供することによって、Railsとシナトラなどの既存のWebアプリケーションフレームワークを補完するために設計されています。</p>
+
+<h1>Grape gemの実装</h1>
+
+<h3>Grape gemのインストール</h3>
+
+<p>まず、GemfileにGrapeを追加します。<br>
+<small>Gemfile</small></p>
+
+<div class="colorscripter-code" style="width: 100%; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">gem&nbsp;'grape'</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+bundle installをします。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">bundle&nbsp;install</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>model追加</h3>
+
+<p>modelを追加してみます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;g&nbsp;model&nbsp;test_data&nbsp;name:string&nbsp;age:integer</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">rake&nbsp;db:migrate</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>application.rbの設定</h3>
+
+<p>application.rbに以下のように書き、apiのパスを設定します。<br>
+<small>application.rb</small></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">config.paths.add&nbsp;File.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'app'</span>,&nbsp;<span style="color:#ffd500">'api'</span>),&nbsp;glob:&nbsp;File.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'**'</span>,&nbsp;<span style="color:#ffd500">'*.rb'</span>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">config.autoload_paths&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Dir[Rails.root.<span style="color:#4be6fa">join</span>(<span style="color:#ffd500">'app'</span>,&nbsp;<span style="color:#ffd500">'api'</span>,&nbsp;<span style="color:#ffd500">'*'</span>)]</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>API作成</h3>
+
+<p>appフォルダーにapiフォルダーを追加します。
+ここに二つのファイルを作ります。一つは実際にapiとして動くファイルで、もう一つはそのファイルをmountするファイルです。
+下のように書いてみます。<br>
+<small>api/user/data.rb</small></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">resource&nbsp;:user_data&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;desc&nbsp;<span style="color:#ffd500">"List&nbsp;all&nbsp;User"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;get&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TestData.all</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+<small>api/api.rb</small></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;API&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;Grape::API</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;prefix&nbsp;<span style="color:#ffd500">'api'</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;version&nbsp;<span style="color:#ffd500">'v1'</span>,&nbsp;using:&nbsp;:path</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;mount&nbsp;User::Data</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<h3>APIのルーティング追加</h3>
+
+<p>route.rbにルーティング追加します。<br>
+<small>route.rb</small></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">mount&nbsp;API&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ffd500">'/'</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+それからrailsのserverを起動します。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">rails&nbsp;server</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+タミナールに下のように入力してみます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+そうすると、databaseに何もないので 「[ ]」 しか出てこないです。<br>
+では、データーを入れてみましょう。<br>
+まずはdata.rbにソースコードを追加します。もっと楽にするようにヘルパーを書きます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">helpers&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;user_params</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ActionController::Parameters.<span style="color:#ff3399">new</span>(params).permit(:name,&nbsp;:age)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">def</span>&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@user&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;TestData.find(params[:id])</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+そして、下のようにcreateのコードを書きます。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"create&nbsp;a&nbsp;new&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:name,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:age,&nbsp;type:&nbsp;Integer</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">post&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;TestData.create<span style="color:#0086b3"></span><span style="color:#ff3399">!</span>(user_params)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+タミナールにこう書くと、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json&nbsp;-d&nbsp;"name=Jo&age=30"</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":1,"name":"Jo","age":30,"created_at":"2016-07-26T07:15:11.212Z","updated_at":"2016-07-26T07:15:11.212Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p>簡単にデーターベースに入れ込みます。<br>
+deleteとupdateも同じように作成します。</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"delete&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">delete&nbsp;<span style="color:#ffd500">':id'</span>&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;@user.destroy<span style="color:#0086b3"></span><span style="color:#ff3399">!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"update&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">put&nbsp;<span style="color:#ffd500">':id'</span>&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;@user.update(user_params)</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+タミナールで実行してみると、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;-X&nbsp;DELETE&nbsp;http://localhost:3000/api/v1/user_data/1.json</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":1,"name":"Jo","age":30,"created_at":"2016-07-26T05:11:16.608Z","updated_at":"2016-07-26T05:11:16.608Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+もう一度データーを作って</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;http://localhost:3000/api/v1/user_data.json&nbsp;-d&nbsp;"name=Jo&age=30"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">{"id":2,"name":"Jo","age":30,"created_at":"2016-07-26T05:16:45.169Z","updated_at":"2016-07-26T05:16:45.169Z"}</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br></p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">curl&nbsp;-X&nbsp;PUT&nbsp;http://localhost:3000/api/v1/user_data/2.json&nbsp;-d&nbsp;"age=100"</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">true</div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+showの部分はちょっと迷いましたけど、</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important; overflow:auto"><table class="colorscripter-code-table" style="margin:0; padding:0; border:none; background-color:#272727; border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px 0"><div style="margin:0; padding:0; color:#f0f0f0; font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">desc&nbsp;<span style="color:#ffd500">"show&nbsp;an&nbsp;user"</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">params&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;requires&nbsp;:id,&nbsp;type:&nbsp;String</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">route_param&nbsp;:id&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;get&nbsp;<span style="color:#ff3399">do</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set_user</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;<span style="color:#ff3399">end</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">end</span></div></div></td><td style="vertical-align:bottom; padding:0 2px 4px 0"></td></tr></table></div>
+
+
+<p><br>
+こういうふうにGETをroute_paramに変えると簡単にできました。
+</small></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/26/first-post/">First Post</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-07-26T10:24:28+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:24 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><small></p>
+
+<h1>a</h1>
+
+<h3>a-1</h3>
+
+<h5>a-1-1</h5>
+
+<p>abcd</p>
+
+<h3>a-2</h3>
+
+<h5>a-2-1</h5>
+
+<p>abcd</p>
+
+<h1>b</h1>
+
+<h3>b-1</h3>
+
+<h5>b-1-1</h5>
+
+<p>abcd</p>
+
+<h3>b-2</h3>
+
+<h5>b-2-1</h5>
+
+<p>abcd
+</small></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/6">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Jo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-02-08T11:50:18+09:00</updated>
+  <updated>2018-02-14T19:17:07+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,400 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[コードを記述するコード]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/02/14/code-to-write-the-code/"/>
+    <updated>2018-02-14T19:14:17+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/02/14/code-to-write-the-code</id>
+    <content type="html"><![CDATA[<h2>eval()</h2>
+
+<p><code>eval()</code>を使うと<code>コード文字列</code>を使って処理できる。例えば、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">array</span> <span class="o">=</span> <span class="o">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="o">]</span>
+</span><span class='line'><span class="n">element</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span class='line'><span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;array &lt;&lt; element&quot;</span><span class="p">)</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>evalの問題点</h4>
+
+<p>evalが評価するコード文字列内でもローカル変数にアクセスできる。
+そういう意味ではブロックと似ている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;v1&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>evalとブロックどちらを使うのが良いのか。<br/>
+答えは「ブロック」らしい。コード文字列(evalを用いた処理記述)は問題点がある。</p>
+
+<p><strong>コードインジェクション</strong></p>
+
+<p>外部からコード文字列を読み込んだ際に、悪意のあるコードを読み込んでしまい、<br/>
+プライベート情報漏洩やハードディスクの情報を消されたりしてしまう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="nb">method</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">eval</span><span class="p">(</span><span class="s2">&quot;&#39;a&#39;.</span><span class="si">#{</span><span class="nb">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 悪意のあるコード プライベートな情報が表示されてしまう。</span>
+</span><span class='line'><span class="n">my_method</span><span class="p">(</span><span class="nb">object_id</span><span class="p">;</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">&#39;a&#39;</span><span class="o">.</span><span class="n">object_id</span>
+</span><span class='line'><span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>オブジェクトの汚染とセーフレベル</strong></p>
+
+<p>Rubyは安全でないオブジェクトに汚染マークを付ける。<br/>
+webフォーム、コマンドライン、システム変数の読み込み文字列などを含んでいた場合、安全でないと判断する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">user_input</span> <span class="o">=</span> <span class="s2">&quot;User input: </span><span class="si">#{</span><span class="nb">gets</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="c1"># 汚染されているかどうかをチェック</span>
+</span><span class='line'><span class="nb">puts</span> <span class="n">user_input</span><span class="o">.</span><span class="n">tainted?</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>汚染マークを検知して、例外を発生させるセーフレベルという仕組みがある。<br/>
+潜在的に危険な操作に対して制限をかけられる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># セーフレベルを１に設定</span>
+</span><span class='line'><span class="n">user_input</span> <span class="o">=</span> <span class="s2">&quot;User input: </span><span class="si">#{</span><span class="nb">gets</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="nb">eval</span> <span class="n">user_input</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="c1"># セーフレベル1以上の場合、汚染した文字列を評価できない</span>
+</span><span class='line'><span class="ss">SecurityError</span><span class="p">:</span> <span class="no">Insecure</span> <span class="n">operatiion</span> <span class="o">-</span> <span class="nb">eval</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>フックメソッド</h2>
+
+<p>さまざまなイベントを契機に処理を行うことができる。(継承、拡張など)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyModule</span>
+</span><span class='line'>  <span class="c1"># includedがフックメソッド </span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">othermod</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1"># MyModuleが拡張されると下記が処理される</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;MyModuleは </span><span class="si">#{</span><span class="n">othermod</span><span class="si">}</span><span class="s2">にmixinされた&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">MyModule</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># =&gt; MymoduleはCにmixinされた</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>その他のフックメソッド</h4>
+
+<ul>
+<li>Class#inherited()</li>
+<li>Module#extend_object()</li>
+<li>Module#method_added()</li>
+<li>Module#method_removed()</li>
+<li>Module#method_undefined()</li>
+</ul>
+
+
+<p>などをオーバーライドすれば、そのイベントに関連したメソッドを実行できる。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://tamata78.hatenablog.com/entry/2015/09/19/172049">http://tamata78.hatenablog.com/entry/2015/09/19/172049</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[クラス定義②]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/02/14/class-teigi-2/"/>
+    <updated>2018-02-14T17:36:52+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/02/14/class-teigi-2</id>
+    <content type="html"><![CDATA[<h2>特異クラス</h2>
+
+<p>特異メソッドはどのクラスに所属しているのか。<br/>
+特異メソッドの定義クラスにおけるインスタンスメソッドだと全インスタンスに引き継がれてしまう。<br/>
+Objectクラスだと全クラスに引き継がれてしまう。ではどこに所属しているのか。
+特異クラスという特殊なクラスに所属している。</p>
+
+<h4>特異クラスのオープン</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="n">an_object</span>
+</span><span class='line'><span class="err">　</span><span class="c1">#処理を記述</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>特異クラスの参照を取得</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">eigenclass</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="n">obj</span>
+</span><span class='line'>  <span class="nb">self</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">eigenclass</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; Class</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>特異クラスの特別なところ</h4>
+
+<ul>
+<li><code>class</code>の変わった構文を使わないとみることができない</li>
+<li>インスタンスを１つしか持てない（だからシングルトンクラスとも呼ばれる）</li>
+<li>継承ができない</li>
+<li>特異クラスはオブジェクトの特異メソッドが住んでいる場所</li>
+</ul>
+
+
+<h4>クラスメソッドの構文</h4>
+
+<p>この前の記事でクラスメソッドを定義する方法の２つを書いてたけど、もう１つがある。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">my_method</span><span class="p">;</span> <span class="nb">puts</span> <span class="s2">&quot;Hello!&quot;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; &quot;Hello!&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>クラスの属性を定義する</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="c1"># これだとインスタンスの属性定義になってしまう</span>
+</span><span class='line'>  <span class="kp">attr_accessor</span> <span class="ss">:a</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">a</span> <span class="c1"># =&gt; NoMethodError: undefined method `a&#39; for MyClass:Class</span>
+</span><span class='line'><span class="n">obj</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">obj</span><span class="o">.</span><span class="n">a</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:c</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;It works!&#39;</span>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">c</span> <span class="c1"># =&gt; &quot;It works!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>クラス拡張</h2>
+
+<p>moduleのインスタンスメソッドをクラスメソッドとして定義させるとき<br/>
+クラス拡張という方法で実現できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyModule</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="c1"># 特異クラス内でインスタンスメソッドを拡張させるとクラスメソッドとして定義可能</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">MyModule</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Object#extendを用いれば、もっとシンプルに定義できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">MyModule</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Myclass</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>エイリアス</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">alias</span> <span class="p">:</span><span class="err">新しい名前</span> <span class="p">:</span><span class="err">古い名前</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>aliasはキーワードであり、メソッドではいので二つの間にカンマはいらない</li>
+<li>参照を向けるのではなく、コピーする。だから、aliasコマンドの後で元となるメソッドに変更が加えられても、aliasによって作成されたメソッドには影響がない</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span><span class="p">;</span> <span class="s2">&quot;my_method()&quot;</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>  <span class="k">alias</span> <span class="ss">:my_method2</span> <span class="ss">:my_method</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">m</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+</span><span class='line'><span class="n">m</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt;  &quot;my_method()&quot;</span>
+</span><span class='line'><span class="n">m</span><span class="o">.</span><span class="n">my_method2</span> <span class="c1"># =&gt;  &quot;my_method()&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように使える。</p>
+
+<h4>aliasの用途</h4>
+
+<p>元のメソッドを修正したいが、外部ライブラリなどで修正できない場合がある。<br/>
+その場合は、元メソッドを別名定義し、元メソッド名でメソッドを再定義する。<br/>
+その際、元メソッドを呼びながら、追加処理を記述できる。これをアラウンドエイリアスと呼ぶ。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;original&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">alias</span> <span class="ss">:my_method2</span> <span class="ss">:my_method</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;changed&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mc</span> <span class="o">=</span> <span class="no">MyClass</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">mc</span><span class="o">.</span><span class="n">my_method</span> <span class="c1"># =&gt; changed</span>
+</span><span class='line'><span class="n">mc</span><span class="o">.</span><span class="n">my_method2</span> <span class="c1"># =&gt; original</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参照</h2>
+
+<p><a href="http://tamata78.hatenablog.com/entry/2015/09/16/205224">http://tamata78.hatenablog.com/entry/2015/09/16/205224</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[クラス定義①]]></title>
@@ -4145,436 +4539,6 @@ JSON形式でレスポンスを返す場合、表示するパラメータを制�
 <h2>参照</h2>
 
 <p><a href="http://qiita.com/m_nakamura145/items/75fd7c0934daf9bcc21d">active_model_serializersが便利</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MastodonをHerokuで動かしてみる]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/08/02/mastodon/"/>
-    <updated>2017-08-02T19:26:59+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/08/02/mastodon</id>
-    <content type="html"><![CDATA[<h3>Mastodonとは</h3>
-
-<p><a href="https://ja.wikipedia.org/wiki/%E3%83%9E%E3%82%B9%E3%83%88%E3%83%89%E3%83%B3_(%E3%83%9F%E3%83%8B%E3%83%96%E3%83%AD%E3%82%B0">(ウィキペディア「マストドン (ミニブログ)」)</a>)に詳しく説明されているが<code>Mastodon</code>というものは<code>Twitter</code>によく似ている短文投稿型のSNSである。最近流行っているそうだ。Mastodonはオープンソースで公開されているので自由に活用できる。</p>
-
-<h3>使い方</h3>
-
-<p>使い方としてはいろいろあるけど、今回はgithubに乗せている<code>Deploy to Heroku</code>ボタンを利用する方法と<code>git clone</code>して自ら<code>Heroku</code>にpushする方法、２つを試してみる。</p>
-
-<h4><code>Deploy to Heroku</code>ボタンを利用する方法</h4>
-
-<p>以外とすごく簡単。<a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md">https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md</a> のHeroku Buttonを押し、</p>
-
-<ul>
-<li>App Nameを希望のアプリ名に</li>
-<li>S3_ENABLEDをtrueに</li>
-<li>LOCAL_DOMAINを&lt;アプリ名>.herokuapp.comに</li>
-<li>SMTP_FROM_ADDRESSをnotifications@localhostに</li>
-</ul>
-
-
-<p>変更して、Deployボタンを押す。Mastodonはデフォルトではdynoのファイルシステムにアイコンやメディアなどのファイルを格納する。これらのファイルは1日に1度のdynoの再起動の際に消えてしまう。なのでS3を使ってファイルを保存する方が良い。S3を使う場合は</p>
-
-<ul>
-<li>S3_BUCKET</li>
-<li>S3_REGION</li>
-<li>AWS_ACCESS_KEY_ID</li>
-<li>AWS_SECRET_ACCESS_KEY</li>
-</ul>
-
-
-<p>これらを記入する。<br/>
-メールの機能のためにSMTP設定もしなきゃいけないが今回は一旦<code>gmail</code>で設定しておいた。<br/>
-Manage appボタンからダッシュボードを開き、Dyno formationからConfigure Dynosをたどり、worker dynoをONにする。<br/>
-これでセッティングは終わり。<br/>
-今までの設定をした<code>Application</code>は<a href="https://mastojon.herokuapp.com">ここ</a>で確認できる。</p>
-
-<h4>git clone</h4>
-
-<p><code>git clone</code>するのもすぐできる。<br/>
-適当なDirectoryに</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@github.com:tootsuite/mastodon.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を入力する。それから<br/>
-- Xcode Command Line ツール</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ xcode-select --install</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>HomeBrewで下記のものをインストール</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install imagemagick ffmpeg yarn postgresql redis rbenv nodejs protobuf</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>rbenv 2.4.1をインストール</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rbenv install 2.4.1</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>bundlerインストール</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install bundler</span></code></pre></td></tr></table></div></figure>
-
-
-<p>全部インストールできたら、実際のapplicationのためのインストールをする。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install libidn
-</span><span class='line'>$ bundle install --with development
-</span><span class='line'>$ yarn install --pure-lockfile
-</span><span class='line'>$ gem install foreman --no-ri --no-rdoc
-</span><span class='line'>$ bundle exec rails db:setup
-</span><span class='line'>$ bin/rails assets:precompile</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ここまでしたらセッティングは終わり。こうしたらローカルで動くようになる。<br/>
-そこで</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
-</span><span class='line'>$ heroku create &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を実行してheroku appを作って、</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "first commit"
-</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>を実行してpushする。そしたら</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>remote:        To see why this extension failed to compile, please check the mkmf.log which can
-</span><span class='line'>remote:        be found here:
-</span><span class='line'>remote:        
-</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/extensions/x86_64-linux/2.4.0/cld3-3.1.3/mkmf.log
-</span><span class='line'>remote:        
-</span><span class='line'>remote:        extconf failed, exit code 1
-</span><span class='line'>remote:        
-</span><span class='line'>remote:        Gem files will remain installed in
-</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/gems/cld3-3.1.3
-</span><span class='line'>remote:        for inspection.
-</span><span class='line'>remote:        Results logged to
-</span><span class='line'>remote:        /tmp/build_65348a656aac448eb5aea36afa80f6c0/vendor/bundle/ruby/2.4.0/extensions/x86_64-linux/2.4.0/cld3-3.1.3/gem_make.out
-</span><span class='line'>remote:        
-</span><span class='line'>remote:        An error occurred while installing cld3 (3.1.3), and Bundler cannot continue.
-</span><span class='line'>remote:        Make sure that `gem install cld3 -v '3.1.3'` succeeds before bundling.
-</span><span class='line'>remote:        
-</span><span class='line'>remote:        In Gemfile:
-</span><span class='line'>remote:        cld3
-</span><span class='line'>remote:  !
-</span><span class='line'>remote:  !     Failed to install gems via Bundler.
-</span><span class='line'>remote:  !
-</span><span class='line'>remote:  !     Push rejected, failed to compile Ruby app.
-</span><span class='line'>remote:
-</span><span class='line'>remote:  !     Push failed</span></code></pre></td></tr></table></div></figure>
-
-
-<p>と怒られる。調べてみると<code>buildpacks</code>を設置しなきゃいけない。それで</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-apt # v1.3.3かそれ以前ではこの行は不要
-</span><span class='line'>$ heroku buildpacks:add heroku/nodejs -a &lt;App名&gt;
-</span><span class='line'>$ heroku buildpacks:add heroku/ruby -a &lt;App名&gt;
-</span><span class='line'>$ heroku addons:create heroku-postgresql -a &lt;App名&gt;
-</span><span class='line'>$ heroku addons:create heroku-redis -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちゃんと設置をしてから</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>をしてみたら、無事に通る。次は</p>
-
-<ul>
-<li>データベースのマイグレーション</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku run rails db:migrate -a &lt;App名&gt;
-</span><span class='line'>$ heroku run rails db:seed -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>アプリケーションの設定</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku config:set HEROKU=true -a &lt;App名&gt;
-</span><span class='line'>$ heroku config:set LOCAL_DOMAIN=$APP_NAME.herokuapp.com -a &lt;App名&gt;
-</span><span class='line'>$ heroku config:set PAPERCLIP_SECRET=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;
-</span><span class='line'>$ heroku config:set SECRET_KEY_BASE=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;
-</span><span class='line'>$ heroku config:set OTP_SECRET=`heroku run rails secret -a &lt;App名&gt;` -a &lt;App名&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そしてHerokuのAppのDashboardでworkerをONにする。<br/>
-ここまでするとセットアップは全て終わり、Heroku上で動かすことができる。その結果は<a href="https://jastodon.herokuapp.com">ここ</a>で確認できる。</p>
-
-<h2>参照</h2>
-
-<p><a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Development-guide.md">tootsuite/documentation(Development guide)</a><br/>
-<a href="https://github.com/tootsuite/documentation/blob/master/Running-Mastodon/Heroku-guide.md">tootsuite/documentation(Heroku guide)</a><br/>
-<a href="https://github.com/zunda/mastodon/wiki/CreateInstanceOnHeroku#heroku-cli%E3%82%92%E4%BD%BF%E3%81%86">zunda/mastodon(CreateInstanceOnHeroku)</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[クラス変数、インスタンス変数、クラスインスタス変数]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/07/26/class-instance-variable/"/>
-    <updated>2017-07-26T19:02:16+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/07/26/class-instance-variable</id>
-    <content type="html"><![CDATA[<h3>クラス変数</h3>
-
-<p>クラスに変数を持ちたい時にはクラス変数を定義すれば良い。<code>@@</code>というプレフィックスをつけるとクラス変数の定義して使うことができる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
-</span><span class='line'>    <span class="vc">@@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>クラス変数はサブクラスや通常のインスタンスメソッドからアクセスすることもできる。上記の<code>Variable</code>クラスの<code>class_var</code>を実行してみると</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c8f730&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>普通にクラス変数の<code>@@var</code>を取得できる。しかし、クラス変数には少し使いにくいところがある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">class_var</span>
-</span><span class='line'>    <span class="vc">@@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Variable</span> <span class="o">&lt;</span> <span class="no">ParentVariable</span>
-</span><span class='line'>  <span class="vc">@@var</span> <span class="o">=</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">parent_var</span> <span class="o">=</span> <span class="no">ParentVariable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;ParentVariable:0x007f8480e4dd90&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">prent_var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8480de7388&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">pvar</span><span class="o">.</span><span class="n">class_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Good morning!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうにクラス変数を変更する場合、このクラス変数にかかっている全てのオブジェクトに影響を与えるので実際の変数の値が変更されてしまう。ということで多くのRubyistはクラス変数は使ってない（らしい）。</p>
-
-<h3>インスタンス変数</h3>
-
-<p>インスタンス変数は<code>@</code>というプレフィックスをつけて使う。これはオブジェクトに所属していて、クラスとは何もつながりがない。なので、同じクラスのオブジェクトでもインスタンス変数の値はそれぞれ違う。インスタンス変数は値を代入した時に初めて出現する。だから明示的に定義しなくても良い。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span> <span class="n">var</span>
-</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;variable : &#39;</span><span class="si">#{</span><span class="n">var</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483923e98&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Hello&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span> <span class="s2">&quot;Bye&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var1</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Hello&#39;.&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var2</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;variable : &#39;Bye&#39;.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>クラスインスタンス変数</h3>
-
-<p>Rubyでは、全てのインスタンス変数はカレントオブジェクト<code>self</code>に属している。クラスの定義の中では<code>self</code>はクラスのことになるから、下記にクラスに定義された<code>@var</code>はクラスに属していることになる。同じインスタンス変数<code>@var</code>だけどどこに定義されているかによって違い、それぞれ異なるスコープに定義されており、別々のオブジェクトに属している。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Variable</span>
-</span><span class='line'>  <span class="vi">@var</span> <span class="o">=</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@var</span> <span class="o">=</span> <span class="n">str</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">instance_var</span>
-</span><span class='line'>    <span class="vi">@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">class_instance_var</span>
-</span><span class='line'>    <span class="vi">@var</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span> <span class="o">=</span> <span class="no">Variable</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;Instance Hello!&quot;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Variable:0x007f8483c56bd8 @var=&quot;Instance Hello!&quot;&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="n">var</span><span class="o">.</span><span class="n">instance_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Instance Hello!&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="o">&gt;</span> <span class="no">Variable</span><span class="o">.</span><span class="n">class_instance_var</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Class Instance Hello!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>１つ目<code>instance_var</code>メソッドで呼ばれた<code>@var</code>は<code>var</code>オブジェクトが<code>self</code>になる。つまり、<code>var</code>オブジェクトのインスタンス変数だ。２つ目の<code>class_instance_var</code>のクラス変数で呼ばれた<code>@var</code>は<code>Variable</code>が<code>self</code>になる。つまり、これは<code>Variable</code>オブジェクトのインスタンス変数だ。これは<code>Class</code>クラスのオブジェクトである<code>Variable</code>に属しているので通常のインスタンス変数だ。これをクラスインスタンス変数と呼ぶ。<br/>
-クラスインスタンス変数はクラスからしかアクセスできない。クラスのインスタンスやサブクラスからはアクセスできない。</p>
-
-<h2>参照</h2>
-
-<p>メタプログラミングRuby 45p - インスタンス変数<br/>
-メタプログラミングRuby 144 ~ 146p - クラスインスタンス変数</p>
 ]]></content>
   </entry>
   
