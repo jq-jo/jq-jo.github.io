@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-02-15T15:55:10+09:00</updated>
+  <updated>2018-02-21T18:46:01+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,275 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveRecordの設計]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/02/21/active-record-sekkei/"/>
+    <updated>2018-02-21T18:43:01+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/02/21/active-record-sekkei</id>
+    <content type="html"><![CDATA[<h2>ActiveRecordの設計</h2>
+
+<p><code>ActiveRecord</code>はRailsの一部であり、Rubyのオブジェクトをデータベースのテーブルにマッピングするものである。この機能を<strong>オブジェクトリレーショナルマッピング</strong>と呼ぶ。<br/>
+<code>ActiveRecord</code>はRailsアプリケーションでは、モデル（MVCの「M」）として使われる。通常のRubyのオブジェクトでビジネスロジックを管理し、<code>ActiveRecord</code>でオブジェクトをデータベースに永続化することになる。</p>
+
+<h4>ActiveRecordの簡単な例</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Duck</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">validates_length_of</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">maximum</span><span class="p">:</span> <span class="mi">6</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の例では、6文字より長い<code>name</code>をデータベースに保存しようとすると、例外を発生するか（save!の場合）、何も言わずに失敗する（saveの場合）。<br/>
+<code>ActiveRecord</code>は規約に基づいて、自動的に<code>Duck</code>クラスを<code>ducks</code>テーブルにマッピングしてくれる。データベーススキーマから<code>ducks</code>テーブルに<code>name</code>が含まれることを認識し、属性にアクセスするゴーストメソッドを定義する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_duck</span> <span class="o">=</span> <span class="no">Duck</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Donald&quot;</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">valid?</span> <span class="c1"># =&gt; true</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">some_duck</span> <span class="o">=</span> <span class="no">Duck</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">id</span>   <span class="c1"># =&gt; 1</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">name</span> <span class="c1"># =&gt; &quot;Donald&quot;</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">delete</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように使われる。</p>
+
+<h4>ActiveRecord::Base</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># gems/activerecord-x.x.x/lib/active_record.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Base</span><span class="p">,</span> <span class="s1">&#39;active_record/base&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Batches</span><span class="p">,</span> <span class="s1">&#39;active_record/batches&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Calculations</span><span class="p">,</span> <span class="s1">&#39;active_record/calculations&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Callbacks</span><span class="p">,</span> <span class="s1">&#39;active_record/callbacks&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord</code>は<code>autoload()</code>を使って各モジュールを読み込んでいる。<code>Kernel#autoload()</code>はモジュール名とファイル名を受け取り、モジュールを最初に参照した時にファイルを自動的に読み込む。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Base</span>
+</span><span class='line'>    <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">public</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">id</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">save</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">save!</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">delete</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base</code>には上記のコードのようにクラスメソッド、インスタンスメソッドを定義している。</p>
+
+<h4>ActiveRecord::Validations</h4>
+
+<p>先ほど使ってた<code>valid?()</code>や<code>validates_length_of()</code>などのメソッドは<code>ActiveRecord::Validations</code>モジュールで定義されている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Validations</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save!</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">send</span> <span class="ss">:include</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Callbacks</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validate_each</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validates_confirmation_of</span><span class="p">(</span><span class="o">*</span><span class="n">attr_names</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validates_length_of</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">save_with_validation</span><span class="p">(</span><span class="n">perform_validation</span> <span class="o">=</span> <span class="kp">true</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">save_with_validation!</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">valid?</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="c1"># ...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base</code>は<code>ActiveRecord::Validations</code>をインクルードしていて、さらにフックメソッドを通してクラスメソッドも手に入れている。これは<strong>クラス拡張ミックスイン</strong>である。<code>ActiveRecord::Base</code>はモジュールのインクルードを繰り返して、メソッドを積み上げていく。</p>
+
+<h4>alias_method_chain()</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">greet</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">greet</span> <span class="c1"># =&gt; Hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例えば、この<code>greet</code>メソッドの周りにロギング機能をつけたいとする場合、<strong>アラウンドエイリアス</strong>を使えば良い。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">greet_with_log</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;メソッド呼び出し開始..&quot;</span>
+</span><span class='line'>    <span class="n">greet_without_log</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;...メソッド呼び出し完了&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="ss">:greet_without_log</span><span class="p">,</span> <span class="ss">:greet</span>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:greet_with_log</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">greet</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="s2">&quot;メソッド呼び出し開始..&quot;</span>
+</span><span class='line'><span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'><span class="s2">&quot;...メソッド呼び出し完了&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このような仕組みをRailsでは<code>Module#alias_method_chain()</code>を使って使用できる。これは<code>ActiveSupport</code>ライブラリで提供されている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Validations</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save!</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードでは<code>ActiveRecord::Base</code>クラスを再オープンして、<code>save()</code>と<code>save!()</code>に検証機能をつけている。これでオブジェクトをデータベースに保存した時に自動的に検証を行ってくれる。</p>
+
+<h4>ActiveRecordのまとめ</h4>
+
+<p><code>ActiveRecord::Base</code>は<code>ActiveRecord</code>のメインとなるクラスだ。インスタンスメソッドとクラスメソッドが定義されているが、それ以外にも<code>ActiveRecord::Validations</code>のような追加モジュールをインクルードしている。モジュールをインクルードする際、クラス拡張ミックスインをして、さらに別のモジュールをインクルードする。こうしたモジュールは<code>alias_method_chain()</code>を使ってさらにいろんなメソッドを生み出す。このように次々にメソッドが定義されて、<code>ActiveRecord::Base</code>は巨大なクラスになっていく。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[コードを記述するコード]]></title>
@@ -364,8 +633,7 @@ Objectクラスだと全クラスに引き継がれてしまう。ではどこ�
 <h4>aliasの用途</h4>
 
 <p>元のメソッドを修正したいが、外部ライブラリなどで修正できない場合がある。<br/>
-その場合は、元メソッドを別名定義し、元メソッド名でメソッドを再定義する。<br/>
-その際、元メソッドを呼びながら、追加処理を記述できる。これをアラウンドエイリアスと呼ぶ。</p>
+その場合は、元メソッドを別名定義し、元メソッド名でメソッドを再定義する。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -4458,86 +4726,6 @@ Uploadにバリデーションをかけるのももちろんできる。<br/>
 <p><a href="https://github.com/janko-m/shrine">Shrine githubページ</a><br/>
 <a href="http://qiita.com/okuramasafumi/items/488b535ad8889ef22b72">RailsでShrineを使ってファイルをS3にダイレクトアップロードするときの注意点</a><br/>
 <a href="https://re-engines.com/2017/04/21/shrine%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/">Shrineを使って画像をアップロードする</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ActiveModelSerializersについて]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/08/17/active-model-serializers/"/>
-    <updated>2017-08-17T10:43:55+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/08/17/active-model-serializers</id>
-    <content type="html"><![CDATA[<p>Mastodonのソースコードを最近のRailsの記述を学ぼうとしたのでMastodonのソースコードを読み始めた。<br/>
-Mastodonのrootページになる<code>/about</code>からみたのだが、最初からわからないことばかり！（泣）<br/>
-Mastodonには<code>ActiveModelSerializers</code>を使ってjsonの処理を行っていたので<code>ActiveModelSerializers</code>を調べてみた。</p>
-
-<h3>ActiveModelSerializersとは</h3>
-
-<p><a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">ActiveModelSerializers</a>によると</p>
-
-<blockquote><p>ActiveModelSerializers brings convention over configuration to your JSON generation.</p></blockquote>
-
-<p>と書いてある。
-つまりActiveModelSerializersとはRailsで簡単で素早くjsonを作れるgemである。
-JSON形式でレスポンスを返す場合、表示するパラメータを制御したいときに細かなJSONの制御を行うことができるので便利。</p>
-
-<h3>使い方</h3>
-
-<p><code>rails generate serializer Hoge</code>を実行すると<br/>
-<code>app/serializers/hoge_serializer.rb</code>ファイルが作成される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HogeSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Serializer</span>
-</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">:name_size</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">name_size</span>
-</span><span class='line'>    <span class="n">object</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">size</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のコードをみてみると<br/>
-- <code>attributes</code>にレスポンスで表示したいパラメータを記述する。
-- 関連オブジェクトで同時に表示したいオブジェクトがある場合は<code>has_many</code>や<code>has_one</code>などが使える。
-- 関数を定義することで、独自のパラメータを追加することもできる。</p>
-
-<p>Controllerで次のように書くと、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@hoge</span> <span class="o">=</span> <span class="no">Hoge</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'><span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@hoge</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>結果のjsonが以下のようになっている。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>  <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;hoge&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;hoge@example.com&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">name_size</span><span class="p">:</span> <span class="mi">4</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このように、Serializerクラスで整形処理を行うことで、Controllerがより綺麗になると思う。</p>
-
-<h2>参照</h2>
-
-<p><a href="http://qiita.com/m_nakamura145/items/75fd7c0934daf9bcc21d">active_model_serializersが便利</a></p>
 ]]></content>
   </entry>
   

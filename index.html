@@ -9,12 +9,8 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="eval() eval()を使うとコード文字列を使って処理できる。例えば、 1
-2
-3
-array = [10, 20]
-element = 30
-eval(&quot;array &lt;&lt; element&quot;) # =&gt; [10, 20, 30] evalの問題点 &hellip;">
+  <meta name="description" content="ActiveRecordの設計 ActiveRecordはRailsの一部であり、Rubyのオブジェクトをデータベースのテーブルにマッピングするものである。この機能をオブジェクトリレーショナルマッピングと呼ぶ。
+ActiveRecordはRailsアプリケーションでは、モデル（MVCの「M」） &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +77,296 @@ eval(&quot;array &lt;&lt; element&quot;) # =&gt; [10, 20, 30] evalの問題点 &
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/02/21/active-record-sekkei/">ActiveRecordの設計</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-21T18:43:01+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>6:43 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>ActiveRecordの設計</h2>
+
+<p><code>ActiveRecord</code>はRailsの一部であり、Rubyのオブジェクトをデータベースのテーブルにマッピングするものである。この機能を<strong>オブジェクトリレーショナルマッピング</strong>と呼ぶ。<br/>
+<code>ActiveRecord</code>はRailsアプリケーションでは、モデル（MVCの「M」）として使われる。通常のRubyのオブジェクトでビジネスロジックを管理し、<code>ActiveRecord</code>でオブジェクトをデータベースに永続化することになる。</p>
+
+<h4>ActiveRecordの簡単な例</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Duck</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">validates_length_of</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">maximum</span><span class="p">:</span> <span class="mi">6</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記の例では、6文字より長い<code>name</code>をデータベースに保存しようとすると、例外を発生するか（save!の場合）、何も言わずに失敗する（saveの場合）。<br/>
+<code>ActiveRecord</code>は規約に基づいて、自動的に<code>Duck</code>クラスを<code>ducks</code>テーブルにマッピングしてくれる。データベーススキーマから<code>ducks</code>テーブルに<code>name</code>が含まれることを認識し、属性にアクセスするゴーストメソッドを定義する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">my_duck</span> <span class="o">=</span> <span class="no">Duck</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Donald&quot;</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">valid?</span> <span class="c1"># =&gt; true</span>
+</span><span class='line'><span class="n">my_duck</span><span class="o">.</span><span class="n">save!</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="n">some_duck</span> <span class="o">=</span> <span class="no">Duck</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">id</span>   <span class="c1"># =&gt; 1</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">name</span> <span class="c1"># =&gt; &quot;Donald&quot;</span>
+</span><span class='line'><span class="n">some_duck</span><span class="o">.</span><span class="n">delete</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のように使われる。</p>
+
+<h4>ActiveRecord::Base</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># gems/activerecord-x.x.x/lib/active_record.rb</span>
+</span><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Base</span><span class="p">,</span> <span class="s1">&#39;active_record/base&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Batches</span><span class="p">,</span> <span class="s1">&#39;active_record/batches&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Calculations</span><span class="p">,</span> <span class="s1">&#39;active_record/calculations&#39;</span>
+</span><span class='line'>  <span class="nb">autoload</span> <span class="ss">:Callbacks</span><span class="p">,</span> <span class="s1">&#39;active_record/callbacks&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord</code>は<code>autoload()</code>を使って各モジュールを読み込んでいる。<code>Kernel#autoload()</code>はモジュール名とファイル名を受け取り、モジュールを最初に参照した時にファイルを自動的に読み込む。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Base</span>
+</span><span class='line'>    <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">public</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">id</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">save</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">save!</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">delete</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base</code>には上記のコードのようにクラスメソッド、インスタンスメソッドを定義している。</p>
+
+<h4>ActiveRecord::Validations</h4>
+
+<p>先ほど使ってた<code>valid?()</code>や<code>validates_length_of()</code>などのメソッドは<code>ActiveRecord::Validations</code>モジュールで定義されている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Validations</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save!</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">send</span> <span class="ss">:include</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Callbacks</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validate_each</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validates_confirmation_of</span><span class="p">(</span><span class="o">*</span><span class="n">attr_names</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">validates_length_of</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>      <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">save_with_validation</span><span class="p">(</span><span class="n">perform_validation</span> <span class="o">=</span> <span class="kp">true</span><span class="p">)</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">save_with_validation!</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">valid?</span> <span class="c1"># ...</span>
+</span><span class='line'>    <span class="c1"># ...</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base</code>は<code>ActiveRecord::Validations</code>をインクルードしていて、さらにフックメソッドを通してクラスメソッドも手に入れている。これは<strong>クラス拡張ミックスイン</strong>である。<code>ActiveRecord::Base</code>はモジュールのインクルードを繰り返して、メソッドを積み上げていく。</p>
+
+<h4>alias_method_chain()</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">greet</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">greet</span> <span class="c1"># =&gt; Hello!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例えば、この<code>greet</code>メソッドの周りにロギング機能をつけたいとする場合、<strong>アラウンドエイリアス</strong>を使えば良い。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyClass</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">greet_with_log</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;メソッド呼び出し開始..&quot;</span>
+</span><span class='line'>    <span class="n">greet_without_log</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;...メソッド呼び出し完了&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="ss">:greet_without_log</span><span class="p">,</span> <span class="ss">:greet</span>
+</span><span class='line'>  <span class="n">alias_method</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:greet_with_log</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MyClass</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">greet</span>
+</span><span class='line'><span class="c1"># =&gt;</span>
+</span><span class='line'><span class="s2">&quot;メソッド呼び出し開始..&quot;</span>
+</span><span class='line'><span class="s2">&quot;Hello!&quot;</span>
+</span><span class='line'><span class="s2">&quot;...メソッド呼び出し完了&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このような仕組みをRailsでは<code>Module#alias_method_chain()</code>を使って使用できる。これは<code>ActiveSupport</code>ライブラリで提供されている。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Validations</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>        <span class="n">alias_method_chain</span> <span class="ss">:save!</span><span class="p">,</span> <span class="ss">:validation</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードでは<code>ActiveRecord::Base</code>クラスを再オープンして、<code>save()</code>と<code>save!()</code>に検証機能をつけている。これでオブジェクトをデータベースに保存した時に自動的に検証を行ってくれる。</p>
+
+<h4>ActiveRecordのまとめ</h4>
+
+<p><code>ActiveRecord::Base</code>は<code>ActiveRecord</code>のメインとなるクラスだ。インスタンスメソッドとクラスメソッドが定義されているが、それ以外にも<code>ActiveRecord::Validations</code>のような追加モジュールをインクルードしている。モジュールをインクルードする際、クラス拡張ミックスインをして、さらに別のモジュールをインクルードする。こうしたモジュールは<code>alias_method_chain()</code>を使ってさらにいろんなメソッドを生み出す。このように次々にメソッドが定義されて、<code>ActiveRecord::Base</code>は巨大なクラスになっていく。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -471,8 +757,7 @@ Objectクラスだと全クラスに引き継がれてしまう。ではどこ�
 <h4>aliasの用途</h4>
 
 <p>元のメソッドを修正したいが、外部ライブラリなどで修正できない場合がある。<br/>
-その場合は、元メソッドを別名定義し、元メソッド名でメソッドを再定義する。<br/>
-その際、元メソッドを呼びながら、追加処理を記述できる。これをアラウンドエイリアスと呼ぶ。</p>
+その場合は、元メソッドを別名定義し、元メソッド名でメソッドを再定義する。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2551,285 +2836,6 @@ Procオブジェクトに変換している。</p></li>
 
 <p><a href="https://qiita.com/kidach1/items/15cfee9ec66804c3afd2">https://qiita.com/kidach1/items/15cfee9ec66804c3afd2</a><br/>
 <a href="https://qiita.com/ryo-ma/items/24c46592b45775e8644d">https://qiita.com/ryo-ma/items/24c46592b45775e8644d</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/25/active-storage/">Active Storage</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-12-25T10:49:14+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:49 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Rails5.2の新しい機能の中に<code>Active Storage</code>というものが気になったので使ってみた。</p>
-
-<h2>Active Storageとは</h2>
-
-<p>AWS S3やGoogle Cloud Storageなどのクラウドファイルストレージサービスへのアップロードをシンプルにやってくれる仕組みとのこと。<br/>
-もちろん物理的なディスクシステムへ保存することもできるけど、主眼はあくまでクラウドサービスに置いているらしい。</p>
-
-<h2>Modelの仕組</h2>
-
-<p>Active Storageをインストールすると<code>active_storage_blobs</code>,<code>active_storage_attachments</code>が生成される。</p>
-
-<p><code>active_storage_blobs</code>は<code>metadata (filename, content-type, etc.)</code>を保存する<code>table</code>になっている。<code>key</code>カラムは<code>identifier key</code>としてクラウドファイルストレージのアップするファイルのfilenameになる。</p>
-
-<p><img src="https://monosnap.com/file/xyt2cDYuvKTA8VzYhA6XzqTwcN8Nwh.png" style="width: 50%;">
-<img src="https://monosnap.com/file/kNPH6J23jIHAywqUdjDYRHfp7V86iB.png" style="width: 50%;"></p>
-
-<p><code>active_storage_attachments</code>は添付ファイルの親モデルと<code>active_storage_blobs</code>をアソシエートしてくれる。親モデルはpolymorphicになる。<br/>
-<img src="https://monosnap.com/file/YOHUlhsSpV1Nt5COr0YZX4RdI7KXD4.png" style="width: 50%;"></p>
-
-<h2>使い方</h2>
-
-<ul>
-<li>環境
-
-<ul>
-<li>Rails 5.2.0.beta2</li>
-<li>ruby 2.4.1p111</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>インストール</h3>
-
-<p><code>rails new</code>を通してプロジェクトを作成するとき自動的に<code>Active Storage</code>がインストールされる。<br/>
-<code>rails new --skip-active-storage</code>にするとインストールせずにプロジェクトを作成できる。</p>
-
-<p>既存プロジェクトに<code>Active Storage</code>を入れたい場合は、まず<code>Rails</code>のバージョンをアップグレードしてから、</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rails active_storage:install
-</span><span class='line'>bundle exec rake db:migrate</span></code></pre></td></tr></table></div></figure>
-
-
-<p>で入れることができる。</p>
-
-<h3>サンプルコード</h3>
-
-<ul>
-<li>gemfile</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;mini_magick&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 4.8&#39;</span> <span class="c1"># 画像の加工のために</span>
-</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;aws-sdk-s3&#39;</span> <span class="c1"># S3へのアップロード</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>model</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_one_attached</span> <span class="ss">:avatar</span> <span class="c1"># has_oneの場合</span>
-</span><span class='line'>  <span class="n">has_many_attached</span> <span class="ss">:images</span> <span class="c1"># has_manyの場合</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>controller</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">UsersController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
-</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user_params</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">render</span> <span class="ss">:new</span> <span class="ow">and</span> <span class="k">return</span> <span class="k">unless</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:avatar</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
-</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">avatar</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">images</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:images</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
-</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">redirect_to</span> <span class="n">users_path</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>view</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">form_for</span> <span class="vi">@user</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="nt">br</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:email</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">email_field</span> <span class="ss">:email</span>
-</span><span class='line'>  <span class="nt">br</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:avatar</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:avatar</span>
-</span><span class='line'>  <span class="nt">br</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:images</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:images</span><span class="p">,</span> <span class="ss">multiple</span><span class="p">:</span> <span class="kp">true</span> <span class="c1"># has_manyの場合</span>
-</span><span class='line'>  <span class="nt">br</span>
-</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;作成&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>クラウド設定</h4>
-
-<ul>
-<li>config/environments/development.rb</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Store uploaded files on the local file system (see config/storage.yml for options)</span>
-</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">active_storage</span><span class="o">.</span><span class="n">service</span> <span class="o">=</span> <span class="ss">:amazon</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>config/storage.yml</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1"># Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)</span>
-</span><span class='line'><span class="l-Scalar-Plain">amazon</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">service</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">S3</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">access_key_id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_ACCESS_KEY&#39;] %&gt;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">secret_access_key</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_SECRET_KEY&#39;] %&gt;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">region</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_REGION&#39;] %&gt;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">bucket</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_BUCKET&#39;] %&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>リサイズ</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">image_tag</span> <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">variant</span><span class="p">(</span><span class="ss">resize</span><span class="p">:</span> <span class="s1">&#39;200x200&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このように<code>variant</code>メソッドを使えばリサイズでビューに表示できる。<br/>
-<small>
-参照：<a href="https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb">https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb</a>
-</small></p>
-
-<h4>Direct upload</h4>
-
-<p>JSを使って<code>Direct upload</code>することもできる。</p>
-
-<ul>
-<li><p>include activestorage.js</p>
-
-<ul>
-<li>asset pipelineの場合</li>
-</ul>
-
-
-<pre><code class="javascript">//= require activestorage
-</code></pre>
-
-<ul>
-<li>npm packageの場合</li>
-</ul>
-
-
-<pre><code class="javascript">import * as ActiveStorage from "activestorage"
-ActiveStorage.start()
-</code></pre></li>
-<li><p>file_fieldに設定</p>
-
-<ul>
-<li>ビューの file_field に direct_upload: true を入れる</li>
-</ul>
-
-
-<pre><code class="slim">= f.file_field :avatar, direct_upload: true
-</code></pre></li>
-</ul>
-
-
-<h2>サンプル</h2>
-
-<p><a href="https://active-storage-jo.herokuapp.com">https://active-storage-jo.herokuapp.com</a></p>
-
-<h2>参考</h2>
-
-<p><a href="https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7">https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7</a><br/>
-<a href="https://github.com/rails/rails/tree/master/activestorage">https://github.com/rails/rails/tree/master/activestorage</a></p>
 </div>
   
   

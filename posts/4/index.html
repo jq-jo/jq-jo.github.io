@@ -9,8 +9,10 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="環境 Rails Rails 5.1.0.rc2 Ruby ruby 2.4.0p0 Vue.js 2.0 Vue.jsの使い方 アプリケーション作成 1
-$ rails new vuejs -d postgresql --webpack=vue rails newに -- &hellip;">
+  <meta name="description" content="種類 React.js 最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する
+JSX、Virtual DOMという、新しいアプローチ
+MVCとは違う、Fluxという設計パターン
+Isomorphicなアーキテクチャが可能 Angular. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +79,159 @@ $ rails new vuejs -d postgresql --webpack=vue rails newに -- &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/27/js-framework/">JSのMVCフレームワーク</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-27T17:54:34+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>5:54 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>種類</h3>
+
+<ul>
+<li>React.js
+
+<ul>
+<li>最近注目を浴びているFacebook製のライブラリで、MVCアーキテクチャでいうViewにあたる機能を提供する</li>
+<li>JSX、Virtual DOMという、新しいアプローチ</li>
+<li>MVCとは違う、Fluxという設計パターン</li>
+<li>Isomorphicなアーキテクチャが可能</li>
+</ul>
+</li>
+<li>Angular.js
+
+<ul>
+<li>Googleが開発している人気MVCフレームワーク</li>
+<li>フルスタックで、できないことは殆ど無い</li>
+<li>Yeomanなどを使うとSPA(Single Page Application)が30分位で作れてしまう</li>
+<li>Angular Wayともいわれるが、モジュール化がきっちりされていて、汚いコードにはほぼならない</li>
+</ul>
+</li>
+<li>Angular.js 2.0
+
+<ul>
+<li>ES6等の最新のJavaScript規格を取り入れ、TypeScriptをベースとし記述する</li>
+<li>Angular.jsとはかなり書き方が違う</li>
+<li>WebComopmentsを利用した、より厳密に独立したコンポーネント化を推進</li>
+</ul>
+</li>
+<li>Backbone.js
+
+<ul>
+<li>単一データの管理を行うModel、複数件のモデルの管理を行うCollection、画面の管理を行うViewを組み立てていく</li>
+<li>Backbone.js自体は構造化の仕組みがなく、フレームワークとしてMarionette.jsと一緒に使われることが多い</li>
+<li>事例が案外多い（Buffer、Soundcloud、Trello、Qiitaなど）</li>
+</ul>
+</li>
+<li>Vue.js
+
+<ul>
+<li>MVVMパターン</li>
+<li>作成したUIコンポーネントを組合せてページを構成することを前提にしている</li>
+<li>似ているといわれるが、AngularJSと設計思想は全く異なるもの</li>
+<li>理解しやすいフレームワークとして有名</li>
+</ul>
+</li>
+<li>Mithril.js
+
+<ul>
+<li>Mercuryとともに、スピードがかなりはやいフレームワーク</li>
+</ul>
+</li>
+<li>Aurelia.js
+
+<ul>
+<li>ES6、ES7なシンタックス</li>
+<li>GoogleでAngularJSの開発に関わっていたRob Eisenbergさんが開発した</li>
+</ul>
+</li>
+<li>Knockout.js
+
+<ul>
+<li>MVVM</li>
+<li>Bindingに特化したフレームワーク</li>
+<li>機能は少ないが、導入するのが容易で、学習コストも低い</li>
+</ul>
+</li>
+<li>Ember.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Riot.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>Ractive.js
+
+<ul>
+<li>後で調べる</li>
+</ul>
+</li>
+<li>まとめ
+
+<ul>
+<li>現存するフレームワークは多すぎる。その中でReact,Vueは早い速度で成長している。Angularは最もシェアが多いのでライブラリとかもちゃんとよいされ、安定的に開発できる。Backboneは段々シェアが落ちていくけど、影響力はまだかなり大きい。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>タスクランナー</h3>
+
+<ul>
+<li>Gulp
+
+<ul>
+<li>タスクランナーは、フロントエンドの様々な面倒事を自動化できるツールです。これなしのフロントエンドはもはや考えられない気がします。</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>モデュール化</h3>
+
+<ul>
+<li>Webpack
+
+<ul>
+<li>Webコンテンツには、CSS、JavaScript、画像、webフォント等多くのファイル（アセット）が必要になる。こういったwebで必要なファイルを取り扱うためのWebpackというものが最近人気になっている。</li>
+<li>webpackとは、 webコンテンツを構成するファイルを「モジュール」単位で取り扱い、最適な形に作り変えるためのツールである。</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>参考</h2>
+
+<p><a href="https://www.developereconomics.com/comparison-4-popular-javascript-mv-frameworks-part-2">Comparison of 4 popular JavaScript MV* frameworks (part 2)</a><br/>
+<a href="http://qiita.com/okmttdhr/items/1caff5a36c8468779a64#%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E5%8C%96">ここ数年前から2015/5までのモダンフロントエンドを総まとめしてみた</a><br/>
+<a href="https://ics.media/entry/12140">JS開発で人気のWebpackとは!?</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2501,128 +2656,6 @@ podがなければプロジェクトDirectoryで<code>pod init</code>をしてpo
 
 <p><a href="https://firebase.google.com/docs/analytics/android/events">Firebase Document Analytics Event Android</a><br/>
 <a href="https://firebase.google.com/docs/analytics/ios/events">Firebase Document Analytics Event iOS</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/02/20/counter-cache-in-rails/">カウンターキャッシュについて</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-02-20T16:35:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:35 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>カウンターキャッシュとは</h2>
-
-<ul>
-<li>Rails3からの機能で、以下のように設定することにより関連するテーブルのレコード数を簡単にカウントさせることができる</li>
-</ul>
-
-
-<h2>設定</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Survey</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:questions</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Question&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">dependent</span><span class="p">:</span> <span class="ss">:destroy</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のような関係を持つモデルの子モデルに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Question</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:survey</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;Survey&quot;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="ss">:survey_id</span><span class="p">,</span> <span class="ss">touch</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">counter_cache</span><span class="p">:</span> <span class="ss">:questions_count</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>counter_cache: :カラム名</code>のように追加する<br/>
-それからmigrationを追加する</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_column_questions_count_to_qualitative_surveys</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そこに</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddColumnInquiresCountToSurveys</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="o">[</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:surveys</span><span class="p">,</span> <span class="ss">:questions_count</span><span class="p">,</span> <span class="ss">:integer</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">reversible</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">dir</span><span class="o">.</span><span class="n">up</span> <span class="k">do</span>
-</span><span class='line'>      <span class="no">Survey</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">survey</span><span class="o">|</span>
-</span><span class='line'>        <span class="no">Survey</span><span class="o">.</span><span class="n">reset_counters</span><span class="p">(</span><span class="n">survey</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">:questions</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <code>default: 0</code>を追加し、今持っている子モデルのカウントをセッティングする場合は上記のように<code>reset_counters</code>メソッドを使って更新する
-consoleで確認してみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span> <span class="o">=</span> <span class="no">Survey</span><span class="o">.</span><span class="n">last</span>
-</span><span class='line'><span class="no">Survey</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">6</span><span class="o">.</span><span class="mi">0</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span>  <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;surveys&quot;</span> <span class="no">ORDER</span> <span class="no">BY</span> <span class="s2">&quot;surveys&quot;</span><span class="o">.</span><span class="s2">&quot;id&quot;</span> <span class="no">DESC</span> <span class="no">LIMIT</span> <span class="vg">$1</span>  <span class="o">[[</span><span class="s2">&quot;LIMIT&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="o">]]</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Survey id: 83, title: &quot;Survey_title_49&quot;, content: nil, created_at: &quot;2017-02-08 10:26:51&quot;, updated_at: &quot;2017-02-16 02:55:41&quot;, questions_count: 43&gt;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">survey</span><span class="o">.</span><span class="n">questions_count</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">43</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>のように確認できる</p>
 </div>
   
   

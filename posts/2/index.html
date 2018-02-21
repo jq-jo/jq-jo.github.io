@@ -9,29 +9,7 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="Observerパターン サンプル① コード 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-class Payroll def update(changed_employee) puts &quot;#{ &hellip;">
+  <meta name="description" content="Rails5.2の新しい機能の中にActive Storageというものが気になったので使ってみた。 Active Storageとは AWS S3やGoogle Cloud Storageなどのクラウドファイルストレージサービスへのアップロードをシンプルにやってくれる仕組みとのこと。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -98,6 +76,285 @@ class Payroll def update(changed_employee) puts &quot;#{ &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/12/25/active-storage/">Active Storage</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-12-25T10:49:14+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:49 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Rails5.2の新しい機能の中に<code>Active Storage</code>というものが気になったので使ってみた。</p>
+
+<h2>Active Storageとは</h2>
+
+<p>AWS S3やGoogle Cloud Storageなどのクラウドファイルストレージサービスへのアップロードをシンプルにやってくれる仕組みとのこと。<br/>
+もちろん物理的なディスクシステムへ保存することもできるけど、主眼はあくまでクラウドサービスに置いているらしい。</p>
+
+<h2>Modelの仕組</h2>
+
+<p>Active Storageをインストールすると<code>active_storage_blobs</code>,<code>active_storage_attachments</code>が生成される。</p>
+
+<p><code>active_storage_blobs</code>は<code>metadata (filename, content-type, etc.)</code>を保存する<code>table</code>になっている。<code>key</code>カラムは<code>identifier key</code>としてクラウドファイルストレージのアップするファイルのfilenameになる。</p>
+
+<p><img src="https://monosnap.com/file/xyt2cDYuvKTA8VzYhA6XzqTwcN8Nwh.png" style="width: 50%;">
+<img src="https://monosnap.com/file/kNPH6J23jIHAywqUdjDYRHfp7V86iB.png" style="width: 50%;"></p>
+
+<p><code>active_storage_attachments</code>は添付ファイルの親モデルと<code>active_storage_blobs</code>をアソシエートしてくれる。親モデルはpolymorphicになる。<br/>
+<img src="https://monosnap.com/file/YOHUlhsSpV1Nt5COr0YZX4RdI7KXD4.png" style="width: 50%;"></p>
+
+<h2>使い方</h2>
+
+<ul>
+<li>環境
+
+<ul>
+<li>Rails 5.2.0.beta2</li>
+<li>ruby 2.4.1p111</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>インストール</h3>
+
+<p><code>rails new</code>を通してプロジェクトを作成するとき自動的に<code>Active Storage</code>がインストールされる。<br/>
+<code>rails new --skip-active-storage</code>にするとインストールせずにプロジェクトを作成できる。</p>
+
+<p>既存プロジェクトに<code>Active Storage</code>を入れたい場合は、まず<code>Rails</code>のバージョンをアップグレードしてから、</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rails active_storage:install
+</span><span class='line'>bundle exec rake db:migrate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>で入れることができる。</p>
+
+<h3>サンプルコード</h3>
+
+<ul>
+<li>gemfile</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;mini_magick&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 4.8&#39;</span> <span class="c1"># 画像の加工のために</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;aws-sdk-s3&#39;</span> <span class="c1"># S3へのアップロード</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>model</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+</span><span class='line'>  <span class="n">has_one_attached</span> <span class="ss">:avatar</span> <span class="c1"># has_oneの場合</span>
+</span><span class='line'>  <span class="n">has_many_attached</span> <span class="ss">:images</span> <span class="c1"># has_manyの場合</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>controller</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">UsersController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user_params</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">:new</span> <span class="ow">and</span> <span class="k">return</span> <span class="k">unless</span> <span class="vi">@user</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">avatar</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:avatar</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">avatar</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">images</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:user</span><span class="o">][</span><span class="ss">:images</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>        <span class="vi">@user</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">redirect_to</span> <span class="n">users_path</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>view</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">form_for</span> <span class="vi">@user</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:email</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">email_field</span> <span class="ss">:email</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:avatar</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:avatar</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:images</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file_field</span> <span class="ss">:images</span><span class="p">,</span> <span class="ss">multiple</span><span class="p">:</span> <span class="kp">true</span> <span class="c1"># has_manyの場合</span>
+</span><span class='line'>  <span class="nt">br</span>
+</span><span class='line'>  <span class="p">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;作成&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>クラウド設定</h4>
+
+<ul>
+<li>config/environments/development.rb</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Store uploaded files on the local file system (see config/storage.yml for options)</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">active_storage</span><span class="o">.</span><span class="n">service</span> <span class="o">=</span> <span class="ss">:amazon</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>config/storage.yml</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1"># Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)</span>
+</span><span class='line'><span class="l-Scalar-Plain">amazon</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">service</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">S3</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">access_key_id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_ACCESS_KEY&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">secret_access_key</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_SECRET_KEY&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">region</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_REGION&#39;] %&gt;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">bucket</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;%= ENV[&#39;AWS_BUCKET&#39;] %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>リサイズ</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="p">=</span> <span class="n">image_tag</span> <span class="vi">@user</span><span class="o">.</span><span class="n">avatar</span><span class="o">.</span><span class="n">variant</span><span class="p">(</span><span class="ss">resize</span><span class="p">:</span> <span class="s1">&#39;200x200&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このように<code>variant</code>メソッドを使えばリサイズでビューに表示できる。<br/>
+<small>
+参照：<a href="https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb">https://github.com/rails/rails/blob/master/activestorage/app/models/active_storage/variant.rb</a>
+</small></p>
+
+<h4>Direct upload</h4>
+
+<p>JSを使って<code>Direct upload</code>することもできる。</p>
+
+<ul>
+<li><p>include activestorage.js</p>
+
+<ul>
+<li>asset pipelineの場合</li>
+</ul>
+
+
+<pre><code class="javascript">//= require activestorage
+</code></pre>
+
+<ul>
+<li>npm packageの場合</li>
+</ul>
+
+
+<pre><code class="javascript">import * as ActiveStorage from "activestorage"
+ActiveStorage.start()
+</code></pre></li>
+<li><p>file_fieldに設定</p>
+
+<ul>
+<li>ビューの file_field に direct_upload: true を入れる</li>
+</ul>
+
+
+<pre><code class="slim">= f.file_field :avatar, direct_upload: true
+</code></pre></li>
+</ul>
+
+
+<h2>サンプル</h2>
+
+<p><a href="https://active-storage-jo.herokuapp.com">https://active-storage-jo.herokuapp.com</a></p>
+
+<h2>参考</h2>
+
+<p><a href="https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7">https://qiita.com/nashirox/items/e63fd28d974ecf12f0e7</a><br/>
+<a href="https://github.com/rails/rails/tree/master/activestorage">https://github.com/rails/rails/tree/master/activestorage</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2184,107 +2441,6 @@ Uploadにバリデーションをかけるのももちろんできる。<br/>
 <p><a href="https://github.com/janko-m/shrine">Shrine githubページ</a><br/>
 <a href="http://qiita.com/okuramasafumi/items/488b535ad8889ef22b72">RailsでShrineを使ってファイルをS3にダイレクトアップロードするときの注意点</a><br/>
 <a href="https://re-engines.com/2017/04/21/shrine%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/">Shrineを使って画像をアップロードする</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/08/17/active-model-serializers/">ActiveModelSerializersについて</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-08-17T10:43:55+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:43 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mastodonのソースコードを最近のRailsの記述を学ぼうとしたのでMastodonのソースコードを読み始めた。<br/>
-Mastodonのrootページになる<code>/about</code>からみたのだが、最初からわからないことばかり！（泣）<br/>
-Mastodonには<code>ActiveModelSerializers</code>を使ってjsonの処理を行っていたので<code>ActiveModelSerializers</code>を調べてみた。</p>
-
-<h3>ActiveModelSerializersとは</h3>
-
-<p><a href="https://github.com/rails-api/active_model_serializers/tree/0-10-stable">ActiveModelSerializers</a>によると</p>
-
-<blockquote><p>ActiveModelSerializers brings convention over configuration to your JSON generation.</p></blockquote>
-
-<p>と書いてある。
-つまりActiveModelSerializersとはRailsで簡単で素早くjsonを作れるgemである。
-JSON形式でレスポンスを返す場合、表示するパラメータを制御したいときに細かなJSONの制御を行うことができるので便利。</p>
-
-<h3>使い方</h3>
-
-<p><code>rails generate serializer Hoge</code>を実行すると<br/>
-<code>app/serializers/hoge_serializer.rb</code>ファイルが作成される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HogeSerializer</span> <span class="o">&lt;</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Serializer</span>
-</span><span class='line'>  <span class="n">attributes</span> <span class="ss">:id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">:name_size</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">name_size</span>
-</span><span class='line'>    <span class="n">object</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">size</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上記のコードをみてみると<br/>
-- <code>attributes</code>にレスポンスで表示したいパラメータを記述する。
-- 関連オブジェクトで同時に表示したいオブジェクトがある場合は<code>has_many</code>や<code>has_one</code>などが使える。
-- 関数を定義することで、独自のパラメータを追加することもできる。</p>
-
-<p>Controllerで次のように書くと、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@hoge</span> <span class="o">=</span> <span class="no">Hoge</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'><span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@hoge</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>結果のjsonが以下のようになっている。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nb">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>  <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;hoge&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;hoge@example.com&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">name_size</span><span class="p">:</span> <span class="mi">4</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このように、Serializerクラスで整形処理を行うことで、Controllerがより綺麗になると思う。</p>
-
-<h2>参照</h2>
-
-<p><a href="http://qiita.com/m_nakamura145/items/75fd7c0934daf9bcc21d">active_model_serializersが便利</a></p>
 </div>
   
   
