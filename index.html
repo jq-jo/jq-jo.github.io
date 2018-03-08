@@ -9,8 +9,8 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="ActiveRecordの設計 ActiveRecordはRailsの一部であり、Rubyのオブジェクトをデータベースのテーブルにマッピングするものである。この機能をオブジェクトリレーショナルマッピングと呼ぶ。
-ActiveRecordはRailsアプリケーションでは、モデル（MVCの「M」） &hellip;">
+  <meta name="description" content="課題 学校の先生、学生のリスト出力 全員のリスト
+データを指定 先生、学生のリスト出力 クラスメソッドを使って取り出す 指定データ出力 インスタンスメソッドを使って取り出す 前提 先生、学生のデータはそれぞれmixin_samples/students_data.rb、mixin_samples/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,363 @@ ActiveRecordはRailsアプリケーションでは、モデル（MVCの「M」�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/03/08/mixin-sample/">クラス拡張ミックスインのサンプル作り</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-03-08T14:13:16+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>2:13 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>課題</h2>
+
+<ul>
+<li>学校の先生、学生のリスト出力
+
+<ul>
+<li>全員のリスト</li>
+<li>データを指定</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>先生、学生のリスト出力</h3>
+
+<ul>
+<li>クラスメソッドを使って取り出す</li>
+</ul>
+
+
+<h3>指定データ出力</h3>
+
+<ul>
+<li>インスタンスメソッドを使って取り出す</li>
+</ul>
+
+
+<h2>前提</h2>
+
+<ul>
+<li>先生、学生のデータはそれぞれ<code>mixin_samples/students_data.rb</code>、<code>mixin_samples/teachers_data.rb</code>を使う</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">StudentsData</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">data</span>
+</span><span class='line'>      <span class="o">[</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Suzuki&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">70</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Sato&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">50</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Takahashi&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">70</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Tanaka&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">90</span> <span class="p">}</span>
+</span><span class='line'>      <span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">TeachersData</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">data</span>
+</span><span class='line'>      <span class="o">[</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">46</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Ito&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;国語&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;1年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Watanabe&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;数学&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;2年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Yamamoto&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;科学&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;3年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Nakamura&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;英語&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;3年生&#39;</span> <span class="p">}</span>
+</span><span class='line'>      <span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Sample code</h2>
+
+<h3>出力のための<code>TotalPrint</code>、<code>PersonalPrint</code>モジュールを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">TotalPrint</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">print_data</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">convert_data</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">print_names</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">names</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">convert_data</span>
+</span><span class='line'>      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">k</span><span class="o">.</span><span class="n">capitalize</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39; | &#39;</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">names</span>
+</span><span class='line'>      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">flatten</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">PersonalPrint</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">to_print</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">person_info</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">person_info</span>
+</span><span class='line'>      <span class="n">args</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">k</span><span class="o">.</span><span class="n">capitalize</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39; | &#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>データ指定のための<code>Search</code>モジュールを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Search</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">objs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="nb">hash</span><span class="o">|</span> <span class="nb">hash</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span> <span class="p">?</span> <span class="nb">hash</span> <span class="p">:</span> <span class="kp">nil</span> <span class="p">}</span><span class="o">.</span><span class="n">compact</span>
+</span><span class='line'>      <span class="n">objs</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span> <span class="kp">new</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>モジュールをMixinするスーパークラスを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">SchoolMember</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:args</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">PersonalPrint</span>
+</span><span class='line'>    <span class="kp">extend</span> <span class="no">TotalPrint</span>
+</span><span class='line'>    <span class="kp">extend</span> <span class="no">Search</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@args</span> <span class="o">=</span> <span class="n">args</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>実際の本体である先生、学生のクラスを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Teacher</span> <span class="o">&lt;</span> <span class="no">SchoolMember</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">TeachersData</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Student</span> <span class="o">&lt;</span> <span class="no">SchoolMember</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">StudentsData</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>結果</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MixinSamples</span><span class="o">::</span><span class="no">Teacher</span><span class="o">.</span><span class="n">print_data</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">46</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Ito</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">国語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">1</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">38</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Watanabe</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">数学</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">2</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">25</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Yamamoto</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">科学</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">3</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">32</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Nakamura</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">英語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">3</span><span class="err">年生</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MixinSamples</span><span class="o">::</span><span class="no">Student</span><span class="o">.</span><span class="n">print_data</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Suzuki</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">17</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Sato</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">60</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">50</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">50</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Takahashi</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">100</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">16</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Tanaka</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">60</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">90</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">teachers</span> <span class="o">=</span> <span class="no">MixinSamples</span><span class="o">::</span><span class="no">Teacher</span><span class="o">.</span><span class="n">search</span> <span class="s1">&#39;Ito&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[&lt;</span><span class="no">MixinSamples</span><span class="o">::</span><span class="ss">Teacher</span><span class="p">:</span><span class="mh">0x007fd7b1682910</span> <span class="vi">@age</span><span class="o">=</span><span class="mi">46</span><span class="p">,</span> <span class="vi">@name</span><span class="o">=</span><span class="s2">&quot;Ito&quot;</span><span class="p">,</span> <span class="vi">@teaching_subject</span><span class="o">=</span><span class="s2">&quot;国語&quot;</span><span class="p">,</span> <span class="vi">@teaching_target</span><span class="o">=</span><span class="s2">&quot;1年生&quot;</span><span class="o">&gt;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">teachers</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">teacher</span><span class="o">|</span> <span class="n">teacher</span><span class="o">.</span><span class="n">to_print</span> <span class="p">}</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">46</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Ito</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">国語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">1</span><span class="err">年生</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">students</span> <span class="o">=</span> <span class="no">MixinSamples</span><span class="o">::</span><span class="no">Student</span><span class="o">.</span><span class="n">search</span> <span class="s1">&#39;Suzuki&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[&lt;</span><span class="no">MixinSamples</span><span class="o">::</span><span class="ss">Student</span><span class="p">:</span><span class="mh">0x007fd7b1506500</span> <span class="vi">@age</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="vi">@args</span><span class="o">=</span><span class="p">{</span><span class="ss">:age</span><span class="o">=&gt;</span><span class="mi">18</span><span class="p">,</span> <span class="ss">:name</span><span class="o">=&gt;</span><span class="s2">&quot;Suzuki&quot;</span><span class="p">,</span> <span class="ss">:japanese</span><span class="o">=&gt;</span><span class="mi">70</span><span class="p">,</span> <span class="ss">:math</span><span class="o">=&gt;</span><span class="mi">80</span><span class="p">,</span> <span class="ss">:science</span><span class="o">=&gt;</span><span class="mi">90</span><span class="p">,</span> <span class="ss">:english</span><span class="o">=&gt;</span><span class="mi">70</span><span class="p">},</span> <span class="vi">@english</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="vi">@japanese</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="vi">@math</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="vi">@name</span><span class="o">=</span><span class="s2">&quot;Suzuki&quot;</span><span class="p">,</span> <span class="vi">@science</span><span class="o">=</span><span class="mi">90</span><span class="o">&gt;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">students</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">student</span><span class="o">|</span> <span class="n">student</span><span class="o">.</span><span class="n">to_print</span> <span class="p">}</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Suzuki</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2371,471 +2728,6 @@ Rubyの「内部スコープ」から「外部スコープ」を参照する「�
 <h2>参照</h2>
 
 <p>本「メタプログラミングRuby」第1章</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/12/27/block-proc-lambda/">Rubyのblock, Proc, Lambda</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-12-27T10:50:28+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:50 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>ブロック</h2>
-
-<h3>ブロックとは</h3>
-
-<ul>
-<li>do~endまたは{~}で囲われた引数となるためのもの</li>
-<li>それ単体では存在できず、メソッドの引数にしかなれない</li>
-<li>引数として渡されたブロックは、yieldによって実行される</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
-</span><span class='line'>  <span class="k">yield</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>説明</h4>
-
-<ul>
-<li>引数を明示</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">block</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>「&amp;」とは<br/>
-<code>&amp;</code>を付けることで、実際に引数にブロックが渡ってきた際、<br/>
-Procオブジェクトに変換している。</p></li>
-<li><p>Procオブジェクトとは</p>
-
-<ul>
-<li>ブロックをオブジェクト化したものがProc
-
-<ul>
-<li>ブロックをオブジェクトに変換することで、引き渡されたメソッド内で扱えるようにする</li>
-</ul>
-</li>
-<li>Procオブジェクトは、callで呼び出すことが出来る</li>
-</ul>
-</li>
-<li><p>注意点<br/>
-引数として渡せるブロックは一つだけ。</p></li>
-<li><p>yieldが使える<br/>
-引数として渡されるブロックが１つに限られているならば、呼び出し箇所を<code>block.call</code>と明示せずに、yieldで統一する。</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#メソッド定義</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">yield</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>さらに、<br/>
-<code>yield</code>を使うなら引数の<code>(&amp;block)</code>はいらないので</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span>
-</span><span class='line'>  <span class="k">yield</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span> <span class="k">do</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, block!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに省略できる。</p>
-
-<h2>Proc</h2>
-
-<ul>
-<li>ブロックをオブジェクト化したものがProc</li>
-<li>Procオブジェクトはcallで呼び出すことが出来る</li>
-<li>Procに引数を持つこともできる</li>
-<li>Proc.newとlambdaはほぼ同義</li>
-</ul>
-
-
-<h3>Procオブジェクトの定義と呼び出し</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;hoge&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hoge&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Procに引数が渡された場合</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;Hello, </span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2">!&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Proc&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, Proc!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Proc.newとlambdaはほぼ同義</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">lambda1</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="nb">p</span> <span class="s2">&quot;hoge&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="n">lambda1</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hoge&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">lambda2</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;Hello, </span><span class="si">#{</span><span class="n">s</span><span class="si">}</span><span class="s2">!&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="n">lambda2</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;Proc&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;Hello, Proc!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Procとlambdaの違い</h3>
-
-<ul>
-<li>lambdaはブロックの引数の数が違うとエラーを起こしてくれる。</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">a</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="kp">nil</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">lambda1</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="o">|</span> <span class="nb">p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">a</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
-</span><span class='line'><span class="n">lambda1</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="n">wrong</span> <span class="n">number</span> <span class="n">of</span> <span class="n">arguments</span> <span class="p">(</span><span class="mi">2</span> <span class="k">for</span> <span class="mi">3</span><span class="p">)</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>明示的にreturnやbreakを行った場合の挙動が違います。</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">method_proc</span>
-</span><span class='line'>  <span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">p</span> <span class="s2">&quot;proc&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;method_proc&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">method_proc</span>
-</span><span class='line'><span class="o">=&gt;</span><span class="s2">&quot;proc&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">method_lambda</span>
-</span><span class='line'>  <span class="nb">lambda</span> <span class="o">=</span> <span class="nb">lambda</span><span class="p">{</span> <span class="k">return</span> <span class="nb">p</span> <span class="s2">&quot;lambda&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="nb">lambda</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="s2">&quot;method_lambda&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">method_lambda</span>
-</span><span class='line'><span class="o">=&gt;</span><span class="s2">&quot;lambda&quot;</span>
-</span><span class='line'>  <span class="s2">&quot;method_lambda&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>ブロックやProcのメリット</h2>
-
-<h3>柔軟に拡張できる</h3>
-
-<p>下のコードのようにメソッドを汎用的に使うことができる</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">someProc</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">someProc</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">sum_proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sum_proc</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">8</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">string_proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="p">,</span> <span class="n">string</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="n">string</span> <span class="o">*</span> <span class="n">x</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">my_method</span><span class="p">(</span><span class="s1">&#39;hello_proc! &#39;</span><span class="p">,</span> <span class="n">string_proc</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello_proc! hello_proc! hello_proc! hello_proc! hello_proc! &quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>クロージャとしての機能が得られる</h3>
-
-<h4>サンプル①</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">bar</span>
-</span><span class='line'>  <span class="n">str</span> <span class="o">=</span> <span class="s1">&#39;bye&#39;</span>
-</span><span class='line'>  <span class="k">yield</span><span class="p">(</span><span class="s1">&#39;Jo&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">str</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
-</span><span class='line'><span class="n">bar</span> <span class="p">{</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">str</span><span class="si">}</span><span class="s2">, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello, Jo&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>サンプル②</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
-</span><span class='line'><span class="n">foo</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'><span class="nb">proc</span> <span class="o">=</span> <span class="no">Proc</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">2</span>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">3</span>
-</span><span class='line'><span class="nb">proc</span><span class="o">.</span><span class="n">call</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">4</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>block_given?</h3>
-
-<h4>block_given?とは</h4>
-
-<p>引数としてブロックが与えられたかどうかを判別するメソッド。</p>
-
-<h4>使い方</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">greet_method</span>
-</span><span class='line'>  <span class="k">if</span> <span class="nb">block_given?</span>
-</span><span class='line'>    <span class="k">yield</span><span class="p">(</span><span class="s1">&#39;hello!&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;ブロックがありません。&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">greet_method</span> <span class="k">do</span> <span class="o">|</span><span class="n">str</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="n">str</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;hello!&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">greet_method</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;ブロックがありません。&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="https://qiita.com/kidach1/items/15cfee9ec66804c3afd2">https://qiita.com/kidach1/items/15cfee9ec66804c3afd2</a><br/>
-<a href="https://qiita.com/ryo-ma/items/24c46592b45775e8644d">https://qiita.com/ryo-ma/items/24c46592b45775e8644d</a></p>
 </div>
   
   

@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-02-21T18:46:01+09:00</updated>
+  <updated>2018-03-08T14:15:22+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,342 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[クラス拡張ミックスインのサンプル作り]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/03/08/mixin-sample/"/>
+    <updated>2018-03-08T14:13:16+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/03/08/mixin-sample</id>
+    <content type="html"><![CDATA[<h2>課題</h2>
+
+<ul>
+<li>学校の先生、学生のリスト出力
+
+<ul>
+<li>全員のリスト</li>
+<li>データを指定</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>先生、学生のリスト出力</h3>
+
+<ul>
+<li>クラスメソッドを使って取り出す</li>
+</ul>
+
+
+<h3>指定データ出力</h3>
+
+<ul>
+<li>インスタンスメソッドを使って取り出す</li>
+</ul>
+
+
+<h2>前提</h2>
+
+<ul>
+<li>先生、学生のデータはそれぞれ<code>mixin_samples/students_data.rb</code>、<code>mixin_samples/teachers_data.rb</code>を使う</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">StudentsData</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">data</span>
+</span><span class='line'>      <span class="o">[</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Suzuki&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">70</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Sato&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">50</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Takahashi&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">70</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Tanaka&#39;</span><span class="p">,</span> <span class="ss">japanese</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="ss">math</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="ss">science</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="ss">english</span><span class="p">:</span> <span class="mi">90</span> <span class="p">}</span>
+</span><span class='line'>      <span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">TeachersData</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="nb">self</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">data</span>
+</span><span class='line'>      <span class="o">[</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">46</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Ito&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;国語&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;1年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Watanabe&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;数学&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;2年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Yamamoto&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;科学&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;3年生&#39;</span> <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Nakamura&#39;</span><span class="p">,</span> <span class="ss">teaching_subject</span><span class="p">:</span> <span class="s1">&#39;英語&#39;</span><span class="p">,</span> <span class="ss">teaching_target</span><span class="p">:</span> <span class="s1">&#39;3年生&#39;</span> <span class="p">}</span>
+</span><span class='line'>      <span class="o">]</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Sample code</h2>
+
+<h3>出力のための<code>TotalPrint</code>、<code>PersonalPrint</code>モジュールを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">TotalPrint</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">print_data</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">convert_data</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">print_names</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">names</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">convert_data</span>
+</span><span class='line'>      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">k</span><span class="o">.</span><span class="n">capitalize</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39; | &#39;</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">names</span>
+</span><span class='line'>      <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">flatten</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">PersonalPrint</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">to_print</span>
+</span><span class='line'>      <span class="nb">puts</span> <span class="n">person_info</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">person_info</span>
+</span><span class='line'>      <span class="n">args</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">k</span><span class="o">.</span><span class="n">capitalize</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39; | &#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>データ指定のための<code>Search</code>モジュールを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Search</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">objs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="nb">hash</span><span class="o">|</span> <span class="nb">hash</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span> <span class="p">?</span> <span class="nb">hash</span> <span class="p">:</span> <span class="kp">nil</span> <span class="p">}</span><span class="o">.</span><span class="n">compact</span>
+</span><span class='line'>      <span class="n">objs</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span> <span class="kp">new</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>モジュールをMixinするスーパークラスを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">SchoolMember</span>
+</span><span class='line'>    <span class="kp">attr_accessor</span> <span class="ss">:args</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">PersonalPrint</span>
+</span><span class='line'>    <span class="kp">extend</span> <span class="no">TotalPrint</span>
+</span><span class='line'>    <span class="kp">extend</span> <span class="no">Search</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>      <span class="vi">@args</span> <span class="o">=</span> <span class="n">args</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>実際の本体である先生、学生のクラスを定義する</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Teacher</span> <span class="o">&lt;</span> <span class="no">SchoolMember</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">TeachersData</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MixinSamples</span>
+</span><span class='line'>  <span class="k">class</span> <span class="nc">Student</span> <span class="o">&lt;</span> <span class="no">SchoolMember</span>
+</span><span class='line'>    <span class="kp">include</span> <span class="no">StudentsData</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>結果</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">MixinSamples</span><span class="o">::</span><span class="no">Teacher</span><span class="o">.</span><span class="n">print_data</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">46</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Ito</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">国語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">1</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">38</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Watanabe</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">数学</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">2</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">25</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Yamamoto</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">科学</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">3</span><span class="err">年生</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">32</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Nakamura</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">英語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">3</span><span class="err">年生</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">MixinSamples</span><span class="o">::</span><span class="no">Student</span><span class="o">.</span><span class="n">print_data</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Suzuki</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">17</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Sato</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">60</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">50</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">50</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Takahashi</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">100</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">16</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Tanaka</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">60</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">90</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">teachers</span> <span class="o">=</span> <span class="no">MixinSamples</span><span class="o">::</span><span class="no">Teacher</span><span class="o">.</span><span class="n">search</span> <span class="s1">&#39;Ito&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[&lt;</span><span class="no">MixinSamples</span><span class="o">::</span><span class="ss">Teacher</span><span class="p">:</span><span class="mh">0x007fd7b1682910</span> <span class="vi">@age</span><span class="o">=</span><span class="mi">46</span><span class="p">,</span> <span class="vi">@name</span><span class="o">=</span><span class="s2">&quot;Ito&quot;</span><span class="p">,</span> <span class="vi">@teaching_subject</span><span class="o">=</span><span class="s2">&quot;国語&quot;</span><span class="p">,</span> <span class="vi">@teaching_target</span><span class="o">=</span><span class="s2">&quot;1年生&quot;</span><span class="o">&gt;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">teachers</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">teacher</span><span class="o">|</span> <span class="n">teacher</span><span class="o">.</span><span class="n">to_print</span> <span class="p">}</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">46</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Ito</span> <span class="o">|</span> <span class="ss">Teaching_subject</span><span class="p">:</span> <span class="err">国語</span> <span class="o">|</span> <span class="ss">Teaching_target</span><span class="p">:</span> <span class="mi">1</span><span class="err">年生</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">students</span> <span class="o">=</span> <span class="no">MixinSamples</span><span class="o">::</span><span class="no">Student</span><span class="o">.</span><span class="n">search</span> <span class="s1">&#39;Suzuki&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[&lt;</span><span class="no">MixinSamples</span><span class="o">::</span><span class="ss">Student</span><span class="p">:</span><span class="mh">0x007fd7b1506500</span> <span class="vi">@age</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="vi">@args</span><span class="o">=</span><span class="p">{</span><span class="ss">:age</span><span class="o">=&gt;</span><span class="mi">18</span><span class="p">,</span> <span class="ss">:name</span><span class="o">=&gt;</span><span class="s2">&quot;Suzuki&quot;</span><span class="p">,</span> <span class="ss">:japanese</span><span class="o">=&gt;</span><span class="mi">70</span><span class="p">,</span> <span class="ss">:math</span><span class="o">=&gt;</span><span class="mi">80</span><span class="p">,</span> <span class="ss">:science</span><span class="o">=&gt;</span><span class="mi">90</span><span class="p">,</span> <span class="ss">:english</span><span class="o">=&gt;</span><span class="mi">70</span><span class="p">},</span> <span class="vi">@english</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="vi">@japanese</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> <span class="vi">@math</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="vi">@name</span><span class="o">=</span><span class="s2">&quot;Suzuki&quot;</span><span class="p">,</span> <span class="vi">@science</span><span class="o">=</span><span class="mi">90</span><span class="o">&gt;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">students</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">student</span><span class="o">|</span> <span class="n">student</span><span class="o">.</span><span class="n">to_print</span> <span class="p">}</span>
+</span><span class='line'><span class="o">=&gt;</span>
+</span><span class='line'><span class="ss">Age</span><span class="p">:</span> <span class="mi">18</span> <span class="o">|</span> <span class="ss">Name</span><span class="p">:</span> <span class="no">Suzuki</span> <span class="o">|</span> <span class="ss">Japanese</span><span class="p">:</span> <span class="mi">70</span> <span class="o">|</span> <span class="ss">Math</span><span class="p">:</span> <span class="mi">80</span> <span class="o">|</span> <span class="ss">Science</span><span class="p">:</span> <span class="mi">90</span> <span class="o">|</span> <span class="ss">English</span><span class="p">:</span> <span class="mi">70</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ActiveRecordの設計]]></title>
@@ -4467,265 +4803,6 @@ apiコントローラーのコードを変えてみる。</p>
 <p><a href="https://github.com/doorkeeper-gem/doorkeeper">doorkeeper</a><br/>
 <a href="http://qiita.com/cyborg__ninja/items/a5e0a12590a1b921a31b">Doorkeeper gem でOauth認証できるアプリケーションを作った後の事</a><br/>
 <a href="http://kansiho.hatenablog.com/entry/2017/09/02/%E3%80%90Rails5%E3%80%91Doorkeeper_gem%E3%81%A7OAuth2.0%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AEAPI%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%80%81%E3%83%86%E3%82%B9%E3%83%88%E3%81%99%E3%82%8B%E6%B5%81%E3%82%8C">【Rails5】Doorkeeper gemでOAuth2.0のためのAPIを作って、rubyクライアントで呼び出す</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Shrine Gemについて]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/08/29/shrine/"/>
-    <updated>2017-08-29T14:34:13+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/08/29/shrine</id>
-    <content type="html"><![CDATA[<ul>
-<li>shrineとは</li>
-</ul>
-
-
-<p>公式サイトには</p>
-
-<blockquote><p>Shrine is a toolkit for file attachments in Ruby applications.</p></blockquote>
-
-<p>と書いてある。つまり、ShrineはRubyアプリケーションにおいてファイルをアタッチするために使えるツールキットである。</p>
-
-<ul>
-<li>使い方
-
-<ul>
-<li>gemのインストール</li>
-</ul>
-
-
-<pre><code class="``ruby">  gem 'shrine'
-</code></pre>
-
-<ul>
-<li>初期設定</li>
-</ul>
-
-
-<pre><code class="``ruby">  # config/initializers/shrine.rb
-  require "shrine"
-  require "shrine/storage/file_system"
-
-  Shrine.storages = {
-    cache: Shrine::Storage::FileSystem.new("public", prefix: "uploads/cache"), # temporary
-    store: Shrine::Storage::FileSystem.new("public", prefix: "uploads/store"), # permanent
-  }
-
-  Shrine.plugin :activerecord
-  Shrine.plugin :cached_attachment_data # for forms
-</code></pre>
-
-<ul>
-<li>Model</li>
-</ul>
-
-
-<pre><code class="``ruby">  class Photo &lt; ApplicationRecord
-    include ImageUploader[:image]
-  end
-</code></pre>
-
-<ul>
-<li>Uploader</li>
-</ul>
-
-
-<pre><code class="``ruby">  class ImageUploader &lt; Shrine
-  end
-</code></pre>
-
-<ul>
-<li>Controller<br/>
-Controllerのparamは<code>image_data</code>ではなく、<code>image</code>にする。</li>
-</ul>
-
-
-<pre><code class="``ruby">  def photo_params
-    params.require(:photo).permit(:name, :image)
-  end
-</code></pre></li>
-</ul>
-
-
-<p>ビューを作ってブラウザーで確認してみると、</p>
-
-<p><img src="https://monosnap.com/file/0qOCToywihGzpmIutHR2OjDjG2Q03w.png" alt="" /><br/>
-大きすぎる。。！！</p>
-
-<ul>
-<li><p>リサイズ<br/>
-リサイズのためには他のgemをインストールする必要がある。</p>
-
-<ul>
-<li>gemのインストール</li>
-</ul>
-
-
-<pre><code class="``ruby">  gem 'image_processing'
-  gem 'mini_magick', '&gt;= 4.3.5'
-</code></pre>
-
-<ul>
-<li>Uploader編集</li>
-</ul>
-
-
-<pre><code class="``ruby">  require 'image_processing/mini_magick'
-  class ImageUploader &lt; Shrine
-    include ImageProcessing::MiniMagick
-    plugin :processing
-    plugin :versions   # enable Shrine to handle a hash of files
-    plugin :delete_raw # delete processed files after uploading
-
-    process(:store) do |io, context|
-      original = io.download
-
-      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
-      size_500 = resize_to_limit(size_800,  500, 500)
-      size_300 = resize_to_limit(size_500,  300, 300)
-
-      {original: io, large: size_800, medium: size_500, small: size_300}
-    end
-  end
-</code></pre>
-
-<ul>
-<li>ビューで表示する
-ビューでサイズ別の画像を取得できる。</li>
-</ul>
-
-
-<pre><code class="``">  = image_tag, @photo.image[:original].url
-  = image_tag, @photo.image[:large].url}
-  = image_tag, @photo.image[:medium].url}"
-  = image_tag, @photo.image[:small].url}"
-</code></pre>
-
-<p>  ビューで確認すると、</p>
-
-<p>  <img src="https://monosnap.com/file/HdW4JQ8J5DJTn3vCV8QvvKQQR0HiIF.png" alt="" /></p></li>
-<li><p>バリデーションの追加<br/>
-Uploadにバリデーションをかけるのももちろんできる。<br/>
-<code>validation_helpers</code>のプラグインを追加し、バリデーションを追加する。<br/>
-バリデーションの処理は<code>Attacher.validate</code>の中に記述する。</p>
-
-<ul>
-<li>Uploaderの編集</li>
-</ul>
-
-
-<pre><code class="``ruby">  require 'image_processing/mini_magick'
-  class ImageUploader &lt; Shrine
-    include ImageProcessing::MiniMagick
-    plugin :processing
-    plugin :versions   # enable Shrine to handle a hash of files
-    plugin :delete_raw # delete processed files after uploading
-    plugin :validation_helpers
-
-    process(:store) do |io, context|
-      original = io.download
-
-      size_800 = resize_to_limit!(original, 800, 800) { |cmd| cmd.auto_orient } # orient rotated images
-      size_500 = resize_to_limit(size_800,  500, 500)
-      size_300 = resize_to_limit(size_500,  300, 300)
-
-      {original: io, large: size_800, medium: size_500, small: size_300}
-    end
-
-    Attacher.validate do
-      validate_max_size 5 * 1024 * 1024, message: 'Image is too large (max is 5 MB)'
-      validate_mime_type_inclusion %w(image/jpeg image/jpg image/png)
-    end
-  end
-</code></pre>
-
-<p>  バリデーションにかかったら</p>
-
-<pre><code class="``">  photo = Photo.new
-  photo.image = File.open("img.png")
-  photo.valid? #=&gt; false
-  photo.errors.to_hash #=&gt; {image: ["Image is too large (max is 5 MB)"]}
-</code></pre></li>
-<li>Direct uploads
-
-<ul>
-<li>gemのインストール</li>
-</ul>
-
-
-<pre><code class="``">  gem 'aws-sdk', '~&gt; 2.1'
-  gem 'roda'
-</code></pre>
-
-<ul>
-<li>config/initializers/shrine.rbファイルの編集</li>
-</ul>
-
-
-<pre><code class="``ruby">  require "shrine/storage/s3"
-
-  s3_options = {
-    access_key_id:     "abc",
-    secret_access_key: "123",
-    region:            "my-region",
-    bucket:            "my-bucket",
-  }
-
-  Shrine.storages = {
-    cache: Shrine::Storage::S3.new(prefix: "cache", **s3_options),
-    store: Shrine::Storage::S3.new(prefix: "store", **s3_options),
-  }
-</code></pre>
-
-<ul>
-<li>Uploaderにpluginの追加</li>
-</ul>
-
-
-<pre><code class="``ruby">  plugin :direct_upload
-</code></pre>
-
-<ul>
-<li>routes.rbに<code>mount</code>追加</li>
-</ul>
-
-
-<pre><code class="``ruby">  Rails.application.routes.draw do
-    mount ImageUploader::UploadEndpoint =&gt; "/images"
-  end
-</code></pre>
-
-<ul>
-<li>jsonの取得</li>
-</ul>
-
-
-<p>  <code>GET /images/cache/presign</code>のrouteでjsonを取得できる。</p>
-
-<pre><code class="``">  # GET /images/cache/presign
-  {
-    "url" =&gt; "https://my-bucket.s3-eu-west-1.amazonaws.com",
-    "fields" =&gt; {
-      "key" =&gt; "cache/b7d575850ba61b44c8a9ff889dfdb14d88cdc25f8dd121004c8",
-      "policy" =&gt; "eyJleHBpcmF0aW9uIjoiMjAxNS0QwMToxMToyOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJzaHJpbmUtdGVzdGluZyJ9LHsia2V5IjoiYjdkNTc1ODUwYmE2MWI0NGU3Y2M4YTliZmY4OGU5ZGZkYjE2NTQ0ZDk4OGNkYzI1ZjhkZDEyMTAwNGM4In0seyJ4LWFtei1jcmVkZW50aWFsIjoiQUtJQUlKRjU1VE1aWlk0NVVUNlEvMjAxNTEwMjQvZXUtd2VzdC0xL3MzL2F3czRfcmVxdWVzdCJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotZGF0ZSI6IjIwMTUxMDI0VDAwMTEyOVoifV19",
-      "x-amz-credential" =&gt; "AKIAIJF55TMZYT6Q/20151024/eu-west-1/s3/aws4_request",
-      "x-amz-algorithm" =&gt; "AWS4-HMAC-SHA256",
-      "x-amz-date" =&gt; "20151024T001129Z",
-      "x-amz-signature" =&gt; "c1eb634f83f96b69bd675f535b3ff15ae184b102fcba51e4db5f4959b4ae26f4"
-    }
-  }
-</code></pre></li>
-</ul>
-
-
-<p>こう設定すると、ひとまずs3にdirect_uploadはできる。<br/>
-公式documentには<code>jQuery-File-Upload</code>, <code>Dropzone</code>, <code>FineUploader</code>などのJavaScriptファイルアップロードライブラリとも連携もできると書いてあるので、次は今のプロジェクトで使用している<code>Dropzone</code>との連携を調べてみる。</p>
-
-<h2>参照</h2>
-
-<p><a href="https://github.com/janko-m/shrine">Shrine githubページ</a><br/>
-<a href="http://qiita.com/okuramasafumi/items/488b535ad8889ef22b72">RailsでShrineを使ってファイルをS3にダイレクトアップロードするときの注意点</a><br/>
-<a href="https://re-engines.com/2017/04/21/shrine%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E7%94%BB%E5%83%8F%E3%82%92%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89%E3%81%99%E3%82%8B/">Shrineを使って画像をアップロードする</a></p>
 ]]></content>
   </entry>
   
