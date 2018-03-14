@@ -9,8 +9,25 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="課題 学校の先生、学生のリスト出力 全員のリスト
-データを指定 先生、学生のリスト出力 クラスメソッドを使って取り出す 指定データ出力 インスタンスメソッドを使って取り出す 前提 先生、学生のデータはそれぞれmixin_samples/students_data.rb、mixin_samples/ &hellip;">
+  <meta name="description" content="動的属性 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+require &#39;activerecord&#39;
+ActiveRecord::Base.establish_connection :adapter =&gt; &quot;sqlite3& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +94,116 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/03/08/active-record-nakami/">ActiveRecordの中身</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-03-08T18:47:11+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>6:47 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>動的属性</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;activerecord&#39;</span>
+</span><span class='line'><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">establish_connection</span> <span class="ss">:adapter</span> <span class="o">=&gt;</span> <span class="s2">&quot;sqlite3&quot;</span><span class="p">,</span>
+</span><span class='line'>                                        <span class="ss">:database</span> <span class="o">=&gt;</span> <span class="s2">&quot;dbfile&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_table</span> <span class="ss">:tasks</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:description</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">boolean</span>  <span class="ss">:completed</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Task</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;ブログの記事作成&#39;</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">completed</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; &quot;ブログの記事作成&quot;</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">completed?</span>  <span class="c1">#=&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードに属性にアクセスする４つのメソッドを呼び出している。（description=()、completed=()、description()、completed?()）<br/>
+しかし、これらの「属性アクセサ」はTaskクラスの定義にはない。<br/>
+では、このアクセサはどこからきたものなんだろうか。</p>
+
+<h4>ActiveRecord::Base#method_missing()</h4>
+
+<p>実際に<code>active_record/attribute_methods.rb</code>では<code>ActiveModel::AttributeMethods</code>を<code>include</code>して<code>method_missing()</code>を使っている。<code>method_missing()</code>が呼び出されたら該当メソッドがあるかどうかを判断し、ゴーストメソッドを生成する。そのゴーストメソッドはゴーストアクセサになり、動的に属性にアクセスすることができる。</p>
+
+<h2>動的ファインダ</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="ss">:first</span><span class="p">,</span> <span class="ss">:conditions</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:completed</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">})</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; &quot;ブログの記事作成&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">find_by_description</span><span class="p">(</span><span class="s1">&#39;ブログの記事作成&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="c1"># =&gt; 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_all_by_completed</span><span class="p">(</span><span class="kp">true</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_by_description_and_completed</span><span class="p">(</span><span class="s1">&#39;ブログの記事作成&#39;</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_or_create_by_description</span><span class="p">(</span><span class="s1">&#39;ランチターイム&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_by_description!</span><span class="p">(</span><span class="s1">&#39;帰宅&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base.find</code>は<code>find_by_&lt;attr&gt;</code>のように属性名を含むメソッドでの検索もできる。<br/>
+and, or での連結などもできる。<br/>
+これも動的属性と同じく「ゴーストメソッド」で実装している。
+長い
+ここでもやはり最初に method_missing でメソッドを定義して次からは直接呼び出せるようにしている</p>
+
+<h2>参照</h2>
+
+<p><a href="https://github.com/rails/rails/tree/master/activerecord">rails/activerecord at master · rails/rails · GitHub</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2401,333 +2528,6 @@ Rubyの「内部スコープ」から「外部スコープ」を参照する「�
 <li><code>method_missing()</code>を利用すると存在しないメソッド、ゴーストメソッドに対するハンドリングや処理ができる</li>
 </ul>
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2018/01/11/object-model/">オブジェクトモデル</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2018-01-11T12:02:58+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>12:02 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>オープンクラス</h2>
-
-<p>下記のメソッドは文字列からアルファベットとスペース以外を取り除くメソッド</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">to_alphanumeric</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">s</span><span class="o">.</span><span class="n">gsub</span> <span class="sr">/[^\w\s]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>オープンクラスを使えば、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">String</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">to_alphanumeric</span>
-</span><span class='line'>    <span class="nb">gsub</span> <span class="sr">/[^\w\s]/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こう書くこともできる。<br/>
-標準クラスの<code>String</code>を書き換える。すると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;!a #b+c&quot;</span><span class="o">.</span><span class="n">to_alphanumeric</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;a bc&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに適用される。</p>
-
-<h2>クラス定義</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;my_method&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method2</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;my_method2&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>class C</code>を定義してまた<code>class C</code>をさらに定義するとどうなるだろう。<br/>
-<code>class C</code>を上書きすると思ったが実際叩いてみたら</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
-</span><span class='line'><span class="n">my_method</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method2</span>
-</span><span class='line'><span class="n">my_method2</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上書きじゃなく、<code>class C</code>に追加する形になる。</p>
-
-<h2>定数</h2>
-
-<p>定数はディレクトリとファイルのようにパスで呼び出すことができる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">M</span>
-</span><span class='line'>  <span class="no">MyConstant</span> <span class="o">=</span> <span class="s2">&quot;ABCDE&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>    <span class="no">MyConstant</span> <span class="o">=</span> <span class="s2">&quot;12345&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">M</span><span class="o">::</span><span class="no">MyConstant</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;ABCDE&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">M</span><span class="o">::</span><span class="n">C</span><span class="o">::</span><span class="no">MyConstant</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;12345&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>クラスオブジェクト</h2>
-
-<p>クラスオブジェクトをみてみるため、<code>"hello"</code>からたどり着いてみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;hello&quot;</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="nb">String</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">String</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Class</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Class</span><span class="o">.</span><span class="n">instance_methods</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:allocate</span><span class="p">,</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">:superclass</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">String</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Object</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">BasicObject</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">BasicObject</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Class</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Module</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Module</span><span class="o">.</span><span class="n">superclass</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Object</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>そうなんだ！と思いながら１つ気になる点がある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Object</span><span class="o">.</span><span class="n">class</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">Class</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>Object</code>の<code>class</code>は<code>Class</code>。<br/>
-でも、<code>Class</code>の<code>superclass</code>は<code>module</code>であり、<code>module</code>の<code>superclass</code>は<code>Object</code>。<br/>
-では<code>Class</code>の上位classの<code>Object</code>は<code>Class</code>？
-ちゃんと理解ができていない。。これは今度深く調べてみよう。</p>
-
-<h2>self</h2>
-
-<h4>class定義の時のself</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="nb">self</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="n">C</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">my_method</span>
-</span><span class='line'>    <span class="nb">self</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">my_method</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;CC:0x007ffbe8a67e08&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>method</code>内での<code>self</code>はオブジェクトを指す。<code>method</code>外での<code>self</code>はクラスを指す。</p>
-
-<h4>privateキーワードのself</h4>
-
-<p>privateメソッドのルール：「明示的なレシーバーをつけて呼び出せない」
-下記は明示的なselfをつけているのでエラーとなる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
-</span><span class='line'>    <span class="nb">self</span><span class="o">.</span><span class="n">private_method</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kp">private</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;ABCDE&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_method</span>
-</span><span class='line'><span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="sb">`private_method&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>selfを削除すると動作するようになる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">C</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">public_method</span>
-</span><span class='line'>    <span class="n">private_method</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kp">private</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">private_method</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;ABCDE&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">C</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">public_method</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">ABCDE</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参照</h2>
-
-<p>本「メタプログラミングRuby」第1章</p>
 </div>
   
   

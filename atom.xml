@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-03-08T14:15:22+09:00</updated>
+  <updated>2018-03-14T18:49:56+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveRecordの中身]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/03/08/active-record-nakami/"/>
+    <updated>2018-03-08T18:47:11+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/03/08/active-record-nakami</id>
+    <content type="html"><![CDATA[<h2>動的属性</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;activerecord&#39;</span>
+</span><span class='line'><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">establish_connection</span> <span class="ss">:adapter</span> <span class="o">=&gt;</span> <span class="s2">&quot;sqlite3&quot;</span><span class="p">,</span>
+</span><span class='line'>                                        <span class="ss">:database</span> <span class="o">=&gt;</span> <span class="s2">&quot;dbfile&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">create_table</span> <span class="ss">:tasks</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:description</span>
+</span><span class='line'>  <span class="n">t</span><span class="o">.</span><span class="n">boolean</span>  <span class="ss">:completed</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Task</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">;</span> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;ブログの記事作成&#39;</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">completed</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">save</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; &quot;ブログの記事作成&quot;</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">completed?</span>  <span class="c1">#=&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のコードに属性にアクセスする４つのメソッドを呼び出している。（description=()、completed=()、description()、completed?()）<br/>
+しかし、これらの「属性アクセサ」はTaskクラスの定義にはない。<br/>
+では、このアクセサはどこからきたものなんだろうか。</p>
+
+<h4>ActiveRecord::Base#method_missing()</h4>
+
+<p>実際に<code>active_record/attribute_methods.rb</code>では<code>ActiveModel::AttributeMethods</code>を<code>include</code>して<code>method_missing()</code>を使っている。<code>method_missing()</code>が呼び出されたら該当メソッドがあるかどうかを判断し、ゴーストメソッドを生成する。そのゴーストメソッドはゴーストアクセサになり、動的に属性にアクセスすることができる。</p>
+
+<h2>動的ファインダ</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="ss">:first</span><span class="p">,</span> <span class="ss">:conditions</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:completed</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">})</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">description</span> <span class="c1"># =&gt; &quot;ブログの記事作成&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">task</span> <span class="o">=</span> <span class="no">Task</span><span class="o">.</span><span class="n">find_by_description</span><span class="p">(</span><span class="s1">&#39;ブログの記事作成&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="c1"># =&gt; 1</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_all_by_completed</span><span class="p">(</span><span class="kp">true</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_by_description_and_completed</span><span class="p">(</span><span class="s1">&#39;ブログの記事作成&#39;</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_or_create_by_description</span><span class="p">(</span><span class="s1">&#39;ランチターイム&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="no">Task</span><span class="o">.</span><span class="n">find_by_description!</span><span class="p">(</span><span class="s1">&#39;帰宅&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>ActiveRecord::Base.find</code>は<code>find_by_&lt;attr&gt;</code>のように属性名を含むメソッドでの検索もできる。<br/>
+and, or での連結などもできる。<br/>
+これも動的属性と同じく「ゴーストメソッド」で実装している。
+長い
+ここでもやはり最初に method_missing でメソッドを定義して次からは直接呼び出せるようにしている</p>
+
+<h2>参照</h2>
+
+<p><a href="https://github.com/rails/rails/tree/master/activerecord">rails/activerecord at master · rails/rails · GitHub</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[クラス拡張ミックスインのサンプル作り]]></title>
@@ -4464,345 +4553,6 @@ apiコントローラーのコードを変えてみる。</p>
 
 <p><a href="http://blog.toshimaru.net/json-parser-benchmark/">RubyのJSONパーサーのパース速度比較</a><br/>
 <a href="https://github.com/ohler55/oj">OJ Github</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Doorkeeper Gemについて]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/09/21/doorkeeper/"/>
-    <updated>2017-09-21T10:33:42+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/09/21/doorkeeper</id>
-    <content type="html"><![CDATA[<h3>Doorkeeperとは</h3>
-
-<p>OAuth2による認証機能をアプリに追加するGemです。</p>
-
-<h3>インストール</h3>
-
-<ul>
-<li>Gem</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;doorkeeper&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>db migration</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">install</span>
-</span><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">migration</span>
-</span><span class='line'><span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>すると、自動に<code>routes.rb</code>に<code>use_doorkeeper</code>が追加される。それから以下のルートが生成される。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">GET</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="o">/</span><span class="ss">:code</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">token</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">revoke</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="kp">new</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="o">/</span><span class="n">edit</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">PATCH</span> <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">PUT</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">token</span><span class="o">/</span><span class="n">info</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>このルートを利用してアプリケーション毎認証を作ってアクセストークンなどを出したりするのもできる。</p>
-
-<h3>使い方</h3>
-
-<p><code>POST   /oauth/authorize</code>で取得できる<code>code</code>を利用して<code>POST   /oauth/token</code>でアクセストークンを取得。</p>
-
-<h4>例</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">curl</span> <span class="o">-</span><span class="n">F</span> <span class="n">response_type</span><span class="o">=</span><span class="n">code</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">grant_type</span><span class="o">=</span><span class="n">authorization_code</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_id</span><span class="o">=</span><span class="mi">9</span><span class="n">b36d8c0db59eff5038aea7a417d73e69aea75b41aac771816d2ef1b3109cc2f</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">d6ea27703957b69939b8104ed4524595e210cd2e79af587744a7eb6e58f5b3d2</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">code</span><span class="o">=</span><span class="mi">456</span><span class="n">b683f8c1e5ccde47bdfac47ee3ec96e0f1bec2546734b92980dcb806df207</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">resource_owner_id</span><span class="o">=</span><span class="mi">1</span> <span class="p">\</span>
-</span><span class='line'><span class="o">-</span><span class="n">X</span> <span class="no">POST</span> <span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="n">oauth</span><span class="o">/</span><span class="n">token</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>parameter
-
-<ul>
-<li>grant_type
-
-<ul>
-<li><code>initializers/doorkeeper.rb</code>に設定した<code>grant_flows</code></li>
-</ul>
-</li>
-<li>client_id
-
-<ul>
-<li>doorkeeperで作ったアプリの<code>Application Id</code></li>
-</ul>
-</li>
-<li>client_secret
-
-<ul>
-<li>doorkeeperで作ったアプリの<code>Secret</code></li>
-</ul>
-</li>
-<li>code
-
-<ul>
-<li>取得したコード</li>
-</ul>
-</li>
-<li>redirect_uri
-
-<ul>
-<li>doorkeeperで作ったアプリの<code>Callback urls</code></li>
-</ul>
-</li>
-<li>resource_owner_id
-
-<ul>
-<li><code>initializers/doorkeeper.rb</code>に設定した<code>resource_owner_authenticator</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>結果</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="s2">&quot;access_token&quot;</span><span class="ss">:&quot;51ebde838061a87f4b2ea318386387f6d265a7328b3edfacb4b7deee7c3bfa73&quot;</span><span class="p">,</span><span class="s2">&quot;token_type&quot;</span><span class="ss">:&quot;bearer&quot;</span><span class="p">,</span><span class="s2">&quot;created_at&quot;</span><span class="p">:</span><span class="mi">1481614521</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうにアクセストークンが取得できる。</p>
-
-<h4>その他</h4>
-
-<p>場合によって<code>curl</code>じゃなくて他のライブラリを使うこともできる。</p>
-
-<ul>
-<li>Oauth2</li>
-</ul>
-
-
-<p>Oauth2 gemをインストールする。それから</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">CLIENT_ID</span><span class="p">,</span> <span class="no">CLIENT_SECRET</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="no">SITE_URL</span><span class="p">)</span>
-</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="no">CODE</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="no">REDIRECT_URL</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>とすると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;OAuth2::AccessToken:0x007fe8cfa51f58</span>
-</span><span class='line'> <span class="vi">@client</span><span class="o">=</span>
-</span><span class='line'>  <span class="c1">#&lt;OAuth2::Client:0x007fe8cea45330</span>
-</span><span class='line'>   <span class="vi">@auth_code</span><span class="o">=</span><span class="c1">#&lt;OAuth2::Strategy::AuthCode:0x007fe8cc25b3d8 @client=#&lt;OAuth2::Client:0x007fe8cea45330 ...&gt;&gt;,</span>
-</span><span class='line'>   <span class="vi">@connection</span><span class="o">=</span>
-</span><span class='line'>    <span class="c1">#&lt;Faraday::Connection:0x007fe8cc25a5c8</span>
-</span><span class='line'>     <span class="vi">@builder</span><span class="o">=</span>
-</span><span class='line'>      <span class="c1">#&lt;Faraday::RackBuilder:0x007fe8cc2593a8</span>
-</span><span class='line'>       <span class="vi">@app</span><span class="o">=</span>
-</span><span class='line'>        <span class="c1">#&lt;Faraday::Request::UrlEncoded:0x007fe8cecb7140</span>
-</span><span class='line'>         <span class="vi">@app</span><span class="o">=</span><span class="c1">#&lt;Faraday::Adapter::NetHttp:0x007fe8cecb7208 @app=#&lt;Proc:0x007fe8cecb73e8@/Users/jo/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/faraday-0.12.2/lib/faraday/rack_builder.rb:154 (lambda)&gt;, @config_block=nil, @connection_options={}&gt;&gt;,</span>
-</span><span class='line'>       <span class="vi">@handlers</span><span class="o">=[</span><span class="no">Faraday</span><span class="o">::</span><span class="no">Request</span><span class="o">::</span><span class="no">UrlEncoded</span><span class="p">,</span> <span class="no">Faraday</span><span class="o">::</span><span class="no">Adapter</span><span class="o">::</span><span class="no">NetHttp</span><span class="o">]&gt;</span><span class="p">,</span>
-</span><span class='line'>     <span class="vi">@default_parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'>     <span class="vi">@headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;Faraday v0.12.2&quot;</span><span class="p">},</span>
-</span><span class='line'>     <span class="vi">@options</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::RequestOptions params_encoder=nil, proxy=nil, bind=nil, timeout=nil, open_timeout=nil, boundary=nil, oauth=nil, context=nil&gt;,</span>
-</span><span class='line'>     <span class="vi">@parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'>     <span class="vi">@params</span><span class="o">=</span><span class="p">{},</span>
-</span><span class='line'>     <span class="vi">@proxy</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'>     <span class="vi">@ssl</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::SSLOptions verify=nil, ca_file=nil, ca_path=nil, verify_mode=nil, cert_store=nil, client_cert=nil, client_key=nil, certificate=nil, private_key=nil, verify_depth=nil, version=nil&gt;,</span>
-</span><span class='line'>     <span class="vi">@url_prefix</span><span class="o">=</span><span class="c1">#&lt;URI::HTTP http://localhost:3000/home/access_token&gt;&gt;,</span>
-</span><span class='line'>   <span class="vi">@id</span><span class="o">=</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:authorize_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/authorize&quot;</span><span class="p">,</span> <span class="ss">:token_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/token&quot;</span><span class="p">,</span> <span class="ss">:token_method</span><span class="o">=&gt;</span><span class="ss">:post</span><span class="p">,</span> <span class="ss">:auth_scheme</span><span class="o">=&gt;</span><span class="ss">:request_body</span><span class="p">,</span> <span class="ss">:connection_opts</span><span class="o">=&gt;</span><span class="p">{},</span> <span class="ss">:connection_build</span><span class="o">=&gt;</span><span class="kp">nil</span><span class="p">,</span> <span class="ss">:max_redirects</span><span class="o">=&gt;</span><span class="mi">5</span><span class="p">,</span> <span class="ss">:raise_errors</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">},</span>
-</span><span class='line'>   <span class="vi">@secret</span><span class="o">=</span><span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span>
-</span><span class='line'>   <span class="vi">@site</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="o">&gt;</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@expires_at</span><span class="o">=</span><span class="mi">1506062175</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@expires_in</span><span class="o">=</span><span class="mi">7200</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:mode</span><span class="o">=&gt;</span><span class="ss">:header</span><span class="p">,</span> <span class="ss">:header_format</span><span class="o">=&gt;</span><span class="s2">&quot;Bearer %s&quot;</span><span class="p">,</span> <span class="ss">:param_name</span><span class="o">=&gt;</span><span class="s2">&quot;access_token&quot;</span><span class="p">},</span>
-</span><span class='line'> <span class="vi">@params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;token_type&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="o">=&gt;</span><span class="mi">1506054975</span><span class="p">},</span>
-</span><span class='line'> <span class="vi">@refresh_token</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@token</span><span class="o">=</span><span class="s2">&quot;c7f79becd53a4f4e571b95dc9e075d39034f9e613505fdb844bd8e778eb8933c&quot;</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうresponseを取得できる。</p>
-
-<ul>
-<li>RestClient</li>
-</ul>
-
-
-<p>RestClient gemをインストールし、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">RestClient</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;http://localhost:3000/oauth/token&#39;</span><span class="p">,</span> <span class="p">{</span><span class="ss">grant_type</span><span class="p">:</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">,</span> <span class="ss">client_id</span><span class="p">:</span> <span class="no">CLIENT_ID</span><span class="p">,</span> <span class="ss">client_secret</span><span class="p">:</span> <span class="no">CLIENT_SECRET</span><span class="p">}</span>
-</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="n">body</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>すると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">access_token</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">7328d931953ce2a4db130d02575a95a80b47683c2b2f9619492285465bce4b9d</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">token_type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">bearer</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">expires_in</span><span class="se">\&quot;</span><span class="s2">:7200,</span><span class="se">\&quot;</span><span class="s2">created_at</span><span class="se">\&quot;</span><span class="s2">:1506055209}&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>というresponseを取得できる。</p>
-
-<h3>Api連携</h3>
-
-<p><code>before_action :doorkeeper_authorize!</code>を使って有効TokenのみアクセスできるようにApiと連携ができる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">BaseController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
-</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:doorkeeper_authorize!</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに設定をしておく。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">UsersController</span> <span class="o">&lt;</span> <span class="no">Api</span><span class="o">::</span><span class="no">BaseController</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
-</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">present?</span>
-</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="n">user</span><span class="p">}</span>
-</span><span class='line'>    <span class="k">else</span>
-</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="s2">&quot;cannot found this user&quot;</span><span class="p">}</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ユーザー情報を取得するapiを試してみると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span> <span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="s2">&quot;http://localhost:3000&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="s2">&quot;536b065b6ae6ca9acdc71d33387b4e5e6dbdd5bcc6950f7fcb2e96fd307bc295&quot;</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">user_info</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users/1&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">body</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">JSON</span><span class="o">.</span><span class="n">decode</span> <span class="n">user_info</span><span class="o">.</span><span class="n">body</span>
-</span><span class='line'><span class="n">user_email</span> <span class="o">=</span> <span class="n">body</span><span class="o">[</span><span class="s2">&quot;user&quot;</span><span class="o">][</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;user@example.com&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>簡単にデータが取れる。<br/>
-トークン無しでアクセスしようとしたら、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">RestClient</span><span class="o">.</span><span class="n">get</span> <span class="s1">&#39;http://localhost:3000/api/users/1&#39;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="no">RestClient</span><span class="o">::</span><span class="ss">Unauthorized</span><span class="p">:</span> <span class="mi">401</span> <span class="no">Unauthorized</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに接続できない。</p>
-
-<p>Doorkeeper gemはすごく簡単にOAuth2による認証機能を実装できる。Doorkeeperと連携してさらにApiを作ったり、ログイン機能に認証機能をつけるなどの実装も可能になる。</p>
-
-<h2>参考</h2>
-
-<p><a href="https://github.com/doorkeeper-gem/doorkeeper">doorkeeper</a><br/>
-<a href="http://qiita.com/cyborg__ninja/items/a5e0a12590a1b921a31b">Doorkeeper gem でOauth認証できるアプリケーションを作った後の事</a><br/>
-<a href="http://kansiho.hatenablog.com/entry/2017/09/02/%E3%80%90Rails5%E3%80%91Doorkeeper_gem%E3%81%A7OAuth2.0%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AEAPI%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%80%81%E3%83%86%E3%82%B9%E3%83%88%E3%81%99%E3%82%8B%E6%B5%81%E3%82%8C">【Rails5】Doorkeeper gemでOAuth2.0のためのAPIを作って、rubyクライアントで呼び出す</a></p>
 ]]></content>
   </entry>
   

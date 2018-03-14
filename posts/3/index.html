@@ -9,7 +9,12 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="shrineとは 公式サイトには Shrine is a toolkit for file attachments in Ruby applications. と書いてある。つまり、ShrineはRubyアプリケーションにおいてファイルをアタッチするために使えるツールキットである。 使い方 &hellip;">
+  <meta name="description" content="Doorkeeperとは OAuth2による認証機能をアプリに追加するGemです。 インストール Gem 1
+gem &#39;doorkeeper&#39; db migration 1
+2
+3
+rails generate doorkeeper:install
+rails generate &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +81,366 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/09/21/doorkeeper/">Doorkeeper Gemについて</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-09-21T10:33:42+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2017</span></span> <span class='time'>10:33 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Doorkeeperとは</h3>
+
+<p>OAuth2による認証機能をアプリに追加するGemです。</p>
+
+<h3>インストール</h3>
+
+<ul>
+<li>Gem</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s1">&#39;doorkeeper&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>db migration</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">install</span>
+</span><span class='line'><span class="n">rails</span> <span class="n">generate</span> <span class="ss">doorkeeper</span><span class="p">:</span><span class="n">migration</span>
+</span><span class='line'><span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>すると、自動に<code>routes.rb</code>に<code>use_doorkeeper</code>が追加される。それから以下のルートが生成される。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">GET</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="o">/</span><span class="ss">:code</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">authorize</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">token</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">revoke</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">POST</span>  <span class="sr">/oauth/</span><span class="n">applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="kp">new</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="o">/</span><span class="n">edit</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">PATCH</span> <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">PUT</span>   <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">DELETE</span>    <span class="sr">/oauth/</span><span class="n">authorized_applications</span><span class="o">/</span><span class="ss">:id</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span><span class='line'><span class="no">GET</span>   <span class="sr">/oauth/</span><span class="n">token</span><span class="o">/</span><span class="n">info</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このルートを利用してアプリケーション毎認証を作ってアクセストークンなどを出したりするのもできる。</p>
+
+<h3>使い方</h3>
+
+<p><code>POST   /oauth/authorize</code>で取得できる<code>code</code>を利用して<code>POST   /oauth/token</code>でアクセストークンを取得。</p>
+
+<h4>例</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">curl</span> <span class="o">-</span><span class="n">F</span> <span class="n">response_type</span><span class="o">=</span><span class="n">code</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">grant_type</span><span class="o">=</span><span class="n">authorization_code</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_id</span><span class="o">=</span><span class="mi">9</span><span class="n">b36d8c0db59eff5038aea7a417d73e69aea75b41aac771816d2ef1b3109cc2f</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">d6ea27703957b69939b8104ed4524595e210cd2e79af587744a7eb6e58f5b3d2</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">code</span><span class="o">=</span><span class="mi">456</span><span class="n">b683f8c1e5ccde47bdfac47ee3ec96e0f1bec2546734b92980dcb806df207</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">F</span> <span class="n">resource_owner_id</span><span class="o">=</span><span class="mi">1</span> <span class="p">\</span>
+</span><span class='line'><span class="o">-</span><span class="n">X</span> <span class="no">POST</span> <span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="n">oauth</span><span class="o">/</span><span class="n">token</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>parameter
+
+<ul>
+<li>grant_type
+
+<ul>
+<li><code>initializers/doorkeeper.rb</code>に設定した<code>grant_flows</code></li>
+</ul>
+</li>
+<li>client_id
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Application Id</code></li>
+</ul>
+</li>
+<li>client_secret
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Secret</code></li>
+</ul>
+</li>
+<li>code
+
+<ul>
+<li>取得したコード</li>
+</ul>
+</li>
+<li>redirect_uri
+
+<ul>
+<li>doorkeeperで作ったアプリの<code>Callback urls</code></li>
+</ul>
+</li>
+<li>resource_owner_id
+
+<ul>
+<li><code>initializers/doorkeeper.rb</code>に設定した<code>resource_owner_authenticator</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>結果</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="s2">&quot;access_token&quot;</span><span class="ss">:&quot;51ebde838061a87f4b2ea318386387f6d265a7328b3edfacb4b7deee7c3bfa73&quot;</span><span class="p">,</span><span class="s2">&quot;token_type&quot;</span><span class="ss">:&quot;bearer&quot;</span><span class="p">,</span><span class="s2">&quot;created_at&quot;</span><span class="p">:</span><span class="mi">1481614521</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうにアクセストークンが取得できる。</p>
+
+<h4>その他</h4>
+
+<p>場合によって<code>curl</code>じゃなくて他のライブラリを使うこともできる。</p>
+
+<ul>
+<li>Oauth2</li>
+</ul>
+
+
+<p>Oauth2 gemをインストールする。それから</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">CLIENT_ID</span><span class="p">,</span> <span class="no">CLIENT_SECRET</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="no">SITE_URL</span><span class="p">)</span>
+</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="no">CODE</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="no">REDIRECT_URL</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とすると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;OAuth2::AccessToken:0x007fe8cfa51f58</span>
+</span><span class='line'> <span class="vi">@client</span><span class="o">=</span>
+</span><span class='line'>  <span class="c1">#&lt;OAuth2::Client:0x007fe8cea45330</span>
+</span><span class='line'>   <span class="vi">@auth_code</span><span class="o">=</span><span class="c1">#&lt;OAuth2::Strategy::AuthCode:0x007fe8cc25b3d8 @client=#&lt;OAuth2::Client:0x007fe8cea45330 ...&gt;&gt;,</span>
+</span><span class='line'>   <span class="vi">@connection</span><span class="o">=</span>
+</span><span class='line'>    <span class="c1">#&lt;Faraday::Connection:0x007fe8cc25a5c8</span>
+</span><span class='line'>     <span class="vi">@builder</span><span class="o">=</span>
+</span><span class='line'>      <span class="c1">#&lt;Faraday::RackBuilder:0x007fe8cc2593a8</span>
+</span><span class='line'>       <span class="vi">@app</span><span class="o">=</span>
+</span><span class='line'>        <span class="c1">#&lt;Faraday::Request::UrlEncoded:0x007fe8cecb7140</span>
+</span><span class='line'>         <span class="vi">@app</span><span class="o">=</span><span class="c1">#&lt;Faraday::Adapter::NetHttp:0x007fe8cecb7208 @app=#&lt;Proc:0x007fe8cecb73e8@/Users/jo/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/faraday-0.12.2/lib/faraday/rack_builder.rb:154 (lambda)&gt;, @config_block=nil, @connection_options={}&gt;&gt;,</span>
+</span><span class='line'>       <span class="vi">@handlers</span><span class="o">=[</span><span class="no">Faraday</span><span class="o">::</span><span class="no">Request</span><span class="o">::</span><span class="no">UrlEncoded</span><span class="p">,</span> <span class="no">Faraday</span><span class="o">::</span><span class="no">Adapter</span><span class="o">::</span><span class="no">NetHttp</span><span class="o">]&gt;</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@default_parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;Faraday v0.12.2&quot;</span><span class="p">},</span>
+</span><span class='line'>     <span class="vi">@options</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::RequestOptions params_encoder=nil, proxy=nil, bind=nil, timeout=nil, open_timeout=nil, boundary=nil, oauth=nil, context=nil&gt;,</span>
+</span><span class='line'>     <span class="vi">@parallel_manager</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@params</span><span class="o">=</span><span class="p">{},</span>
+</span><span class='line'>     <span class="vi">@proxy</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>     <span class="vi">@ssl</span><span class="o">=</span><span class="c1">#&lt;struct Faraday::SSLOptions verify=nil, ca_file=nil, ca_path=nil, verify_mode=nil, cert_store=nil, client_cert=nil, client_key=nil, certificate=nil, private_key=nil, verify_depth=nil, version=nil&gt;,</span>
+</span><span class='line'>     <span class="vi">@url_prefix</span><span class="o">=</span><span class="c1">#&lt;URI::HTTP http://localhost:3000/home/access_token&gt;&gt;,</span>
+</span><span class='line'>   <span class="vi">@id</span><span class="o">=</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:authorize_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/authorize&quot;</span><span class="p">,</span> <span class="ss">:token_url</span><span class="o">=&gt;</span><span class="s2">&quot;/oauth/token&quot;</span><span class="p">,</span> <span class="ss">:token_method</span><span class="o">=&gt;</span><span class="ss">:post</span><span class="p">,</span> <span class="ss">:auth_scheme</span><span class="o">=&gt;</span><span class="ss">:request_body</span><span class="p">,</span> <span class="ss">:connection_opts</span><span class="o">=&gt;</span><span class="p">{},</span> <span class="ss">:connection_build</span><span class="o">=&gt;</span><span class="kp">nil</span><span class="p">,</span> <span class="ss">:max_redirects</span><span class="o">=&gt;</span><span class="mi">5</span><span class="p">,</span> <span class="ss">:raise_errors</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">},</span>
+</span><span class='line'>   <span class="vi">@secret</span><span class="o">=</span><span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span>
+</span><span class='line'>   <span class="vi">@site</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@expires_at</span><span class="o">=</span><span class="mi">1506062175</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@expires_in</span><span class="o">=</span><span class="mi">7200</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@options</span><span class="o">=</span><span class="p">{</span><span class="ss">:mode</span><span class="o">=&gt;</span><span class="ss">:header</span><span class="p">,</span> <span class="ss">:header_format</span><span class="o">=&gt;</span><span class="s2">&quot;Bearer %s&quot;</span><span class="p">,</span> <span class="ss">:param_name</span><span class="o">=&gt;</span><span class="s2">&quot;access_token&quot;</span><span class="p">},</span>
+</span><span class='line'> <span class="vi">@params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;token_type&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span> <span class="s2">&quot;created_at&quot;</span><span class="o">=&gt;</span><span class="mi">1506054975</span><span class="p">},</span>
+</span><span class='line'> <span class="vi">@refresh_token</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'> <span class="vi">@token</span><span class="o">=</span><span class="s2">&quot;c7f79becd53a4f4e571b95dc9e075d39034f9e613505fdb844bd8e778eb8933c&quot;</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうresponseを取得できる。</p>
+
+<ul>
+<li>RestClient</li>
+</ul>
+
+
+<p>RestClient gemをインストールし、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">RestClient</span><span class="o">.</span><span class="n">post</span> <span class="s1">&#39;http://localhost:3000/oauth/token&#39;</span><span class="p">,</span> <span class="p">{</span><span class="ss">grant_type</span><span class="p">:</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">,</span> <span class="ss">client_id</span><span class="p">:</span> <span class="no">CLIENT_ID</span><span class="p">,</span> <span class="ss">client_secret</span><span class="p">:</span> <span class="no">CLIENT_SECRET</span><span class="p">}</span>
+</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="n">body</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>すると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">access_token</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">7328d931953ce2a4db130d02575a95a80b47683c2b2f9619492285465bce4b9d</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">token_type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">bearer</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">expires_in</span><span class="se">\&quot;</span><span class="s2">:7200,</span><span class="se">\&quot;</span><span class="s2">created_at</span><span class="se">\&quot;</span><span class="s2">:1506055209}&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>というresponseを取得できる。</p>
+
+<h3>Api連携</h3>
+
+<p><code>before_action :doorkeeper_authorize!</code>を使って有効TokenのみアクセスできるようにApiと連携ができる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">BaseController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
+</span><span class='line'>  <span class="n">before_action</span> <span class="ss">:doorkeeper_authorize!</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに設定をしておく。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">UsersController</span> <span class="o">&lt;</span> <span class="no">Api</span><span class="o">::</span><span class="no">BaseController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">present?</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="n">user</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="p">{</span><span class="ss">user</span><span class="p">:</span> <span class="s2">&quot;cannot found this user&quot;</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ユーザー情報を取得するapiを試してみると、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">OAuth2</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;c4af4d3ab6de658d55e9f0383cfec3703586f5802be991c82f3df99bc80ea853&quot;</span><span class="p">,</span> <span class="s2">&quot;928d7220f1f112cf954871da5559a54a64eabcec9b56ffa87ad43a11a678b548&quot;</span><span class="p">,</span> <span class="ss">site</span><span class="p">:</span> <span class="s2">&quot;http://localhost:3000&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">auth_code</span><span class="o">.</span><span class="n">get_token</span><span class="p">(</span><span class="s2">&quot;536b065b6ae6ca9acdc71d33387b4e5e6dbdd5bcc6950f7fcb2e96fd307bc295&quot;</span><span class="p">,</span> <span class="ss">:redirect_uri</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://localhost:3000/home/access_token&quot;</span><span class="p">,</span> <span class="ss">:grant_type</span> <span class="o">=&gt;</span> <span class="s1">&#39;client_credentials&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">user_info</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/api/users/1&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">body</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">JSON</span><span class="o">.</span><span class="n">decode</span> <span class="n">user_info</span><span class="o">.</span><span class="n">body</span>
+</span><span class='line'><span class="n">user_email</span> <span class="o">=</span> <span class="n">body</span><span class="o">[</span><span class="s2">&quot;user&quot;</span><span class="o">][</span><span class="s2">&quot;email&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;user@example.com&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>簡単にデータが取れる。<br/>
+トークン無しでアクセスしようとしたら、</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">RestClient</span><span class="o">.</span><span class="n">get</span> <span class="s1">&#39;http://localhost:3000/api/users/1&#39;</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="no">RestClient</span><span class="o">::</span><span class="ss">Unauthorized</span><span class="p">:</span> <span class="mi">401</span> <span class="no">Unauthorized</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こういうふうに接続できない。</p>
+
+<p>Doorkeeper gemはすごく簡単にOAuth2による認証機能を実装できる。Doorkeeperと連携してさらにApiを作ったり、ログイン機能に認証機能をつけるなどの実装も可能になる。</p>
+
+<h2>参考</h2>
+
+<p><a href="https://github.com/doorkeeper-gem/doorkeeper">doorkeeper</a><br/>
+<a href="http://qiita.com/cyborg__ninja/items/a5e0a12590a1b921a31b">Doorkeeper gem でOauth認証できるアプリケーションを作った後の事</a><br/>
+<a href="http://kansiho.hatenablog.com/entry/2017/09/02/%E3%80%90Rails5%E3%80%91Doorkeeper_gem%E3%81%A7OAuth2.0%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AEAPI%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%80%81%E3%83%86%E3%82%B9%E3%83%88%E3%81%99%E3%82%8B%E6%B5%81%E3%82%8C">【Rails5】Doorkeeper gemでOAuth2.0のためのAPIを作って、rubyクライアントで呼び出す</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2170,477 +2535,6 @@ bowerはツイッターが作ったフロントエンドのパッケージを管
 <p><a href="http://qiita.com/tsuuuuu_san/items/f29836c78e3eaffc4d68">npmの使い方</a><br/>
 <a href="http://qiita.com/megane42/items/2ab6ffd866c3f2fda066#%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E7%94%A8js-%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E7%AE%A1%E7%90%86%E3%83%84%E3%83%BC%E3%83%ABbower">npm とか bower とか一体何なんだよ！Javascript 界隈の文脈を理解しよう</a><br/>
 <a href="http://qiita.com/morrr/items/c16ae12272484a849737">Bower/bower-rails チートシート</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2017/05/18/vuejs-dnd/">VuejsにおけるDrag&Drop</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2017-05-18T10:20:28+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:20 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Rails5.1.1でのVuejs</h2>
-
-<h3>1. HTML5を利用したDrag&amp;Drop</h3>
-
-<p>Rails5.1.1の環境で実装してみた。ビューとJS側はただ宣言と登録だけして全てのコードは<code>.vue</code>ファイルに書いておいた。
-- ビューとJS側</p>
-
-<p><sub>index.html.slim</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='slim'><span class='line'><span class="nf">#todo</span>
-</span><span class='line'>  <span class="nt">todo-dnd</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">=</span> <span class="n">javascript_pack_tag</span> <span class="s1">&#39;todo&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><sub>todo.js</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">Vue</span> <span class="nx">from</span> <span class="s1">&#39;vue/dist/vue.esm&#39;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">TodoDnd</span> <span class="nx">from</span> <span class="s1">&#39;./todo-dnd.vue&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Vue</span><span class="p">.</span><span class="nx">component</span><span class="p">(</span><span class="s1">&#39;todo-dnd&#39;</span><span class="p">,</span> <span class="nx">TodoDnd</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#todo&#39;</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>vueファイル</li>
-</ul>
-
-
-<p><sub>todo-dnd.vue</sub></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;mainDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span> <span class="nx">draggable</span><span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="err">@</span><span class="nx">dragstart</span><span class="o">=</span><span class="s2">&quot;dragStart(list, $event)&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;checkbox&quot;</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;list.todoDone&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">label</span> <span class="nx">v</span><span class="o">-</span><span class="nx">show</span><span class="o">=</span><span class="s2">&quot;!list.todoDone&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/label&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">label</span> <span class="nx">v</span><span class="o">-</span><span class="nx">show</span><span class="o">=</span><span class="s2">&quot;list.todoDone&quot;</span><span class="o">&gt;&lt;</span><span class="nx">s</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/s&gt;&lt;/label&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">textarea</span> <span class="nx">cols</span><span class="o">=</span><span class="s2">&quot;50&quot;</span> <span class="nx">rows</span><span class="o">=</span><span class="s2">&quot;10&quot;</span> <span class="err">@</span><span class="nx">dragover</span><span class="o">=</span><span class="s2">&quot;dragOver($event)&quot;</span> <span class="err">@</span><span class="nx">dragleave</span><span class="o">=</span><span class="s2">&quot;dragLeave($event)&quot;</span> <span class="err">@</span><span class="nx">dragover</span><span class="p">.</span><span class="nx">prevent</span> <span class="err">@</span><span class="nx">drop</span><span class="o">=</span><span class="s2">&quot;drop($event)&quot;</span><span class="o">&gt;&lt;</span><span class="err">/textarea&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">v</span><span class="o">-</span><span class="nx">on</span><span class="o">:</span><span class="nx">click</span><span class="o">=</span><span class="s2">&quot;afterSend&quot;</span><span class="o">&gt;</span><span class="err">送信</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">lists</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Ruby&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Ruby!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">},</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Rails!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">},</span>
-</span><span class='line'>        <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Vue.js&quot;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Hello, Vue.js!&#39;</span><span class="p">,</span> <span class="nx">todoDone</span><span class="o">:</span> <span class="kc">false</span><span class="p">}</span>
-</span><span class='line'>      <span class="p">],</span>
-</span><span class='line'>      <span class="nx">listIndex</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">dragContent</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">mounted</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">props</span><span class="o">:</span> <span class="p">[],</span>
-</span><span class='line'>  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">dragStart</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">content</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">listIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">lists</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">dragOver</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">dragLeave</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">drop</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="s1">&#39;placeholder&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="nx">evt</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dragContent</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">afterSend</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">lists</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">listIndex</span><span class="p">].</span><span class="nx">todoDone</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">scoped</span><span class="o">&gt;</span>
-</span><span class='line'><span class="p">.</span><span class="nx">mainDiv</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">width</span><span class="o">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">float</span><span class="o">:</span> <span class="nx">left</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">width</span><span class="o">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">margin</span><span class="o">-</span><span class="nx">right</span><span class="o">:</span> <span class="mi">100</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">ul</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">width</span><span class="o">:</span> <span class="mi">300</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">black</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">li</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">black</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">margin</span><span class="o">-</span><span class="nx">top</span><span class="o">:</span> <span class="mi">5</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Vuejsで提供してくれるEventの一部</strong></p>
-
-<blockquote><p>@click<br>
-@submit<br>
-@keyup<br>
-@mousedown<br>
-@mousemove<br>
-@mouseup<br>
-@mouseleave<br>
-@touchstart<br>
-@touchmove<br>
-@touchend<br>
-@dragstart<br>
-@dragenter<br>
-@dragleave<br>
-@dragover<br>
-@dragend</p></blockquote>
-
-<p>この中でdrag&amp;dropに関するEventもあるのでそれらを活用してVuejsとHTML5を連携する。
-テンプレート側で、
-Dragする対象に<code>draggable="true"</code>にしてDragが可能になるようにする。あと<code>@dragstart</code>をかけてdragが始まったときのEventを処理する。
-Dropされる対象に<code>@dragover</code>,<code>@dragleave</code>,<code>@drop</code>をかけてそれぞれの必要な処理をさせる。</p>
-
-<h2>2. VueDraggableを利用したDrag&amp;Drop</h2>
-
-<p>ビューとJS側はさっきのやつと同じようになるのでvueファイルだけ書く。
-VueDraggableを使うためには二つの方法がある。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="nx">draggable</span> <span class="nx">from</span> <span class="s1">&#39;vuedraggable&#39;</span>
-</span><span class='line'><span class="p">...</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">components</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">draggable</span><span class="p">,</span>
-</span><span class='line'>          <span class="p">...</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>こういうふうに<code>import</code>をするか、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">draggable</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;vuedraggable&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>require</code>をする。
-今回は前者の<code>import</code>の方法を使う。<code>import</code>をするには<code>npm</code>や<code>bower</code>でインストールをする。今回はnpmで。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span> <span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vuedraggable</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>vueファイル</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Simple</span> <span class="nx">DnD</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span> <span class="err">@</span><span class="nx">start</span><span class="o">=</span><span class="s2">&quot;drag=true&quot;</span> <span class="err">@</span><span class="nx">end</span><span class="o">=</span><span class="s2">&quot;drag=false&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">hr</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;div2&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Two</span> <span class="nx">Lists</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;twoListsDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;twoListsDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists2&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;list in lists2&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">hr</span><span class="o">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">List</span> <span class="nx">clone</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;listCloneDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:{ name:&#39;people&#39;,  pull:&#39;clone&#39;, put:false }}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;(list, index) in lists&quot;</span> <span class="o">:</span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;listCloneDiv&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="nx">draggable</span> <span class="nx">v</span><span class="o">-</span><span class="nx">model</span><span class="o">=</span><span class="s2">&quot;lists2&quot;</span> <span class="o">:</span><span class="nx">options</span><span class="o">=</span><span class="s2">&quot;{group:&#39;people&#39;}&quot;</span><span class="o">&gt;</span>
-</span><span class='line'>            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">v</span><span class="o">-</span><span class="k">for</span><span class="o">=</span><span class="s2">&quot;(list, index) in lists2&quot;</span> <span class="o">:</span><span class="nx">key</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'>          <span class="o">&lt;</span><span class="err">/draggable&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/div&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/template&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
-</span><span class='line'><span class="kr">import</span> <span class="nx">draggable</span> <span class="nx">from</span> <span class="s1">&#39;vuedraggable&#39;</span>
-</span><span class='line'><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">components</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">draggable</span><span class="p">,</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">lists</span><span class="o">:</span> <span class="p">[{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Ruby&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Rails&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Vuejs&#39;</span><span class="p">}],</span>
-</span><span class='line'>      <span class="nx">lists2</span><span class="o">:</span> <span class="p">[{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Java&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Swift&#39;</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Objective-C&#39;</span><span class="p">}],</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
-</span><span class='line'><span class="nx">div</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">ul</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">width</span><span class="o">:</span> <span class="mi">200</span><span class="nx">px</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">border</span><span class="o">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">twoListsDiv</span><span class="p">,</span> <span class="p">.</span><span class="nx">listCloneDiv</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">float</span><span class="o">:</span> <span class="nx">left</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">.</span><span class="nx">div2</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">overflow</span><span class="o">:</span> <span class="nx">hidden</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="err">/style&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>VueDraggableでは<code>draggable</code>というタグを使う。このタグを使っていろんなDnDができる。<code>options</code>を使って同じグループに結んだらDnDを簡単に実装することができるし、<code>pull</code>とか<code>put</code>とかでDnDのOptionを決めることができる。</p>
-
-<h2>参考</h2>
-
-<p><a href="http://qiita.com/akifo/items/a13b76dd94348114111f">Vue.jsのリストレンダリングとhtml5のドラッグ＆ドロップの実装</a><br/>
-<a href="https://www.html5rocks.com/ja/tutorials/dnd/basics/">ネイティブ HTML5 ドラッグ＆ドロップ</a><br/>
-<a href="http://uraway.hatenablog.com/entry/2015/11/30/require_is_not_defined%E3%82%92%E8%A7%A3%E6%B6%88%E3%81%97%E3%81%A6require%E3%82%92%E4%BD%BF%E3%81%88%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%99%E3%82%8B">require is not definedを解消してrequireを使えるようにする</a></p>
 </div>
   
   
