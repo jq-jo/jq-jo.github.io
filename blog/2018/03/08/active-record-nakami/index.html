@@ -190,9 +190,8 @@ ActiveRecord::Base.establish_connection :adapter =&gt; &quot;sqlite3& &hellip;">
 
 <p><code>ActiveRecord::Base.find</code>は<code>find_by_&lt;attr&gt;</code>のように属性名を含むメソッドでの検索もできる。<br/>
 and, or での連結などもできる。<br/>
-これも動的属性と同じく「ゴーストメソッド」で実装している。
-長い
-ここでもやはり最初に method_missing でメソッドを定義して次からは直接呼び出せるようにしている</p>
+これも動的属性と同じく「ゴーストメソッド」で実装している。<br/>
+ここでもやはり最初に<code>method_missing</code>でメソッドを定義して次からは直接呼び出せるようにしている。</p>
 
 <h2>参照</h2>
 
