@@ -9,7 +9,12 @@
   <meta name="author" content="Jo">
 
   
-  <meta name="description" content="はじめに Action Cableとは RailsにWebSocketを組み込む機能で、クライアントサイドからサーバサイドまでフルスタックな機能が提供されるということ。 大きな流れ ビューのEvent発生(ex: onclick) -> coffeescriptのfunction呼び出し -> &hellip;">
+  <meta name="description" content="Rubyはオブジェクト指向言語であるのだけれど、Javaや他の言語の継承と考え方、方法が違うので調べてみた 継承 普通にSubクラスに親クラスを継承したら親クラスのメソッドを使えるようになる 1
+2
+3
+4
+5
+class MyName def my_name p &quot;My name is &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +81,401 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/09/keishou-include-extend/">Rubyの継承とinclude、extendの使い方</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-03-09T18:03:17+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:03 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Rubyはオブジェクト指向言語であるのだけれど、Javaや他の言語の継承と考え方、方法が違うので調べてみた</p>
+
+<h3>継承</h3>
+
+<p>普通にSubクラスに親クラスを継承したら親クラスのメソッドを使えるようになる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">MyName</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is Jo&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Subクラスが親クラスのメソッドをoverrideすると同じように親クラスのメソッドを使える</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
+</span><span class='line'>    <span class="k">super</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Subクラスでoverrideした親クラスのメソッドにsuperを書かないと親クラスからの影響はされない</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is...&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My name is...&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>だが、上のメソッドにsuperを入れたら</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span> <span class="o">&lt;</span> <span class="no">MyName</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_name</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My name is...&quot;</span>
+</span><span class='line'>    <span class="k">super</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My name is...&quot;</span>
+</span><span class='line'><span class="s2">&quot;My name is Jo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>include</h3>
+
+<p>includeはクラスにモジュールを使うようにしてくれる<br>
+継承の場合と少し似ている<br>
+まず、普通にクラスにモジュールを継includeしたらモジュールのメソッドを使えるようになる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyAge</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is 30.&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>overrideしたクラスのメソッドにsuperをつけると同じようにモジュールのメソッドを使えるようになる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
+</span><span class='line'>    <span class="k">super</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>superを書かない場合はモジュールに影響されない</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is.....&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My age is.....&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>その上、superを書いたらクラスのメソッドの処理とモジュールのメソッドの処理が両方行われる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">MyAge</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_age</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My age is.....&quot;</span>
+</span><span class='line'>    <span class="k">super</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_name</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My age is.....&quot;</span>
+</span><span class='line'><span class="s2">&quot;My age is 30.&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>extend</h3>
+
+<p>extendの使い方はさっきの継承やincludeと少し違う</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">MyHobby</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">my_hobby</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My hobby is read a book!&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">MyHobby</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>モジュールをextendしてクラスをオブジェクト化してメソッドを実行しようとすると
+NoMethodErrorが出てくる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span> <span class="o">=</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">introduction</span><span class="o">.</span><span class="n">my_hobby</span>
+</span><span class='line'>
+</span><span class='line'><span class="ss">NoMethodError</span><span class="p">:</span> <span class="n">undefined</span> <span class="nb">method</span> <span class="sb">`my_hobby&#39; for #&lt;Introduction:0x007fd74c0cae38&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>だが、次のようにしてみると通る</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">my_hobby</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My hobby is read a book!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>つまり、extendしたモジュールのメソッドはクラスメソッドのように使えるということ</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Introduction</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">MyHobby</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">my_hobby</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;My hobby is.....&quot;</span>
+</span><span class='line'>    <span class="k">super</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="no">Introduction</span><span class="o">.</span><span class="n">my_hobby</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;My hobby is.....&quot;</span>
+</span><span class='line'><span class="s2">&quot;My hobby is read a book!&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>extendはクラスメソッドに影響する</p>
+
+<h4>参考</h4>
+
+<p><a href="http://d.hatena.ne.jp/kasei_san/20091021/p1">継承, mix-in, include, extend について覚え書き</a><br/>
+<a href="http://qiita.com/metheglin/items/ff877fdfe5dd1fd965e2">superを使って継承/Include/Extendしたメソッドをオーバーライド</a><br/>
+<a href="http://jonny.hatenablog.com/entry/2014/03/07/145731">rubyのrequire/include/extend/継承/クラス拡張ミックスインまとめ</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3983,89 +4383,6 @@ consoleで確認してみたら</p>
 <a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829"><a href="http://sakebook.hatenablog.com/entry/2015/11/20/015829">http://sakebook.hatenablog.com/entry/2015/11/20/015829</a></a>
 <a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B"><a href="http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B">http://ja.stackoverflow.com/questions/31140/androidstudio%E3%81%A7%E5%90%84%E3%83%93%E3%83%AB%E3%83%89%E3%81%AB%E3%81%9D%E3%82%8C%E3%81%9E%E3%82%8C%E3%81%AE%E5%A4%89%E6%95%B0%E3%82%84%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%82%92%E4%BD%9C%E3%82%8B</a></a>
 </small></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/11/30/make-environment-xcode/">ビルド環境設定(XCode)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-11-30T12:23:41+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>12:23 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>XCode</h2>
-
-<p>XCodeの場合はTargetを分ける方法とConfigurationsを分ける方法の二つの方法がある。<br><br>
-◎ Configurationsを分ける方法<br><br>
-まず、プロジェクトのinfoタブでConfigurationsというところで追加させる。ReleaseとDebugがDefaultされてあるのでその中にStagingを入れてみる。<br>
-<img src="https://monosnap.com/file/Q3O8utFKCtm5zg1p0Z3GoWfu4rFUco.png" alt="Alt text" />
-<code>+</code>を押し、DebugかReleaseをduplicateして名前を変える。
-<img src="https://monosnap.com/file/aFsMeAhXPgkctvXCw03jPw61GpWSpg.png" alt="Alt text" />
-続いてTargetsのBuildSettingsの<code>+</code>を押し、User-DefinedにBUNDLE_DISPLAY_NAME_PREFIXとBUNDLE_IDENTIFIER_SUFFIXを追加する。そしてActiveConpilationConditionsも下のように変える。BUNDLE_DISPLAY_NAME_PREFIXはアプリ名を分けるために追加、BUNDLE_IDENTIFIER_SUFFIXはアプリのBundleIdをそれぞれ分けるために追加する。また、ActiveConpilationConditionsはそれぞれのビルドの機能を分岐させるために追加する。
-<img src="https://monosnap.com/file/JK5RqnvNu5iG0jEU35kC6anLKbHFow.png" alt="Alt text" />
-<img src="https://monosnap.com/file/8WwygchOcTeNfveXhUyVHMCJj9DMsH.png" alt="Alt text" />
-次はschemeを分けて管理する。左上のschemeのところで<code>New Scheme</code>を押してDebugとStagingのschemeを追加する。また、<code>Edit Scheme</code>でRelease,Debug,Stagingのそれぞれの設定をする。
-<img src="https://monosnap.com/file/DdgdmUzq2UVIa30kWZiptqU0KKSvy5.png" alt="Alt text" />
-<img src="https://monosnap.com/file/4eeSZVYzL1r3c852b7yzzeYBxSWOKS.png" alt="Alt text" />
-そこまでできたらTargetsのinfoでBundle identifierとBundle nameを変更する。Bundle identifierは$(PRODUCT_BUNDLE_IDENTIFIER)の後ろに$(BUNDLE_IDENTIFIER_SUFFIX)を、Bundle nameは$(PRODUCT_NAME)の前に$(BUNDLE_DISPLAY_NAME_PREFIX)を入れる。
-<img src="https://monosnap.com/file/hZBoQgZnVpl9OVgYINvjgOOubUTsoH.png" alt="Alt text" />
-そうすれば下のようにGeneralで変更されたのを確認できる。
-<img src="https://monosnap.com/file/vdIoWGmaDrrt8nGg5rI1uMkdodxCJa.png" alt="Alt text" />
-それぞれのビルドに機能を分岐させる場合は下のように<code>#if</code>を使う。#ifのところにさっきのActiveConpilationConditionsに設定したのを入れる。
-<img src="https://monosnap.com/file/lTp2TdWE3BsKrapycZtPep3lJoEEWl.png" alt="Alt text" />
-ビルド別にビルドしてみると、<br></p>
-
-<h5>Release</h5>
-
-<p><img src="https://monosnap.com/file/QkGImbr37gD8Y7JyAvxxpi52zoHuPV.png" alt="Alt text" /></p>
-
-<h5>Debug</h5>
-
-<p><img src="https://monosnap.com/file/KlSkLEKfDVMXsWl7MyN3XzsPIbrVvL.png" alt="Alt text" /></p>
-
-<h5>Staging</h5>
-
-<p><img src="https://monosnap.com/file/raVMMgsr3Gvy02ih0hUZy86pxPZIkC.png" alt="Alt text" />
-それぞれ違うソースコードが実行されたことをみることができる。<br>
-インストールされたデバイスをみたら、
-<img src="https://monosnap.com/file/MKAP87DCtdgFOg0kcTQo3IJqS7r4cM.png" alt="Alt text" />
-三つのアプリがインストールされる。<br><br>
-◎ Targetを分ける方法<br><br>
-今のTargetをduplicateしてもう一つのTargetを作る。もちろん<code>+</code>で追加しても良いが、同じソースコードを使うならばduplicateでも全然構わない。作ったら名前を変更し、また自動にinfo.plistファイルも生成されるのでそれのファイル名も変更。その後にGeneralでinfo.plistを選んで設定する。
-<img src="https://monosnap.com/file/lM4SmNEhPp2AIL61Z6rKJOmyEGGq3H.png" alt="Alt text" />
-そしてBuild SettingsでProduct Bundle Identifierを変更すればする。
-<img src="https://monosnap.com/file/hBfhNcDfOoPxGT2mrNAaLe5jCbBbwj.png" alt="Alt text" />
-さっきと同じようにschemeを追加する。
-<img src="https://monosnap.com/file/78PpR1UeYXfOGLrywsrJP0fr6b7E5M.png" alt="Alt text" />
-ActiveConpilationConditionsをカスタマイズするが、Targetを間違わないよう気をつける。
-<img src="https://monosnap.com/file/yq1WCEKKQIKD8NcEFOCkblOp1ypMjV.png" alt="Alt text" />
-さっきの分岐のうえにさらに分岐してみる。
-<img src="https://monosnap.com/file/Vqy7Sz343KYnnO1WokdGwBafGhTqUP.png" alt="Alt text" />
-すると、新たのプロジェクトのRelease,Debug,Stagingをそれぞれ使うことができる。
-<img src="https://monosnap.com/file/E7uYaDWIxb8G3meokqY7V0JffVggzP.png" alt="Alt text" />
-<img src="https://monosnap.com/file/ia7prDT8OLMrKf9jHhd637uHXBgoJ6.png" alt="Alt text" />
-<img src="https://monosnap.com/file/mHxnMnR7C8ikmFrdsY6GYEUHcvoczK.png" alt="Alt text" />
-そして、デバイスで確認してみるとまた三つが増えて六つもアプリがインストールされたのを確認できる。
-<img src="https://monosnap.com/file/3v0ZtxQX4GRtZmgy7DGF5EhmKlBjal.png" alt="Alt text" /></p>
 </div>
   
   

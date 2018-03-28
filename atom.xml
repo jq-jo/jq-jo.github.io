@@ -4,7 +4,7 @@
   <title><![CDATA[JQ Blog]]></title>
   <link href="http://jq-jo.github.io/atom.xml" rel="self"/>
   <link href="http://jq-jo.github.io/"/>
-  <updated>2018-03-15T15:07:11+09:00</updated>
+  <updated>2018-03-28T18:36:32+09:00</updated>
   <id>http://jq-jo.github.io/</id>
   <author>
     <name><![CDATA[Jo]]></name>
@@ -12,6 +12,420 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rack Application]]></title>
+    <link href="http://jq-jo.github.io/blog/2018/03/28/rack-application/"/>
+    <updated>2018-03-28T18:34:25+09:00</updated>
+    <id>http://jq-jo.github.io/blog/2018/03/28/rack-application</id>
+    <content type="html"><![CDATA[<h2>Rack起動</h2>
+
+<h3>Rack gemをインストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install rack</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>config.ru</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ShowEnv</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span>
+</span><span class='line'>      <span class="mi">200</span><span class="p">,</span>
+</span><span class='line'>      <span class="p">{</span> <span class="s1">&#39;Content-Type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;text/plain&#39;</span> <span class="p">},</span>
+</span><span class='line'>      <span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">k</span><span class="o">|</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">k</span><span class="si">}</span><span class="s2"> = </span><span class="si">#{</span><span class="n">env</span><span class="o">[</span><span class="n">k</span><span class="o">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span> <span class="no">ShowEnv</span><span class="o">.</span><span class="n">new</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>起動</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">$</span> <span class="n">rackup</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>起動確認</h3>
+
+<ul>
+<li>ブラウザで<code>localhost:9292</code>で接続</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">GATEWAY_INTERFACE</span> <span class="o">=</span> <span class="no">CGI</span><span class="o">/</span><span class="mi">1</span><span class="o">.</span><span class="mi">2</span>
+</span><span class='line'><span class="no">HTTP_ACCEPT</span> <span class="o">=</span> <span class="n">text</span><span class="o">/</span><span class="n">html</span><span class="p">,</span><span class="n">application</span><span class="o">/</span><span class="n">xhtml</span><span class="o">+</span><span class="n">xml</span><span class="p">,</span><span class="n">application</span><span class="o">/</span><span class="n">xml</span><span class="p">;</span><span class="n">q</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span><span class="n">image</span><span class="o">/</span><span class="n">webp</span><span class="p">,</span><span class="n">image</span><span class="o">/</span><span class="n">apng</span><span class="p">,</span><span class="o">*/*</span><span class="p">;</span><span class="n">q</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">8</span>
+</span><span class='line'><span class="no">HTTP_ACCEPT_ENCODING</span> <span class="o">=</span> <span class="n">gzip</span><span class="p">,</span> <span class="n">deflate</span><span class="p">,</span> <span class="n">br</span>
+</span><span class='line'><span class="no">HTTP_ACCEPT_LANGUAGE</span> <span class="o">=</span> <span class="n">ko</span><span class="p">,</span><span class="n">ja</span><span class="p">;</span><span class="n">q</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span><span class="n">en</span><span class="o">-</span><span class="no">US</span><span class="p">;</span><span class="n">q</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">8</span><span class="p">,</span><span class="n">en</span><span class="p">;</span><span class="n">q</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">7</span>
+</span><span class='line'><span class="no">HTTP_CACHE_CONTROL</span> <span class="o">=</span> <span class="n">max</span><span class="o">-</span><span class="n">age</span><span class="o">=</span><span class="mi">0</span>
+</span><span class='line'><span class="no">HTTP_CONNECTION</span> <span class="o">=</span> <span class="n">keep</span><span class="o">-</span><span class="n">alive</span>
+</span><span class='line'><span class="no">HTTP_HOST</span> <span class="o">=</span> <span class="ss">localhost</span><span class="p">:</span><span class="mi">9292</span>
+</span><span class='line'><span class="no">HTTP_SAVE_DATA</span> <span class="o">=</span> <span class="n">on</span>
+</span><span class='line'><span class="no">HTTP_UPGRADE_INSECURE_REQUESTS</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'><span class="no">HTTP_USER_AGENT</span> <span class="o">=</span> <span class="no">Mozilla</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span> <span class="p">(</span><span class="no">Macintosh</span><span class="p">;</span> <span class="no">Intel</span> <span class="no">Mac</span> <span class="no">OS</span> <span class="n">X</span> <span class="mi">10_13_3</span><span class="p">)</span> <span class="no">AppleWebKit</span><span class="o">/</span><span class="mi">537</span><span class="o">.</span><span class="mi">36</span> <span class="p">(</span><span class="no">KHTML</span><span class="p">,</span> <span class="n">like</span> <span class="no">Gecko</span><span class="p">)</span> <span class="no">Chrome</span><span class="o">/</span><span class="mi">66</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">3359</span><span class="o">.</span><span class="mi">45</span> <span class="no">Safari</span><span class="o">/</span><span class="mi">537</span><span class="o">.</span><span class="mi">36</span>
+</span><span class='line'><span class="no">HTTP_VERSION</span> <span class="o">=</span> <span class="no">HTTP</span><span class="o">/</span><span class="mi">1</span><span class="o">.</span><span class="mi">1</span>
+</span><span class='line'><span class="no">PATH_INFO</span> <span class="o">=</span> <span class="sr">/</span>
+</span><span class='line'><span class="sr">QUERY_STRING = </span>
+</span><span class='line'><span class="sr">REMOTE_ADDR = ::1</span>
+</span><span class='line'><span class="sr">REQUEST_METHOD = GET</span>
+</span><span class='line'><span class="sr">REQUEST_PATH = /</span>
+</span><span class='line'><span class="no">REQUEST_URI</span> <span class="o">=</span> <span class="sr">/</span>
+</span><span class='line'><span class="sr">SCRIPT_NAME = </span>
+</span><span class='line'><span class="sr">SERVER_NAME = localhost</span>
+</span><span class='line'><span class="sr">SERVER_PORT = 9292</span>
+</span><span class='line'><span class="sr">SERVER_PROTOCOL = HTTP/</span><span class="mi">1</span><span class="o">.</span><span class="mi">1</span>
+</span><span class='line'><span class="no">SERVER_SOFTWARE</span> <span class="o">=</span> <span class="n">puma</span> <span class="mi">3</span><span class="o">.</span><span class="mi">11</span><span class="o">.</span><span class="mi">2</span> <span class="no">Love</span> <span class="no">Song</span>
+</span><span class='line'><span class="n">puma</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="c1">#&lt;Puma::Configuration:0x007ff652a60680&gt;</span>
+</span><span class='line'><span class="n">puma</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="c1">#&lt;TCPSocket:0x007ff652a09cb8&gt;</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">after_reply</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="c1">#&lt;Rack::Lint::ErrorWrapper:0x007ff651039450&gt;</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">hijack</span> <span class="o">=</span> <span class="c1">#&lt;Proc:0x007ff6510396f8@/Users/jo/.rbenv/versions/2.4.1/lib/ruby/gems/2.4.0/gems/rack-2.0.4/lib/rack/lint.rb:525&gt;</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">hijack?</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="c1">#&lt;Rack::Lint::InputWrapper:0x007ff651039478&gt;</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">multiprocess</span> <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">multithread</span> <span class="o">=</span> <span class="kp">true</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">run_once</span> <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">tempfiles</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">url_scheme</span> <span class="o">=</span> <span class="n">http</span>
+</span><span class='line'><span class="n">rack</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Rack Applicationの仕様</h2>
+
+<h3>Rackアプリケーションの形式</h3>
+
+<ul>
+<li>callメソッドに応答するオブジェクト</li>
+<li>callの引数envはCGI環境変数(ハッシュ)</li>
+<li>callの戻り値は[HTTPステータス番号, レスポンスヘッダ, ボディ]の形式
+
+<ul>
+<li>ステータス番号は3桁の整数
+
+<ul>
+<li>より正確にはto_iに応答してステータスを返すオブジェクト</li>
+</ul>
+</li>
+<li>レスポンスヘッダはハッシュ
+
+<ul>
+<li>より正確にはeachイテレータに応答しkey, valueの組をyieldするオブジェクト</li>
+</ul>
+</li>
+<li>ボディは次の3つのバリエーションのどれかひとつ
+
+<ul>
+<li>文字列が要素の配列([文字列, 文字列, &hellip; ])(上の例ではこれを使用)</li>
+<li>to_pathメソッドを持つオブジェクト(ファイルを返す)</li>
+<li>ストリーム(File-like)オブジェクト(ストリームから読んで返す)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>オブジェクト生成方法の種類</h3>
+
+<ul>
+<li>インスタンスメソッドとして定義する場合</li>
+<li>特異メソッドとして定義する場合</li>
+<li>lambdaを用いる場合</li>
+</ul>
+
+
+<h4>インスタンスメソッドとして定義する場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">},</span> <span class="o">[</span><span class="s1">&#39;Hello&#39;</span><span class="o">]]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>特異メソッドとして定義する場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>       <span class="c1"># module Foo も可</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">},</span> <span class="o">[</span><span class="s1">&#39;Hello&#39;</span><span class="o">]]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span> <span class="no">Foo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>lambdaを用いる場合</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">run</span> <span class="nb">lambda</span> <span class="p">{</span><span class="o">|</span><span class="n">env</span><span class="o">|</span> <span class="o">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">},</span> <span class="o">[</span><span class="s1">&#39;Hello&#39;</span><span class="o">]]</span> <span class="p">}</span>
+</span><span class='line'><span class="c1"># run proc {|env| ... } でも同じ</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>lambda(またはproc)の実行メソッドがProc#callで、名前がRack仕様のcallと同じため実行できるという仕組みになっている。</p>
+
+<h2>Rack Applicationの構成</h2>
+
+<p>一般的には複数のRackアプリケーションを連結した構成を取る。典型的なRackアプリケーションの模式図は下記のようになる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">endpoint</span> <span class="o">&lt;-&gt;</span> <span class="n">middleware</span><span class="o">[</span><span class="n">s</span><span class="o">]</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span> <span class="o">&lt;-&gt;</span> <span class="p">(</span><span class="no">Rack</span> <span class="n">handler</span><span class="p">)</span> <span class="o">&lt;-&gt;</span> <span class="p">(</span><span class="n">server</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>エンドポイント</li>
+<li>ミドルウエア</li>
+<li>Rackハンドラ</li>
+</ul>
+
+
+<h4>エンドポイント</h4>
+
+<p>エンドポイントは(サーバから一番離れた)末端のRackアプリケーション。典型的にはWebアプリケーションそのものになる。RailsアプリケーションもRackエンドポイントである。
+下記はRailsアプリケーションの<code>config.ru</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Rackに含まれているエンドポイントアプリケーションをいくつか示す。</p>
+
+<ul>
+<li>Rack::File - 静的ファイルサーバ(ディレクトリリスティングなし)</li>
+<li>Rack::Directory - 静的ファイルサーバ(ディレクトリリスティング付き)</li>
+<li>Rack::Lobster - 動作確認用サンプル</li>
+</ul>
+
+
+<h4>ミドルウエア</h4>
+
+<p>ミドルウエアはエンドポイントとサーバの中間に位置するRackアプリケーション。典型的なミドルウエアとは次のようなものになる。</p>
+
+<ul>
+<li>callはクラスのインスタンスメソッドとして記述する</li>
+<li>コンストラクタ引数に上流(Webアプリケーション側)Rackアプリケーションを取る</li>
+</ul>
+
+
+<p>ミドルウエアは中間の各種フィルタ処理を担当する。Rack gemに含まれるRackアプリケーションの大部分はこのミドルウエアである。これも主なものからいくつか示す。</p>
+
+<ul>
+<li>Rack::Static - 静的ファイルサーバ(各種フィルタ機能付き)</li>
+<li>Rack::Deflater - 圧縮エンコーディング対応</li>
+<li>Rack::ETag - HTTP ETagを処理</li>
+<li>Rack::ConditionalGet - If-None-Match及びIf-Modified-Sinceの対応</li>
+<li>Rack::MockRequest - テスト用モック(実際のHTTPを使わない)</li>
+<li>Rack::Lint - プロトコルの実行時チェック(開発時は自動的に挿入される)</li>
+<li>Rack::ShowExceptions - 例外時に詳細情報を表示(開発時は自動的に挿入される)</li>
+<li>Rack::ContentLength - Content-Lengthをセットする</li>
+<li>Rack::Cascade - 複数アプリケーションの分岐</li>
+</ul>
+
+
+<p>なお「ミドルウエア」という用語はRackアプリケーション全般という意味でも使われている(広義のミドルウエア)。</p>
+
+<h4>Rackハンドラ</h4>
+
+<p>環境や用途の違いによりthin/puma/webrick/mongrelなど様々のサーバの選択がある。この環境の違いを吸収する部分がRackハンドラである。Rubyベースの環境で用いられるサーバにはRackハンドラが用意されており、それぞれ仕様の異なるサーバに対してRackの共通仕様を提供する。<br/>
+開発環境で<code>rackup</code>を起動する時、<code>rackup -s webrick</code>のように立ち上げるサーバ種類を選択することもできる。<br/>
+<code>config.ru</code>にサーバの種類やポート番号などを直接設定することも可能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rack</span><span class="o">::</span><span class="no">Handler</span><span class="o">::</span><span class="no">WEBrick</span><span class="o">.</span><span class="n">run</span> <span class="no">Foo</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="ss">Port</span><span class="p">:</span> <span class="mi">9292</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Rack DSL</h2>
+
+<p>Rackアプリケーションの構成は<code>config.ru</code>に記述するけど、この際用いられるのがRack DSLと呼ばれる記法である。これはRack::Builderモジュールで実装されている。
+ここで次のような構成を持っているアプリケーションを作ってみる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Rack</span><span class="o">::</span><span class="no">Directory</span> <span class="o">&lt;-&gt;</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Deflater</span> <span class="o">&lt;-&gt;</span> <span class="no">Rack</span><span class="o">::</span><span class="no">ETag</span> <span class="o">&lt;-&gt;</span> <span class="p">(</span><span class="no">Rack</span> <span class="n">handler</span><span class="o">/</span><span class="n">server</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Rack::Directoryは指定するディレクトリを静的ファイルサーバとして立ち上げる。<br/>
+Rack::Deflaterは圧縮エンコーディングに対応する。<br/>
+Rack::ETagでHTTPヘッダにETagフィールドをセットする。</p>
+
+<p><code>config.ru</code>を修正する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">ETag</span>
+</span><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Deflater</span>
+</span><span class='line'><span class="n">run</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Directory</span><span class="o">.</span><span class="n">new</span> <span class="s1">&#39;public&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここでミドルウエアとエンドポイントの違いが重要になる。</p>
+
+<ul>
+<li>ミドルウエアは接続順にuseで記述する</li>
+<li>エンドポイントは最後にrunで記述する</li>
+</ul>
+
+
+<p>useを使わずにrunだけで記述することも可能だが、下記のようにコードが増える。この程度だとまだ十分だけど、<code>Ruby on Rails</code>のように多数のミドルウエアを直列接続することを考えたら<code>use</code>を使った方が良いであろう。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># useをrunに書き換えた場合</span>
+</span><span class='line'><span class="n">run</span> <span class="no">Rack</span><span class="o">::</span><span class="no">ETag</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>  <span class="no">Rack</span><span class="o">::</span><span class="no">Deflater</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>    <span class="no">Rack</span><span class="o">::</span><span class="no">Directory</span><span class="o">.</span><span class="n">new</span> <span class="s1">&#39;public&#39;</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のアプリケーションはpublickディレクトリを静的ファイルサーバとして立ち上げる。<br/>
+<img src="https://monosnap.com/file/vwA0rDDj1cV1HLpl7knAvprVCTbcfo.png" alt="directory" /></p>
+
+<p><code>Rack::Static</code>を用いたらディレクトリ(URLの最後が'/&lsquo;)に対するアクセスに対してもディレクトリリスティングではなく、静的ページに対応できる。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Static</span><span class="p">,</span> <span class="ss">urls</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s1">&#39;public&#39;</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="s1">&#39;test1.txt&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Rack::Staticは実質的にエンドポイントの機能を持っているが、コンストラクタの第一引数が<code>app</code>なのでエンドポイントにはならない。そこで空のエンドポイントを作って対応する。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Static</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+</span><span class='line'>      <span class="vi">@app</span> <span class="o">=</span> <span class="n">app</span>
+</span><span class='line'>      <span class="vi">@urls</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="ss">:urls</span><span class="o">]</span> <span class="o">||</span> <span class="o">[</span><span class="s2">&quot;/favicon.ico&quot;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">・・・</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="https://github.com/rack/rack/blob/master/lib/rack/static.rb#L86">rack/static.rb at master · rack/rack · GitHub</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># 空のエンドポイント</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">NullEndPoint</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">ETag</span>
+</span><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Deflater</span>
+</span><span class='line'><span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Static</span><span class="p">,</span> <span class="ss">urls</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;&#39;</span><span class="o">]</span><span class="p">,</span> <span class="ss">root</span><span class="p">:</span> <span class="s1">&#39;public&#39;</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="s1">&#39;test1.txt&#39;</span>
+</span><span class='line'><span class="n">run</span> <span class="no">NullEndPoint</span><span class="o">.</span><span class="n">new</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定した<code>test1.txt</code>が表示される。<br/>
+<img src="https://monosnap.com/file/UjTytEMmXAAKYVX9btPbfEamaFt32B.png" alt="Alt text" /></p>
+
+<h2>参考</h2>
+
+<p><a href="https://qiita.com/higuma/items/838f4f58bc4a0645950a">Rack解説 - Rackの構造とRack DSL - Qiita</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ActiveRecordの中身]]></title>
@@ -4203,355 +4617,6 @@ Railsで提供しているライブラリ<code>ActiveRecord::Callbacks</code>と
 </li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OJ Gem]]></title>
-    <link href="http://jq-jo.github.io/blog/2017/10/04/oj-gem/"/>
-    <updated>2017-10-04T10:24:30+09:00</updated>
-    <id>http://jq-jo.github.io/blog/2017/10/04/oj-gem</id>
-    <content type="html"><![CDATA[<h3>はじめ</h3>
-
-<p>ウェブサービスをやっていく中にはAPIを取得することが多い。今みている<code>mastodon</code>では<code>OJ</code>という<code>Json parser</code>を使っていたので調べてみた。</p>
-
-<h3>インストール</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem install oj</span></code></pre></td></tr></table></div></figure>
-
-
-<p>or</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># in Gemfile
-</span><span class='line'>gem 'oj'</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>使い方</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'oj'
-</span><span class='line'>
-</span><span class='line'>h = { 'one' =&gt; 1, 'array' =&gt; [ true, false ] }
-</span><span class='line'>json = Oj.dump(h)
-</span><span class='line'>
-</span><span class='line'># json =
-</span><span class='line'># {
-</span><span class='line'>#   "one":1,
-</span><span class='line'>#   "array":[
-</span><span class='line'>#     true,
-</span><span class='line'>#     false
-</span><span class='line'>#   ]
-</span><span class='line'># }
-</span><span class='line'>
-</span><span class='line'>h2 = Oj.load(json)
-</span><span class='line'>puts "Same? #{h == h2}"
-</span><span class='line'># true</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>他のParserとの比較</h3>
-
-<ul>
-<li><a href="https://github.com/evanphx/benchmark-ips">benchmark-ips</a>でベンチマークを取る</li>
-<li>比較対象
-
-<ul>
-<li>JSON</li>
-<li>yajl</li>
-<li>oj</li>
-</ul>
-</li>
-</ul>
-
-
-<p>まずロカールにapiのコントローラーをよいする。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">json</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="ss">test1</span><span class="p">:</span> <span class="s1">&#39;test1&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test2</span><span class="p">:</span> <span class="s1">&#39;test2&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test3</span><span class="p">:</span> <span class="s1">&#39;test3&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test4</span><span class="p">:</span> <span class="s1">&#39;test4&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test5</span><span class="p">:</span> <span class="s1">&#39;test5&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test6</span><span class="p">:</span> <span class="s1">&#39;test6&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test7</span><span class="p">:</span> <span class="s1">&#39;test7&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test8</span><span class="p">:</span> <span class="s1">&#39;test8&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test9</span><span class="p">:</span> <span class="s1">&#39;test9&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">test10</span><span class="p">:</span> <span class="s1">&#39;test10&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="n">json</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>それから比較するコードを書く。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">JsonCompare</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;yajl&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;oj&#39;</span>
-</span><span class='line'>  <span class="nb">require</span> <span class="s1">&#39;benchmark/ips&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">compare</span>
-</span><span class='line'>    <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span> <span class="s2">&quot;http://localhost:3000/api/json_compare&quot;</span>
-</span><span class='line'>    <span class="n">response</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">get</span> <span class="n">uri</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="no">Benchmark</span><span class="o">.</span><span class="n">ips</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;JSON.parse&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Yajl&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Yajl</span><span class="o">::</span><span class="no">Parser</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;Oj&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="n">x</span><span class="o">.</span><span class="n">compare!</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>結果</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">9</span><span class="o">.</span><span class="mi">786</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                <span class="no">Yajl</span>    <span class="mi">10</span><span class="o">.</span><span class="mi">364</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">17</span><span class="o">.</span><span class="mo">00</span><span class="mi">9</span><span class="n">k</span> <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>     <span class="mi">99</span><span class="o">.</span><span class="mo">053</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">2</span><span class="sx">%) i/s -    499.086k in   5.043910s</span>
-</span><span class='line'><span class="sx">                Yajl    107.150k (± 3.4%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">538</span><span class="o">.</span><span class="mi">928</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">036016</span><span class="n">s</span>
-</span><span class='line'>                  <span class="no">Oj</span>    <span class="mi">183</span><span class="o">.</span><span class="mi">400</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>    <span class="mi">918</span><span class="o">.</span><span class="mi">486</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">012</span><span class="mi">844</span><span class="n">s</span>
-</span><span class='line'>
-</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
-</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>   <span class="mi">183399</span><span class="o">.</span><span class="mi">8</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
-</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>   <span class="mi">107149</span><span class="o">.</span><span class="mi">6</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">71</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>    <span class="mi">99053</span><span class="o">.</span><span class="mi">1</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">85</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdef3b04440</span>
-</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
-</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef8c3cbf0 @iterations=499086, @label=&quot;JSON.parse&quot;, @measurement_cycle=9786, @microseconds=5043910.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef8c3cc68 @error=3164, @mean=99053.0983205518&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef7a234a0 @iterations=538928, @label=&quot;Yajl&quot;, @measurement_cycle=10364, @microseconds=5036016.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef7a23568 @error=3672, @mean=107149.64088869188&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdef89e6c98 @iterations=918486, @label=&quot;Oj&quot;, @measurement_cycle=17009, @microseconds=5012844.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdef89e6d10 @error=5584, @mean=183399.80361005384&gt;&gt;]&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>OJ</code>が<code>Yajl</code>よりは1.7倍、<code>JSON</code>よりは1.8倍速かった。<br/>
-<code>String</code>じゃなくてモデルにしたらどうなるだろう。<br/>
-apiコントローラーのコードを変えてみる。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Api</span><span class="o">::</span><span class="no">JsonCompareController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">API</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:id</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">render</span> <span class="ss">json</span><span class="p">:</span> <span class="vi">@users</span><span class="p">,</span> <span class="ss">status</span><span class="p">:</span> <span class="ss">:ok</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ちなみに<code>User.count</code>は<code>100</code>。<br/>
-さっきの比較コードを実行してみると、</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Warming</span> <span class="n">up</span> <span class="o">--------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>   <span class="mi">253</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                <span class="no">Yajl</span>   <span class="mi">259</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'>                  <span class="no">Oj</span>   <span class="mi">387</span><span class="o">.</span><span class="mo">000</span>  <span class="n">i</span><span class="o">/</span><span class="mi">100</span><span class="n">ms</span>
-</span><span class='line'><span class="no">Calculating</span> <span class="o">-------------------------------------</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span>      <span class="mi">2</span><span class="o">.</span><span class="mi">529</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">4</span><span class="sx">%) i/s -     12.650k in   5.007160s</span>
-</span><span class='line'><span class="sx">                Yajl      2.612k (± 2.6%)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">13</span><span class="o">.</span><span class="mi">209</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mo">061015</span><span class="n">s</span>
-</span><span class='line'>                  <span class="no">Oj</span>      <span class="mi">3</span><span class="o">.</span><span class="mi">952</span><span class="n">k</span> <span class="p">(</span><span class="err">±</span> <span class="mi">3</span><span class="o">.</span><span class="mi">6</span><span class="o">%</span><span class="p">)</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span>     <span class="mi">20</span><span class="o">.</span><span class="mi">124</span><span class="n">k</span> <span class="k">in</span>   <span class="mi">5</span><span class="o">.</span><span class="mi">098328</span><span class="n">s</span>
-</span><span class='line'>
-</span><span class='line'><span class="ss">Comparison</span><span class="p">:</span>
-</span><span class='line'>                  <span class="ss">Oj</span><span class="p">:</span>     <span class="mi">3952</span><span class="o">.</span><span class="mi">4</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span>
-</span><span class='line'>                <span class="ss">Yajl</span><span class="p">:</span>     <span class="mi">2611</span><span class="o">.</span><span class="mi">7</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">51</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>          <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">:</span>     <span class="mi">2529</span><span class="o">.</span><span class="mi">5</span> <span class="n">i</span><span class="o">/</span><span class="n">s</span> <span class="o">-</span> <span class="mi">1</span><span class="o">.</span><span class="mi">56</span><span class="n">x</span>  <span class="n">slower</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="c1">#&lt;Benchmark::IPS::Report:0x007fdf594c4678</span>
-</span><span class='line'> <span class="vi">@data</span><span class="o">=</span><span class="kp">nil</span><span class="p">,</span>
-</span><span class='line'> <span class="vi">@entries</span><span class="o">=</span>
-</span><span class='line'>  <span class="o">[</span><span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5da291a0 @iterations=12650, @label=&quot;JSON.parse&quot;, @measurement_cycle=253, @microseconds=5007160.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5da29268 @error=87, @mean=2529.463823054468&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5a59b8c0 @iterations=13209, @label=&quot;Yajl&quot;, @measurement_cycle=259, @microseconds=5061015.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5a59ba28 @error=67, @mean=2611.693591724044&gt;&gt;,</span>
-</span><span class='line'>   <span class="c1">#&lt;Benchmark::IPS::Report::Entry:0x007fdf5d821510 @iterations=20124, @label=&quot;Oj&quot;, @measurement_cycle=387, @microseconds=5098328.0, @show_total_time=true, @stats=#&lt;Benchmark::IPS::Stats::SD:0x007fdf5d821588 @error=141, @mean=3952.373849831794&gt;&gt;]&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>OJ</code>が<code>Yajl</code>、<code>JSON</code>より1.5倍速いことがわかる。</p>
-
-<h3>まとめ</h3>
-
-<p>単純に速度のパフォーマンス側をみると<code>OJ</code>を使った方が良さそう！</p>
-
-<h2>追記</h2>
-
-<h3>mastodonでのOJの使い方</h3>
-
-<ul>
-<li>emoji.jsonの変換</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/lib/emoji.rb</span>
-</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">,</span> <span class="s1">&#39;emoji.json&#39;</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>serviceクラスでのpayload作成</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># app/services/batched_remove_status_service.rb</span>
-</span><span class='line'><span class="vi">@json_payloads</span> <span class="o">=</span> <span class="n">statuses</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span> <span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">]</span> <span class="p">}</span><span class="o">.</span><span class="n">to_h</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/fan_out_on_write_service.rb</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="kp">nil</span><span class="p">,</span> <span class="ss">:status</span><span class="p">)</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="vi">@payload</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/notify_service.rb</span>
-</span><span class='line'><span class="no">Redis</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;timeline:</span><span class="si">#{</span><span class="vi">@recipient</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:notification</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="no">InlineRenderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="vi">@notification</span><span class="p">,</span> <span class="vi">@recipient</span><span class="p">,</span> <span class="ss">:notification</span><span class="p">)))</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># app/services/remove_status_service.rb</span>
-</span><span class='line'><span class="vi">@payload</span> <span class="o">=</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="ss">event</span><span class="p">:</span> <span class="ss">:delete</span><span class="p">,</span> <span class="ss">payload</span><span class="p">:</span> <span class="n">status</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>reactコンポーネントへのprops</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="c">// app/views/home/index.html.haml</span>
-</span><span class='line'><span class="nc">.app-holder</span><span class="nf">#mastodon</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
-</span><span class='line'>
-</span><span class='line'><span class="c">// app/views/about/show.html.haml</span>
-</span><span class='line'><span class="nf">#mastodon-timeline</span><span class="p">{</span> <span class="ss">data</span><span class="p">:</span> <span class="p">{</span> <span class="ss">props</span><span class="p">:</span> <span class="no">Oj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">default_props</span><span class="p">)</span> <span class="p">}</span> }
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>参考</h2>
-
-<p><a href="http://blog.toshimaru.net/json-parser-benchmark/">RubyのJSONパーサーのパース速度比較</a><br/>
-<a href="https://github.com/ohler55/oj">OJ Github</a></p>
 ]]></content>
   </entry>
   
